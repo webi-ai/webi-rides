@@ -26,9 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Run
-      working-directory: ./client
+    - name: Run truffle tests
       run: | 
-        yarn install --immutable --immutable-cache --check-cache
-        yarn run test
+        truffle test
         
