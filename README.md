@@ -82,7 +82,8 @@ sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
 ```
 
 2. If you haven't already, create a cycle wallet, claim free cycles and set wallet address using the steps here: https://smartcontracts.org/docs/quickstart/cycles-faucet.html
-ICP tokens can be converted into more cycles if needed: https://smartcontracts.org/docs/quickstart/4-2-convert-ICP-to-cycles.html
+
+* ICP tokens can be converted into more cycles if needed: https://smartcontracts.org/docs/quickstart/4-2-convert-ICP-to-cycles.html
   
 3. Check that wallet is configured and has a balance:
 ```bash
