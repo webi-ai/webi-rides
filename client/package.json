@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "1.9.0",
-  "description": "Material Dashboard React. Coded by Creative Tim",
+  "description": "",
   "private": false,
   "main": "dist/index.js",
   "dependencies": {
@@ -42,10 +42,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/creativetimofficial/material-dashboard-react.git"
+    "url": "git+https://github.com/webi-ai/rides_frontend.git"
   },
   "keywords": [],
-  "homepage": "https://creativetimofficial.github.io/material-dashboard-react/#/dashboard",
   "optionalDependencies": {
     "@types/googlemaps": "3.39.6",
     "@types/markerclustererplus": "2.1.33",
