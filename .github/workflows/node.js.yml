@@ -19,5 +19,5 @@ jobs:
     - name: Run truffle tests
       run: | 
         npm i -g truffle
-        truffle build
+        truffle migrate --dry-run
         
