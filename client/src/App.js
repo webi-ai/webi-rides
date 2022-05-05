@@ -23,15 +23,22 @@ class App extends Component {
             'rideManager': null,
             'loading': true,
             'web3': null,
-        }
+        };
     }
 
     async componentWillMount() {
-        await this.loadWeb3()
-        await this.loadBlockChain()
+        await this.loadWeb3();
+        await this.loadBlockChain();
     }
 
     async loadWeb3() {
+        // // load testnet web3
+        // window.web3 = new Web3(new Web3.providers.HttpProvider(
+        //     'https://ropsten.infura.io/v3/6dc689c2703041f48f42d2fa186ce85e'
+        // ));
+        // console.log(window.web3.eth.personal.currentProvider);
+        // return; // TODO
+
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum);
             await window.ethereum.enable();
@@ -47,18 +54,20 @@ class App extends Component {
     handleInputChange = (e) => {
         this.setState({
             [ e.target.id ]: e.target.value,
-        })
+        });
     }
 
     async loadBlockChain() {
-        const web3 = window.web3
+        const web3 = window.web3;
         const accounts = await web3.eth.getAccounts();
         console.log(accounts);
         this.setState({ 'account': accounts[ 0 ] });
         const networkId = await web3.eth.net.getId();
+        // const networkData = true;
         const networkData = RideManager.networks[ networkId ];
         if (networkData) {
             const rideManager = new web3.eth.Contract(RideManager.abi, networkData.address);
+            console.log(rideManager);
             this.setState({ 'rideManager': rideManager, 'loading': false, 'web3': web3 });
         } else {
             window.alert('Ride Manager contract not deployed to detected network.');
@@ -78,7 +87,7 @@ class App extends Component {
                             <Admin rideManager={this.state.rideManager} web3={this.state.web3} account={this.state.account}/>
                         )}
                     />
-                    <Redirect from="/" to="/admin/dashboard" />
+                    <Redirect from="/" to="/admin/maps" />
                 </Switch>
             </Router>
         );

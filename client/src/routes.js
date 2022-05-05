@@ -19,23 +19,30 @@ import QrScanner from "views/QrScanner/QrScanner.js";
 import { DriveEta } from "@material-ui/icons";
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import RideShareSteps from "views/RideShareSteps/RideShareSteps";
-// core components/views for RTL layout
 
 const dashboardRoutes = [
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    rtlName: "لوحة القيادة",
-    icon: Dashboard,
-    component: DashboardPage,
-    layout: "/admin"
-  },
+  // {
+  //   path: "/dashboard",
+  //   name: "Dashboard",
+  //   rtlName: "لوحة القيادة",
+  //   icon: Dashboard,
+  //   component: DashboardPage,
+  //   layout: "/admin"
+  // },
   {
     path: "/steps",
     name: "Get a Ride",
     rtlName: "لوحة القيادة",
     icon: FormatListNumberedIcon,
     component: RideShareSteps,
+    layout: "/admin"
+  },
+  {
+    path: "/maps",
+    name: "Maps",
+    rtlName: "خرائط",
+    icon: LocationOn,
+    component: Maps,
     layout: "/admin"
   },
   {
@@ -53,47 +60,40 @@ const dashboardRoutes = [
     icon: DriveEta,
     component: DriverProfile,
     layout: "/admin"
-  },
-  {
-    path: "/table",
-    name: "Table List",
-    rtlName: "قائمة الجدول",
-    icon: "content_paste",
-    component: TableList,
-    layout: "/admin"
-  },
-  {
-    path: "/typography",
-    name: "Typography",
-    rtlName: "طباعة",
-    icon: LibraryBooks,
-    component: Typography,
-    layout: "/admin"
-  },
-  {
-    path: "/maps",
-    name: "Maps",
-    rtlName: "خرائط",
-    icon: LocationOn,
-    component: Maps,
-    layout: "/admin"
-  },
-  {
-    path: "/notifications",
-    name: "Notifications",
-    rtlName: "إخطارات",
-    icon: Notifications,
-    component: NotificationsPage,
-    layout: "/admin"
-  },
-  {
-    path: "/qrscanner",
-    name: "QR Scanner",
-    rtlName: "إخطارات",
-    icon: CropFreeIcon,
-    component: QrScanner,
-    layout: "/admin"
   }
+  // {
+  //   path: "/table",
+  //   name: "Table List",
+  //   rtlName: "قائمة الجدول",
+  //   icon: "content_paste",
+  //   component: TableList,
+  //   layout: "/admin"
+  // },
+  // {
+  //   path: "/typography",
+  //   name: "Typography",
+  //   rtlName: "طباعة",
+  //   icon: LibraryBooks,
+  //   component: Typography,
+  //   layout: "/admin"
+  // },
+
+  // {
+  //   path: "/notifications",
+  //   name: "Notifications",
+  //   rtlName: "إخطارات",
+  //   icon: Notifications,
+  //   component: NotificationsPage,
+  //   layout: "/admin"
+  // },
+  // {
+  //   path: "/qrscanner",
+  //   name: "QR Scanner",
+  //   rtlName: "إخطارات",
+  //   icon: CropFreeIcon,
+  //   component: QrScanner,
+  //   layout: "/admin"
+  // }
 
 ];
 
