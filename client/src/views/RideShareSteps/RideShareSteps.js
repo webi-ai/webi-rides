@@ -163,8 +163,6 @@ export default function RideShareSteps(props) {
             </CardBody>
           </div>;
         case 3:
-          // TODO don't pass state between driver/rider flows
-          // return //!confirmed ? `` : 
           return <QrReader
             delay={100}
             style={previewStyle}
@@ -222,35 +220,24 @@ export default function RideShareSteps(props) {
         console.log([String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))]);
         console.log([String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))]);
         updateSeats(value);
-        isLoading(false); // TODO remove
-        // if (e.key === 'Enter') { // TODO shouldn't be just Enter to advance
-          // make async
-          // TODO prevent multiple press
-          rideManager.methods.requestRide(
-              account,
-              [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
-              [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
-              web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
-            )
-            .send({ from: account })
-            .once('receipt', async (receipt) => {
-              let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
-              console.log(data);
-              console.log(data[5][data[5].length - 1]);
-              setRideContractAddress(data[5][data[5].length - 1]);
-              setRideContractAddress('0xcb40811F061025e8E16991602E5660fB7E2Fe051');
-              isLoading(false);
-              // TODO scan qr code here??
-              // let a = '';
-              // while (a === '') {
-              //   a = qrcodeResult;
-              // }
-              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            });
-          // setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        // }
-        // TODO unhack - don't handle every event, only next click events
-        // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        isLoading(false); 
+        // TODO make async
+        rideManager.methods.requestRide(
+            account,
+            [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
+            [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
+            web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
+          )
+          .send({ from: account })
+          .once('receipt', async (receipt) => {
+            let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
+            console.log(data);
+            console.log(data[5][data[5].length - 1]);
+            setRideContractAddress(data[5][data[5].length - 1]);
+            setRideContractAddress('0xcb40811F061025e8E16991602E5660fB7E2Fe051');
+            isLoading(false);
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          });
       } else if (activeStep === 2) {
         isLoading(true);
         // TODO precise geolocation
