@@ -78,7 +78,9 @@ export default function RideShareSteps(props) {
   // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
     setqrcodeResult(data);
+    console.log(data);
     if (data === rideContractAddress) {
+      // TODO shouldn't be alert
       alert('QR code verified successfully! Enjoy your ride!');
       setActiveStep(4);
     }
@@ -105,12 +107,12 @@ export default function RideShareSteps(props) {
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
-                      WebI Ride Location
+                      webI Ride Location
                     </Typography>
                     {
                       localStorage.getItem("destinationLng") === null ?
                         <Typography variant="body2" color="textSecondary" component="p">
-                          To book a WebI Ride all you would need to do is login to your WebI Rides account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                          To book a webI Ride all you would need to do is login to your webI Rides account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
                         </Typography>
                         :
                         <Typography variant="body2" color="textSecondary" component="p">
@@ -135,18 +137,17 @@ export default function RideShareSteps(props) {
 
             </div>);
         case 1:
+          // TODO constrain to 1-2 seats (or max seat limit)
           return (
             <div>
               <TextField
                 type='number'
                 label="No. of Seats"
                 id="filled-margin-none"
-                defaultValue="Default Value"
-                onKeyDown={handleNext}
+                defaultValue={1}
                 className={classes.textField}
-                onChange={handleNext}
                 value={seats}
-                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your WebI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
+                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
                 variant="outlined"
               />
             </div>);
@@ -162,14 +163,16 @@ export default function RideShareSteps(props) {
             </CardBody>
           </div>;
         case 3:
-          return !confirmed ? `` : <QrReader
+          // TODO don't pass state between driver/rider flows
+          // return //!confirmed ? `` : 
+          return <QrReader
             delay={100}
             style={previewStyle}
             onError={handleError}
             onScan={handleScan}
           />;
         case 4:
-          return 'Ready to begin your WebI Rides journey for eco-friendly rides at pocket-friendly rates';
+          return 'Ready to begin your webI Rides journey for eco-friendly rides at pocket-friendly rates';
         case 5:
           return `Ride Completed!`;
         default:
@@ -191,7 +194,9 @@ export default function RideShareSteps(props) {
         case 1:
           // TODO fix loading doesn't work
           // TODO placeholder here
-          return confirmed ? `` : <QRCode value="0xc0ffee254729296a45a3885639AC7E10F9d54979" />;//<QRCode value={rideContractAddress} />; 
+          console.log('rideContractAddress');
+          console.log(rideContractAddress);
+          return confirmed ? `` :/* <QRCode value="0xc0ffee254729296a45a3885639AC7E10F9d54979" />;*/ <QRCode value={rideContractAddress} />; 
         case 2:
           return ``;
         default:
@@ -214,11 +219,13 @@ export default function RideShareSteps(props) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
       else if (activeStep === 1) {
+        console.log([String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))]);
+        console.log([String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))]);
         updateSeats(value);
         isLoading(false); // TODO remove
-        if (e.key === 'Enter') { // TODO shouldn't be just Enter to advance
+        // if (e.key === 'Enter') { // TODO shouldn't be just Enter to advance
           // make async
-          console.log(rideManager);
+          // TODO prevent multiple press
           rideManager.methods.requestRide(
               account,
               [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
@@ -229,18 +236,21 @@ export default function RideShareSteps(props) {
             .once('receipt', async (receipt) => {
               let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
               console.log(data);
+              console.log(data[5][data[5].length - 1]);
               setRideContractAddress(data[5][data[5].length - 1]);
+              setRideContractAddress('0xcb40811F061025e8E16991602E5660fB7E2Fe051');
               isLoading(false);
-              let a = '';
-              while (a === '') {
-                a = qrcodeResult;
-              }
+              // TODO scan qr code here??
+              // let a = '';
+              // while (a === '') {
+              //   a = qrcodeResult;
+              // }
               setActiveStep((prevActiveStep) => prevActiveStep + 1);
             });
-          setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        }
+          // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        // }
         // TODO unhack - don't handle every event, only next click events
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        // setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else if (activeStep === 2) {
         isLoading(true);
         // TODO precise geolocation
@@ -263,6 +273,7 @@ export default function RideShareSteps(props) {
           console.log(response);
           console.log(response.data.selectedDrivers);
           let temp = response.data.selectedDrivers;
+          // TODO fix all drivers the same
           const tempList = temp.map(data => {
             return (
               [
@@ -276,8 +287,12 @@ export default function RideShareSteps(props) {
                   color="primary"
                   className={classes.button}
                   onClick={() => {
+                    console.log(account);
+                    console.log(data.ethAddress);
+                    console.log(rideContractAddress);
                     setUserSelectedDriver(data.ethAddress);
-                    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress).send({ from: account })
+                    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
+                      .send({ from: account })
                       .once('receipt', async (receipt) => {
                         console.log(receipt);
                         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -469,7 +484,7 @@ export default function RideShareSteps(props) {
         <GridItem xs={12} sm={12} md={10}>
           <Card>
             <CardHeader color="warning">
-              <h4 className={classes.cardTitleWhite}>Enjoy WebI Rides</h4>
+              <h4 className={classes.cardTitleWhite}>Enjoy webI Rides</h4>
               <p className={classes.cardCategoryWhite}>
                 Travel management made secure &amp; easy
               </p>
