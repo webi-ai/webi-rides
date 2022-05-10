@@ -120,10 +120,10 @@ More `dfx canister` commands: https://smartcontracts.org/docs/developers-guide/c
 
 ***
 
-View the backend repository <a href="https://github.com/webi-ai/rides-backend">here</a>.
+View the backend repository <a href="https://github.com/webi-ai/rides_backend">here</a>.
 
 ## License
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[MIT License Link](https://github.com/webi-ai/rides-frontend/blob/main/LICENSE)
+[MIT License Link](https://github.com/webi-ai/rides_frontend/blob/main/LICENSE)
