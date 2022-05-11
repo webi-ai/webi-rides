@@ -163,7 +163,7 @@ export default function DriverProfile(props) {
                         onChange: (e) => handleChange(e),
                         type: "tel"
                       }}
-                      labelText="Contact"
+                      labelText="Phone Number"
                       id="contact"
                       formControlProps={{
                         fullWidth: true
@@ -191,7 +191,7 @@ export default function DriverProfile(props) {
                         onChange: (e) => handleChange(e),
                         type: "text"
                       }}
-                      labelText="Car Number"
+                      labelText="License Plate Number"
                       id="carNo"
                       formControlProps={{
                         fullWidth: true
@@ -236,7 +236,7 @@ export default function DriverProfile(props) {
                       <TableBody>
                         <StyledTableRow>
                           <StyledTableCell component="th" scope="row">
-                            Contact
+                            Phone Number
                         </StyledTableCell>
                           <StyledTableCell align="right">{formData.contact}</StyledTableCell>
                         </StyledTableRow>
@@ -249,7 +249,7 @@ export default function DriverProfile(props) {
                         </StyledTableRow>
                         <StyledTableRow>
                           <StyledTableCell component="th" scope="row">
-                            Car Number
+                            License Plate Number
                         </StyledTableCell>
                           <StyledTableCell align="right">{formData.carNo}</StyledTableCell>
 

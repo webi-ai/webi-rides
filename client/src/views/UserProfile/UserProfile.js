@@ -82,7 +82,7 @@ export default function UserProfile(props) {
 
   const [ formData, setFormData ] = useState({
     name: "",
-    contact: "",
+    contact: "", // TODO update var name
     email: "",
   })
   const handleSuccess = () => {
@@ -96,43 +96,44 @@ export default function UserProfile(props) {
   };
 
   function handleChange(event) {
-    const { id, value } = event.target
-    setFormData({ ...formData, [ id ]: value })
+    const { id, value } = event.target;
+    setFormData({ ...formData, [ id ]: value });
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setHide(true)
+    setHide(true);
     let accounts = await web3.eth.getAccounts();
-    localStorage.setItem('account', accounts[ 0 ])
-    localStorage.setItem('name', formData.name)
-    localStorage.setItem('contact', formData.contact)
-    localStorage.setItem('email', formData.email)
-    localStorage.setItem('type', "0")
+    localStorage.setItem('account', accounts[ 0 ]);
+    localStorage.setItem('name', formData.name);
+    localStorage.setItem('contact', formData.contact);
+    localStorage.setItem('email', formData.email);
+    localStorage.setItem('type', "0");
 
 
-    var n = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
-    var c = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
-    var e = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
+    var name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
+    var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
+    var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
 
 
-    props.rideManager.methods.registerRider(n, c, e, 0, accounts[ 0 ]).send({ from: accounts[ 0 ] })
+    await props.rideManager.methods.registerRider(name, contact, email, 0, accounts[ 0 ]).send({ from: accounts[ 0 ] })
       .once('receipt', (receipt) => {
         console.log(receipt);
         isLoading(false);
-      })
-    handleSuccess()
+      });
+    handleSuccess();
   }
 
   if (loading) {
     return <Loader />;
   } else {
+    // TODO are snackbars necessary?
     return (
       <div>
         <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
           <Alert onClose={handleClose} severity="success">
             Success Wallet Address {localStorage.getItem('account')}!
-        </Alert>
+          </Alert>
         </Snackbar>
         <GridContainer>
           <GridItem xs={12} sm={12} md={7}>
@@ -163,7 +164,7 @@ export default function UserProfile(props) {
                           onChange: (e) => handleChange(e),
                           type: "tel"
                         }}
-                        labelText="Contact"
+                        labelText="Phone Number"
                         id="contact"
                         formControlProps={{
                           fullWidth: true
@@ -208,16 +209,15 @@ export default function UserProfile(props) {
                         <TableBody>
                           <StyledTableRow>
                             <StyledTableCell component="th" scope="row">
-                              Contact
-                        </StyledTableCell>
+                              Phone Number
+                            </StyledTableCell>
                             <StyledTableCell align="right">{formData.contact}</StyledTableCell>
                           </StyledTableRow>
                           <StyledTableRow>
                             <StyledTableCell component="th" scope="row">
                               Email Address
-                        </StyledTableCell>
+                            </StyledTableCell>
                             <StyledTableCell align="right">{formData.email}</StyledTableCell>
-
                           </StyledTableRow>
                         </TableBody>
                       </Table>
@@ -225,7 +225,7 @@ export default function UserProfile(props) {
                   </p>
                   <Button color="primary" round onClick={e => e.preventDefault()}>
                     Edit
-              </Button>
+                  </Button>
                 </CardBody>
               </Card>
             </GridItem>

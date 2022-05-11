@@ -7,7 +7,6 @@ import "perfect-scrollbar/css/perfect-scrollbar.css";
 import { makeStyles } from "@material-ui/core/styles";
 // core components
 import Navbar from "components/Navbars/Navbar.js";
-import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -25,6 +24,7 @@ const useStyles = makeStyles(styles);
 
 export default function Admin({ ...rest }) {
   const switchRoutes = (
+    
     <Switch>
       {routes.map((prop, key) => {
         if (prop.layout === "/admin" && prop.path !== '/steps') {
@@ -50,7 +50,7 @@ export default function Admin({ ...rest }) {
         }
         return null;
       })}
-      <Redirect from="/admin" to="/admin/dashboard" />
+      <Redirect from="/admin" to="/admin/steps" />
     </Switch>
   );
 
@@ -126,7 +126,7 @@ export default function Admin({ ...rest }) {
     <div className={classes.wrapper}>
       <Sidebar
         routes={routes}
-        logoText={"Ride Share"}
+        logoText={"webI Rides"}
         logo={logo}
         image={image}
         handleDrawerToggle={handleDrawerToggle}
@@ -147,15 +147,14 @@ export default function Admin({ ...rest }) {
               <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="success">
                   Success
-        </Alert>
+                </Alert>
               </Snackbar>
               {switchRoutes}
             </div>
           </div>
         ) : (
-            <div className={classes.map}>{switchRoutes}</div>
-          )}
-        {getRoute() ? <Footer /> : null}
+          <div className={classes.map}>{switchRoutes}</div>
+        )}
 
       </div>
     </div>

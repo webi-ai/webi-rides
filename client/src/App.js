@@ -8,7 +8,6 @@ import Admin from "layouts/Admin.js";
 import "assets/css/material-dashboard-react.css?v=1.9.0";
 import "./styles.css";
 
-
 import RideManager from "./contracts/RideManager.json";
 import Web3 from 'web3';
 
@@ -23,12 +22,12 @@ class App extends Component {
             'rideManager': null,
             'loading': true,
             'web3': null,
-        }
+        };
     }
 
     async componentWillMount() {
-        await this.loadWeb3()
-        await this.loadBlockChain()
+        await this.loadWeb3();
+        await this.loadBlockChain();
     }
 
     async loadWeb3() {
@@ -47,13 +46,12 @@ class App extends Component {
     handleInputChange = (e) => {
         this.setState({
             [ e.target.id ]: e.target.value,
-        })
+        });
     }
 
     async loadBlockChain() {
-        const web3 = window.web3
+        const web3 = window.web3;
         const accounts = await web3.eth.getAccounts();
-        console.log(accounts);
         this.setState({ 'account': accounts[ 0 ] });
         const networkId = await web3.eth.net.getId();
         const networkData = RideManager.networks[ networkId ];
@@ -78,7 +76,7 @@ class App extends Component {
                             <Admin rideManager={this.state.rideManager} web3={this.state.web3} account={this.state.account}/>
                         )}
                     />
-                    <Redirect from="/" to="/admin/dashboard" />
+                    <Redirect from="/" to="/admin/maps" />
                 </Switch>
             </Router>
         );

@@ -46,13 +46,20 @@ const useStyles = makeStyles((theme) => {
     },
   }
 });
+
 function getSteps() {
-  if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+  if (isRider()) {
     return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
   } else {
     return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
   }
 }
+
+const isRider = () => {
+  return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
+}
+
+// TODO fix widgets not showing on step load
 
 export default function RideShareSteps(props) {
   const classes = useStyles();
@@ -72,11 +79,12 @@ export default function RideShareSteps(props) {
     width: 300,
   });
   const [qrcodeResult, setqrcodeResult] = React.useState('');
-
   
+  // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
     setqrcodeResult(data);
     if (data === rideContractAddress) {
+      // TODO shouldn't be alert
       alert('QR code verified successfully! Enjoy your ride!');
       setActiveStep(4);
     }
@@ -89,7 +97,7 @@ export default function RideShareSteps(props) {
   const steps = getSteps();
 
   function getStepContent(step) {
-    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+    if (isRider()) {
       switch (step) {
         case 0:
           return (
@@ -97,27 +105,24 @@ export default function RideShareSteps(props) {
               <Card>
                 <CardActionArea>
                   <CardMedia
-                    image=""
                     title="Google Maps"
                     className={classes.media}
                     image={image}
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
-                      Ride-Share Location
-                  </Typography>
+                      webI Ride Location
+                    </Typography>
                     {
                       localStorage.getItem("destinationLng") === null ?
                         <Typography variant="body2" color="textSecondary" component="p">
-                          To book a Ride-Share all you would need to do is login to your Ride-Share account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
-                </Typography>
+                          To book a webI Ride all you would need to do is login to your webI Rides account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                        </Typography>
                         :
-
                         <Typography variant="body2" color="textSecondary" component="p">
                           Time: {localStorage.getItem('time')}<br />
                           Distance: {localStorage.getItem('distance')}<br />
                         </Typography>
-
                     }
                   </CardContent>
                 </CardActionArea>
@@ -136,40 +141,41 @@ export default function RideShareSteps(props) {
 
             </div>);
         case 1:
+          // TODO constrain to 1-2 seats (or max seat limit)
           return (
             <div>
               <TextField
                 type='number'
                 label="No. of Seats"
                 id="filled-margin-none"
-                defaultValue="Default Value"
-                onKeyDown={handleNext}
+                defaultValue={1}
                 className={classes.textField}
-                onChange={handleNext}
                 value={seats}
-                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your Ola Share ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
+                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
                 variant="outlined"
               />
             </div>);
         case 2:
+          // TODO fix loading doesn't work
           return loading ? `` : <div>
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Name", "Contact", "Car No.", "Rating", "Amount", "Accept/Decline"]}
+                tableHead={["Name", "Phone Number", "License Plate", "Rating", "Amount", ""]}
                 tableData={selectedDrivers}
               />
             </CardBody>
           </div>;
         case 3:
-          return !confirmed ? `` : <QrReader
+          // TODO wait for ride confirmation before showing QR reader?
+          return <QrReader
             delay={100}
             style={previewStyle}
             onError={handleError}
             onScan={handleScan}
           />;
         case 4:
-          return 'Ready to begin your Ride-Share journey for eco-friendly rides at pocket - friendly rates';
+          return 'Ready to begin your webI Rides journey for eco-friendly rides at pocket-friendly rates';
         case 5:
           return `Ride Completed!`;
         default:
@@ -178,57 +184,61 @@ export default function RideShareSteps(props) {
     } else {
       switch (step) {
         case 0:
+          // TODO fix loading doesn't work
           return loading ? `` :  <div>
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Ride Address", "Rider Address", "From", "To", "Accept/Decline"]}
+                tableHead={["Ride Address", "Rider Address", "From", "To", ""]}
                 tableData={rideRequests}
               />
             </CardBody>
           </div>;
         case 1:
-          return !confirmed ? `` : <QRCode value={rideContractAddress} />;
+          // TODO wait for ride confirmation before showing QR?
+          return <QRCode value={rideContractAddress} />; 
         case 2:
           return ``;
         default:
           return 'Unknown step';
       }
     }
-
   }
+
+  // TODO naming
+  // TODO factor out steps
+  // TODO magic step number -> enum sequence
+  // TODO 'type' should be driver/rider enum
+  // TODO handle first step without having to press next button
   const handleNext = async (e) => {
     const { value, id } = e.target;
-    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+    if (isRider()) {
 
       if (activeStep === 0) {
         console.log(account);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
       else if (activeStep === 1) {
-        updateSeats(value)
-        if (e.key == 'Enter') {
-          rideManager.methods.requestRide(
+        updateSeats(value);
+        // TODO make async
+        rideManager.methods.requestRide(
             account,
             [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
             [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
-            web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)).send({ from: account })
-            .once('receipt', async (receipt) => {
-              let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
-              console.log(data);
-              setRideContractAddress(data[5][data[5].length - 1]);
-              // isLoading(false);
-              // let a = '';
-              // while (a === '') {
-              //   a = qrcodeResult;
-              // }
-              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            });
-          // setActiveStep((prevActiveStep) => prevActiveStep + 1);
-
-        }
+            web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
+          )
+          .send({ from: account })
+          .once('receipt', async (receipt) => {
+            let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
+            console.log(data);
+            console.log(data[5][data[5].length - 1]);
+            setRideContractAddress(data[5][data[5].length - 1]);
+            isLoading(false);
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          });
       } else if (activeStep === 2) {
         isLoading(true);
+        // TODO precise geolocation
         axios.post('http://localhost:8000/api/rider/request-ride', {
           user: {
             "account": account,
@@ -238,6 +248,7 @@ export default function RideShareSteps(props) {
         }).then((response) => {
           console.log(response.data.selectedDrivers);
           let temp = response.data.selectedDrivers;
+          // TODO fix all drivers the same
           const tempList = temp.map(data => {
             return (
               [
@@ -252,7 +263,8 @@ export default function RideShareSteps(props) {
                   className={classes.button}
                   onClick={() => {
                     setUserSelectedDriver(data.ethAddress);
-                    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress).send({ from: account })
+                    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
+                      .send({ from: account })
                       .once('receipt', async (receipt) => {
                         console.log(receipt);
                         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -260,7 +272,7 @@ export default function RideShareSteps(props) {
                   }}
                 >
                   Accept
-              </Button>
+                </Button>
               ]
             );
           });
@@ -271,7 +283,6 @@ export default function RideShareSteps(props) {
           console.log(err);
         })
         props.notifyNotificationListener("Sample")
-        // setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
       } else if (activeStep === 3) {
         const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
@@ -287,7 +298,8 @@ export default function RideShareSteps(props) {
               console.log(receipt);
             });
           setConfirmed(true);
-
+          // TODO only move to next step on QR code read
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
 
       } else if (activeStep === 4) {
@@ -302,8 +314,7 @@ export default function RideShareSteps(props) {
       }
     } else {
       //For Driver
-      if (activeStep === 0) {
-        console.log('heere');
+      if (activeStep === 0) { 
         let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
         events = events.filter((event) => {
           return event.returnValues._driverAddr === account;
@@ -313,36 +324,39 @@ export default function RideShareSteps(props) {
 
         const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
         let info = await ride.methods.getRideInfo().call({ from: account });
-        var sourceDisplayName = '';
-        var destDisplayName = '';
+        let sourceDisplayName = '';
+        let destDisplayName = '';
 
-
-        axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.7440d726e8b0dde92f02c33d4b74dcfd&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
+        // TODO move to backend
+        axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
           .then((response) => {
             sourceDisplayName = response.data.display_name;
-            axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.7440d726e8b0dde92f02c33d4b74dcfd&lat=' + info[3][0] + '&lon=' + info[3][1] + '&format=json')
+            axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[3][0] + '&lon=' + info[3][1] + '&format=json')
               .then((response) => {
                 destDisplayName = response.data.display_name;
                 setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => {
-                    ride.methods.updateDriverAddress(account).send({ from: account })
-                      .once('receipt', async (receipt) => {
-                        console.log(receipt);
-                        ride.methods.updateDriverConfirmation(true).send({ from: account })
-                          .once('receipt', async (receipt) => {
-                            console.log(receipt);
-                            setConfirmed(true);
-                            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                          });
-                      });
-                  }}
-                >
-                  Accept
-          </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    onClick={async () => {
+                      // workaround to avoid two transactions before next step
+                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                      // TODO avoid 2 distinct transactions here
+                      await ride.methods.updateDriverAddress(account).send({ from: account })
+                        .once('receipt', async (receipt) => {
+                          console.log(receipt);
+                          await ride.methods.updateDriverConfirmation(true).send({ from: account })
+                            .once('receipt', async (receipt) => {
+                              console.log(receipt);
+                              setConfirmed(true);
+                              setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                            });
+                        });
+                    }}
+                  >
+                    Accept
+                  </Button>
                 ]]);
                 isLoading(false);
                 console.log(rideRequests);
@@ -355,10 +369,10 @@ export default function RideShareSteps(props) {
             console.log(e);
           })
 
-      } else if (activeStep == 1) {
+      } else if (activeStep === 1) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
-      } else if (activeStep == 2) {
+      } else if (activeStep === 2) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
       }
@@ -373,13 +387,14 @@ export default function RideShareSteps(props) {
     setActiveStep(0);
   };
 
+  // TODO ui quirk - 'Finish' displays when last step started to move to but still in transition
   return (
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={10}>
           <Card>
             <CardHeader color="warning">
-              <h4 className={classes.cardTitleWhite}>Enjoy Ride Share</h4>
+              <h4 className={classes.cardTitleWhite}>Enjoy webI Rides</h4>
               <p className={classes.cardCategoryWhite}>
                 Travel management made secure &amp; easy
               </p>
@@ -399,7 +414,7 @@ export default function RideShareSteps(props) {
                             className={classes.button}
                           >
                             Back
-                  </Button>
+                          </Button>
                           <Button
                             variant="contained"
                             color="primary"
@@ -419,7 +434,7 @@ export default function RideShareSteps(props) {
                   <Typography>All steps completed - you&apos;re finished</Typography>
                   <Button onClick={handleReset} className={classes.button}>
                     Reset
-          </Button>
+                  </Button>
                 </Paper>
               )}
             </CardBody>

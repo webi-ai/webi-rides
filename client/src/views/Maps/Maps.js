@@ -1,25 +1,22 @@
 /*global google*/
 import React from "react";
 import _ from 'lodash';
-//import { DirectionsRenderer } from "react-google-maps";
 import { compose, withProps, lifecycle } from "recompose";
 import {
   withScriptjs,
   withGoogleMap,
   GoogleMap,
   DirectionsRenderer,
-
 } from "react-google-maps";
 import { Fab } from "@material-ui/core";
 import { LocalTaxi } from "@material-ui/icons";
 
-const { InfoBox } = require("react-google-maps/lib/components/addons/InfoBox");
 const { SearchBox } = require("react-google-maps/lib/components/places/SearchBox");
 
 const Maps = compose(
   withProps({
     googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyAUxSCFAa8dpHXlqjdMlRRvuQm1rbUUP7A&v=3.exp&libraries=geometry,drawing,places",
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyAsZV7rx1CtrGri3qHipWkpjf0WspSOGtU&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `580px` }} />,
     mapElement: <div style={{ height: `100%` }} />
@@ -27,6 +24,9 @@ const Maps = compose(
   withScriptjs,
   withGoogleMap,
 
+  // TODO pick san francisco addresses
+  // TODO fix footer
+  // TODO remove street view, satellite
   lifecycle({
     componentDidMount() {
       const DirectionsService = new google.maps.DirectionsService();
@@ -87,7 +87,7 @@ const Maps = compose(
               bounds.union(place.geometry.viewport)
             } else {
               bounds.extend(place.geometry.location)
-            }
+            } 
           });
           const nextMarkers = places.map(place => ({
             position: place.geometry.location,
@@ -165,7 +165,7 @@ const Maps = compose(
       });
     },
   })
-)(props => (
+)(props => (// TODO inline styling to CSS
   <GoogleMap defaultZoom={8} ref={props.onMapMounted} defaultCenter={{ lat: 72.77587292177071, lng: 18.89286755846978 }}>
     <SearchBox
       ref={props.onSourceBoxMounted}
@@ -226,8 +226,8 @@ const Maps = compose(
       }}
     >
       <LocalTaxi />
-  Ride Now
-</Fab>
+      Ride Now
+    </Fab>
     {props.directions && <DirectionsRenderer directions={props.directions} />}
   </GoogleMap>
 ));
