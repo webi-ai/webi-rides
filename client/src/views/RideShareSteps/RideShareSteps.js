@@ -162,6 +162,7 @@ export default function RideShareSteps(props) {
             </CardBody>
           </div>;
         case 3:
+          // TODO wait for ride confirmation before showing QR reader?
           return <QrReader
             delay={100}
             style={previewStyle}
@@ -189,11 +190,8 @@ export default function RideShareSteps(props) {
             </CardBody>
           </div>;
         case 1:
-          // TODO fix loading doesn't work
-          // TODO placeholder here
-          console.log('rideContractAddress');
-          console.log(rideContractAddress);
-          return confirmed ? `` :/* <QRCode value="0xc0ffee254729296a45a3885639AC7E10F9d54979" />;*/ <QRCode value={rideContractAddress} />; 
+          // TODO wait for ride confirmation before showing QR?
+          return <QRCode value={rideContractAddress} />; 
         case 2:
           return ``;
         default:
