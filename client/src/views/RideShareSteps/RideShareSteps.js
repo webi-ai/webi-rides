@@ -78,7 +78,6 @@ export default function RideShareSteps(props) {
   // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
     setqrcodeResult(data);
-    console.log(data);
     if (data === rideContractAddress) {
       // TODO shouldn't be alert
       alert('QR code verified successfully! Enjoy your ride!');
