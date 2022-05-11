@@ -241,7 +241,6 @@ export default function RideShareSteps(props) {
             "longitude": 25
           }
         }).then((response) => {
-          console.log(response);
           console.log(response.data.selectedDrivers);
           let temp = response.data.selectedDrivers;
           // TODO fix all drivers the same
@@ -258,9 +257,6 @@ export default function RideShareSteps(props) {
                   color="primary"
                   className={classes.button}
                   onClick={() => {
-                    console.log(account);
-                    console.log(data.ethAddress);
-                    console.log(rideContractAddress);
                     setUserSelectedDriver(data.ethAddress);
                     rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
                       .send({ from: account })
