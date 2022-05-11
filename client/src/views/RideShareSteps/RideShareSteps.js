@@ -228,7 +228,6 @@ export default function RideShareSteps(props) {
             console.log(data);
             console.log(data[5][data[5].length - 1]);
             setRideContractAddress(data[5][data[5].length - 1]);
-            setRideContractAddress('0xcb40811F061025e8E16991602E5660fB7E2Fe051');
             isLoading(false);
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
           });
