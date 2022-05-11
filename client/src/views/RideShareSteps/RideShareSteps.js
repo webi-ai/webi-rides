@@ -248,15 +248,6 @@ export default function RideShareSteps(props) {
             "longitude": 25
           }
         }).then((response) => {
-          // let response = { data: {
-          //   selectedDrivers: [{
-          //     name: web3.utils.utf8ToHex('First Last'),
-          //     contact: web3.utils.utf8ToHex('555-555-5555'),
-          //     carNo: web3.utils.utf8ToHex('ASW-23123'),
-          //     rating: '5',
-          //     ethAddress: '0xc0ffee254729296a45a3885639AC7E10F9d54979'
-          //   }]
-          // }};
           console.log(response);
           console.log(response.data.selectedDrivers);
           let temp = response.data.selectedDrivers;
@@ -284,7 +275,6 @@ export default function RideShareSteps(props) {
                         console.log(receipt);
                         setActiveStep((prevActiveStep) => prevActiveStep + 1);
                       });
-                    // setActiveStep((prevActiveStep) => prevActiveStep + 1);
                   }}
                 >
                   Accept
@@ -292,7 +282,6 @@ export default function RideShareSteps(props) {
               ]
             );
           });
-          // TODO next button not valid for this step
           console.log(tempList);
           setSelectedDrivers(tempList);
           isLoading(false);
@@ -300,16 +289,10 @@ export default function RideShareSteps(props) {
           console.log(err);
         })
         props.notifyNotificationListener("Sample")
-        // setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
       } else if (activeStep === 3) {
         const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
         let events = await ride.getPastEvents('UpdateConfirmationEvent', { filter: { _riderAddr: account }, fromBlock: 0, toBlock: 'latest' });
-        // let events = [{ returnValues: {
-        //     _riderAddr: account,
-        //     _driverAddr: userSelectedDriver
-        //   } 
-        // }];
         events = events.filter((event) => {
           return event.returnValues._riderAddr === account && event.returnValues._driverAddr === userSelectedDriver;
         });
@@ -339,12 +322,6 @@ export default function RideShareSteps(props) {
       //For Driver
       if (activeStep === 0) { 
         let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
-      //   let events = [{ returnValues: {
-      //     _riderAddr: account,
-      //     _driverAddr: account,
-      //     rideAddr: '0xc0ffee254729296a45a3885639AC7E10F9d54979'
-      //   } 
-      //  }];
         events = events.filter((event) => {
           return event.returnValues._driverAddr === account;
         });
@@ -353,11 +330,10 @@ export default function RideShareSteps(props) {
 
         const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
         let info = await ride.methods.getRideInfo().call({ from: account });
-        // let info = ['dunno',[],[25.1,25],[25,25],[25125]];
         let sourceDisplayName = '';
         let destDisplayName = '';
 
-        // TODO untangle
+        // TODO move to backend
         axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
           .then((response) => {
             sourceDisplayName = response.data.display_name;
