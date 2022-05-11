@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => {
   }
 });
 function getSteps() {
-  if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+  if (isRider()) {
     return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
   } else {
     return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
@@ -92,7 +92,7 @@ export default function RideShareSteps(props) {
   const steps = getSteps();
 
   function getStepContent(step) {
-    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+    if (isRider()) {
       switch (step) {
         case 0:
           return (
