@@ -396,50 +396,6 @@ export default function RideShareSteps(props) {
     return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
   }
 
-  // structured data better for this
-  const isShowBack = () => {
-    if(isRider()) {
-      switch (activeStep) {
-        // TODO
-        case 0: return false;
-        case 1: 
-        case 2: 
-        case 3: 
-        case 4:
-        default: return true;
-      }
-    } else {
-      switch (activeStep) {
-        case 0: return false;
-        case 1: return true;
-        case 2: return true;
-        default: return true;
-      }
-    }
-  };
-
-  const isShowNext = () => {
-    if(isRider()) {
-      switch (activeStep) {
-        // TODO
-        case 0:
-        case 1: 
-        case 2: 
-          return true;
-        case 3: return false;
-        case 4: return true;
-        default: return true;
-      }
-    } else {
-      switch (activeStep) {
-        case 0: return true;
-        case 1: return true;
-        case 2: return true;
-        default: return true;
-      }
-    }
-  };
-
   // TODO ui quirk - 'Finish' displays when last step started to move to but still in transition
   return (
     <div>
@@ -462,14 +418,13 @@ export default function RideShareSteps(props) {
                       <div className={classes.actionsContainer}>
                         <div>
                           <Button
-                            disabled={!isShowBack()}
+                            disabled={activeStep === 0}
                             onClick={handleBack}
                             className={classes.button}
                           >
                             Back
                           </Button>
                           <Button
-                            disabled={!isShowNext()}
                             variant="contained"
                             color="primary"
                             onClick={handleNext}
