@@ -334,9 +334,8 @@ export default function RideShareSteps(props) {
                     variant="contained"
                     color="primary"
                     className={classes.button}
-                    onClick={() => {
-                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                      // await?
+                    onClick={async () => {
+                      // TODO async
                       ride.methods.updateDriverAddress(account).send({ from: account })
                         .once('receipt', async (receipt) => {
                           console.log(receipt);
