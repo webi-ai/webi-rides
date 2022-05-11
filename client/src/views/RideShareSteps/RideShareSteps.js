@@ -214,10 +214,7 @@ export default function RideShareSteps(props) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }
       else if (activeStep === 1) {
-        console.log([String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))]);
-        console.log([String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))]);
         updateSeats(value);
-        isLoading(false); 
         // TODO make async
         rideManager.methods.requestRide(
             account,
