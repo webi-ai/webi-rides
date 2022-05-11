@@ -46,12 +46,17 @@ const useStyles = makeStyles((theme) => {
     },
   }
 });
+
 function getSteps() {
   if (isRider()) {
     return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
   } else {
     return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
   }
+}
+
+const isRider = () => {
+  return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
 }
 
 // TODO fix widgets not showing on step load
@@ -381,10 +386,6 @@ export default function RideShareSteps(props) {
   const handleReset = () => {
     setActiveStep(0);
   };
-
-  const isRider = () => {
-    return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
-  }
 
   // TODO ui quirk - 'Finish' displays when last step started to move to but still in transition
   return (
