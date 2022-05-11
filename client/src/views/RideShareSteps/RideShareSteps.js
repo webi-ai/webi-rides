@@ -335,11 +335,13 @@ export default function RideShareSteps(props) {
                     color="primary"
                     className={classes.button}
                     onClick={async () => {
-                      // TODO async
-                      ride.methods.updateDriverAddress(account).send({ from: account })
+                      // workaround to avoid two transactions before next step
+                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                      // TODO avoid 2 distinct transactions here
+                      await ride.methods.updateDriverAddress(account).send({ from: account })
                         .once('receipt', async (receipt) => {
                           console.log(receipt);
-                          ride.methods.updateDriverConfirmation(true).send({ from: account })
+                          await ride.methods.updateDriverConfirmation(true).send({ from: account })
                             .once('receipt', async (receipt) => {
                               console.log(receipt);
                               setConfirmed(true);
