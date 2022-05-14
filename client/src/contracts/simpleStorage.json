@@ -65,7 +65,7 @@
   "sourceMap": "25:258:3:-;;;79:64;8:9:-1;5:2;;;30:1;27;20:12;5:2;79:64:3;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;79:64:3;;;;;;;;;;;;;;;;131:7;118:10;:20;;;;79:64;25:258;;;;;;",
   "deployedSourceMap": "25:258:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;25:258:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;52:22;;;:::i;:::-;;;;;;;;;;;;;;;;;;;147:53;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;147:53:3;;;;;;;;;;;;;;;;;:::i;:::-;;204:77;;;:::i;:::-;;;;;;;;;;;;;;;;;;;52:22;;;;:::o;147:53::-;194:1;181:10;:14;;;;147:53;:::o;204:77::-;240:11;266:10;;259:17;;204:77;:::o",
   "source": "pragma solidity ^0.5.0;\n\ncontract simpleStorage {\n  uint public storedData;\n\n  constructor(uint initVal) public {\n    storedData = initVal;\n  }\n\n  function set(uint x) public {\n    storedData = x;\n  }\n\n  function get() view public returns (uint retVal) {\n    return storedData;\n  }\n}\n",
-  "sourcePath": "/Users/kelsey/code/rides_frontend/contracts/SimpleStorage.sol",
+  "sourcePath": "/Users/kod/code/rides_frontend/contracts/SimpleStorage.sol",
   "ast": {
     "absolutePath": "project:/contracts/SimpleStorage.sol",
     "exportedSymbols": {
@@ -849,7 +849,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.7",
-  "updatedAt": "2022-05-02T20:57:31.138Z",
+  "updatedAt": "2022-05-14T01:28:58.056Z",
   "devdoc": {
     "methods": {}
   },
