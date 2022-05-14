@@ -1,14 +1,9 @@
-const Ride = artifacts.require("./Ride.sol");
+const RideManager = artifacts.require("./RideManager.sol");
 
-contract("Ride", accounts => {
-  it("...should set rider confirmation to true.", async () => {
-    const rideInstance = await Ride.deployed();
-    const rideInfo = await rideInstance.getRideInfo();
-    assert.equal(rideInfo.confirmedByRider, false, "Rider confirmation is not false.");
-
-    // Set Rider Confirmation to true
-    await rideInstance.updateRiderConfirmation.set("True");
-    const rideInfo2 = await rideInstance.getRideInfo();
-    assert.equal(rideInfo2.confirmedByRider, true, "Rider confirmation is not true.");
+contract("RideManager", accounts => {
+  it("...should set return drivers available.", async () => {
+    const rideInstance = await RideManager.deployed();
+    const rideInfo = await rideInstance.returnDriversAvailable();
+    assert.equal(rideInfo.toNumber(), 0, "Driver is not available");
   });
 });
