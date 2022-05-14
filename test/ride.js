@@ -1,4 +1,4 @@
-const Ride = artifacts.require("../contracts/Ride.sol");
+const Ride = artifacts.require("./Ride.sol");
 
 contract("Ride", accounts => {
   it("...should set rider confirmation to true.", async () => {
