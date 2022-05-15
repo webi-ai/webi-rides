@@ -60,6 +60,7 @@ const sidebarStyle = theme => ({
       right: "auto !important"
     }
   },
+  // TODO improve logo layout
   logo: {
     position: "relative",
     padding: "15px 15px",
@@ -67,8 +68,7 @@ const sidebarStyle = theme => ({
     "&:after": {
       content: '""',
       position: "absolute",
-      bottom: "0",
-
+      bottom: "-10px",
       height: "1px",
       right: "15px",
       width: "calc(100% - 30px)",
