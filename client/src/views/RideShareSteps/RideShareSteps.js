@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => {
 
 function getSteps() {
   if (isRider()) {
-    return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
+    return [ 'Choose Pickup / Dropoff', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
   } else {
     return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
   }
@@ -105,7 +105,7 @@ export default function RideShareSteps(props) {
               <Card>
                 <CardActionArea>
                   <CardMedia
-                    title="Google Maps"
+                    title="Maps"
                     className={classes.media}
                     image={image}
                   />

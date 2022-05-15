@@ -6,25 +6,29 @@ import LocationOn from "@material-ui/icons/LocationOn";
 import UserProfile from "views/UserProfile/UserProfile.js";
 import DriverProfile from "views/DriverProfile/DriverProfile.js";
 import Maps from "views/Maps/Maps.js";
+import Map from "views/Map/map.js";
+import MapApp from "views/Map/MapApp.js";
 import { DriveEta } from "@material-ui/icons";
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import RideShareSteps from "views/RideShareSteps/RideShareSteps";
 
+// TODO naming?
 const dashboardRoutes = [
+  
   {
-    path: "/steps",
-    name: "Get a Ride",
-    rtlName: "لوحة القيادة",
-    icon: FormatListNumberedIcon,
-    component: RideShareSteps,
+    path: "/map",
+    name: "Choose Pickup / Dropoff",
+    rtlName: "خرائط",
+    icon: LocationOn,
+    component: MapApp,
     layout: "/admin"
   },
   {
-    path: "/maps",
-    name: "Maps",
-    rtlName: "خرائط",
-    icon: LocationOn,
-    component: Maps,
+    path: "/steps",
+    name: "Book a Ride",
+    rtlName: "لوحة القيادة",
+    icon: FormatListNumberedIcon,
+    component: RideShareSteps,
     layout: "/admin"
   },
   {
