@@ -31,8 +31,7 @@ contract('RideManager', (accounts) => {
 
   describe('registerRider', () => {
     it("should register a rider", async () => {
-      const rideInstance = await RideManager.deployed();
-      const result = await rideInstance.registerRider(
+      const result = await ridemanager.registerRider(
           web3.utils.fromAscii("Rider1"),
           web3.utils.fromAscii("1234567890"),
           web3.utils.fromAscii("rider1@webi.io"),
@@ -78,8 +77,7 @@ contract('RideManager', (accounts) => {
 
   describe('returnDriversAvailable', () => {
     it("should set return drivers available, which will be false", async () => {
-      const rideInstance = await RideManager.deployed();
-      const ridesAvailable = await rideInstance.returnDriversAvailable();
+      const ridesAvailable = await ridemanager.returnDriversAvailable();
       //console.log(ridesAvailable);
       assert.equal(ridesAvailable > 0, false);
     });
