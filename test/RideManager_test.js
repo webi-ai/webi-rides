@@ -30,7 +30,7 @@ contract('RideManager', (accounts) => {
   })
 
   describe('registerRider', () => {
-    it("...should register a rider", async () => {
+    it("should register a rider", async () => {
       const rideInstance = await RideManager.deployed();
       const result = await rideInstance.registerRider(
           web3.utils.fromAscii("Rider1"),
@@ -77,7 +77,7 @@ contract('RideManager', (accounts) => {
   })
 
   describe('returnDriversAvailable', () => {
-    it("...should set return drivers available, which will be false", async () => {
+    it("should set return drivers available, which will be false", async () => {
       const rideInstance = await RideManager.deployed();
       const ridesAvailable = await rideInstance.returnDriversAvailable();
       //console.log(ridesAvailable);
