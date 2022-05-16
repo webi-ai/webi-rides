@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "@truffle/hdwallet-provider": "^2.0.8"
+  },
+  "devDependencies": {
+    "@audits/truffle-test-generator": "^1.0.1"
   }
 }
