@@ -38,7 +38,8 @@ CardHeader.propTypes = {
     "danger",
     "info",
     "primary",
-    "rose"
+    "rose",
+    "webi" // TODO naming?
   ]),
   plain: PropTypes.bool,
   stats: PropTypes.bool,
