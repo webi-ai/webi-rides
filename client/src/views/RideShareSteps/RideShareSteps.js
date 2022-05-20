@@ -83,7 +83,7 @@ export default function RideShareSteps(props) {
   // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
     setqrcodeResult(data);
-    if (data !== null || data === rideContractAddress) { // TODO check for correct address
+    if (data === rideContractAddress) {
       setActiveStep(4);
     }
   }
