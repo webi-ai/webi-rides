@@ -1,7 +1,7 @@
 import React from "react";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
-import image from "assets/img/ride.png";
+import mapImage from "assets/img/map-image.png";
 
 // core components
 import Table from "components/Table/Table.js";
@@ -49,9 +49,9 @@ const useStyles = makeStyles((theme) => {
 
 function getSteps() {
   if (isRider()) {
-    return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
+    return [ 'Confirm Pickup / Dropoff Location', 'Enter Number of Seats', 'Select Driver', 'Confirm Pickup', 'Confirm Dropoff' ];
   } else {
-    return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
+    return [ 'Accept Ride', 'Confirm Pickup', 'Confirm Dropoff' ];
   }
 }
 
@@ -75,7 +75,7 @@ export default function RideShareSteps(props) {
   const [rideContractAddress, setRideContractAddress] = React.useState('');
   const [confirmed, setConfirmed] = React.useState(false);
   const [previewStyle, setPreviewStyle] = React.useState({
-    height: 300,
+    height: 220,
     width: 300,
   });
   const [qrcodeResult, setqrcodeResult] = React.useState('');
@@ -84,8 +84,6 @@ export default function RideShareSteps(props) {
   function handleScan(data) {
     setqrcodeResult(data);
     if (data === rideContractAddress) {
-      // TODO shouldn't be alert
-      alert('QR code verified successfully! Enjoy your ride!');
       setActiveStep(4);
     }
   }
@@ -102,26 +100,29 @@ export default function RideShareSteps(props) {
         case 0:
           return (
             <div>
+              
               <Card>
                 <CardActionArea>
                   <CardMedia
-                    title="Google Maps"
+                    title="Maps"
                     className={classes.media}
-                    image={image}
+                    image={mapImage}
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      webI Ride Location
+                    <Typography gutterBottom variant="h6" component="h4">
+                      Pickup / Dropoff Location
                     </Typography>
                     {
                       localStorage.getItem("destinationLng") === null ?
                         <Typography variant="body2" color="textSecondary" component="p">
-                          To book a webI Ride all you would need to do is login to your webI Rides account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                          To book a webI Ride all you would need to do is login to your webI Rides account and choose a location. Enter your pickup and dropoff locations and click on ‘Ride Now’.
                         </Typography>
                         :
                         <Typography variant="body2" color="textSecondary" component="p">
-                          Time: {localStorage.getItem('time')}<br />
+                          Pickup: {localStorage.getItem('sourceName')} <br />
+                          Dropoff: {localStorage.getItem('destinationName')} <br />
                           Distance: {localStorage.getItem('distance')}<br />
+                          Time: {localStorage.getItem('time')}<br />
                         </Typography>
                     }
                   </CardContent>
@@ -130,11 +131,11 @@ export default function RideShareSteps(props) {
                   <Button
                     variant="outlined"
                     color="secondary"
-                    href="/admin/maps"
+                    href="/admin/map"
                     className={classes.button}
                     startIcon={<LocationOn />}
                   >
-                    Go To Maps
+                    Go to map
                   </Button>
                 </CardActions>
               </Card>
@@ -144,16 +145,15 @@ export default function RideShareSteps(props) {
           // TODO constrain to 1-2 seats (or max seat limit)
           return (
             <div>
+              <CardBody>
               <TextField
                 type='number'
-                label="No. of Seats"
-                id="filled-margin-none"
-                defaultValue={1}
+                label="Number of Seats"
                 className={classes.textField}
                 value={seats}
-                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
                 variant="outlined"
               />
+              </CardBody>
             </div>);
         case 2:
           // TODO fix loading doesn't work
@@ -168,14 +168,27 @@ export default function RideShareSteps(props) {
           </div>;
         case 3:
           // TODO wait for ride confirmation before showing QR reader?
-          return <QrReader
-            delay={100}
-            style={previewStyle}
-            onError={handleError}
-            onScan={handleScan}
-          />;
+          return <div>
+              <Card>
+                <CardActionArea>
+                  <CardContent style={{padding:'10px 20px 5px 15px'}}>
+                    <QrReader
+                      delay={100}
+                      style={previewStyle}
+                      onError={handleError}
+                      onScan={handleScan}
+                    />
+                  </CardContent>
+                </CardActionArea>
+                <CardActions style={{padding:'5px 20px 10px 20px'}}>
+                  <Typography variant="body2" color="textSecondary" component="p" >
+                    Scan your driver's QR code to confirm your pickup
+                  </Typography>
+                </CardActions>
+              </Card>
+            </div>;
         case 4:
-          return 'Ready to begin your webI Rides journey for eco-friendly rides at pocket-friendly rates';
+          return '';
         case 5:
           return `Ride Completed!`;
         default:
@@ -196,7 +209,21 @@ export default function RideShareSteps(props) {
           </div>;
         case 1:
           // TODO wait for ride confirmation before showing QR?
-          return <QRCode value={rideContractAddress} />; 
+          return <div>
+            <Card>
+              <CardActionArea>
+                <CardContent style={{padding:'10px 20px 5px 15px'}}>
+                  <QRCode value={rideContractAddress} />
+                </CardContent>
+              </CardActionArea>
+              <CardActions style={{padding:'5px 20px 10px 20px'}}>
+                <Typography variant="body2" color="textSecondary" component="p">
+                  Show this QR code to your rider to scan to begin the ride
+                </Typography>
+              </CardActions>
+            </Card> 
+          </div>
+          ; 
         case 2:
           return ``;
         default:
@@ -237,7 +264,6 @@ export default function RideShareSteps(props) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
           });
       } else if (activeStep === 2) {
-        isLoading(true);
         // TODO precise geolocation
         axios.post('http://localhost:8000/api/rider/request-ride', {
           user: {
@@ -256,7 +282,7 @@ export default function RideShareSteps(props) {
                 web3.utils.hexToUtf8(data.contact).trim(),
                 web3.utils.hexToUtf8(data.carNo).trim(),
                 data.rating.toString(),
-                "2 ETH", 
+                "0.01 ETH", 
                 <Button
                   variant="contained"
                   color="primary"
@@ -324,50 +350,34 @@ export default function RideShareSteps(props) {
 
         const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
         let info = await ride.methods.getRideInfo().call({ from: account });
-        let sourceDisplayName = '';
-        let destDisplayName = '';
-
-        // TODO move to backend
-        axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
-          .then((response) => {
-            sourceDisplayName = response.data.display_name;
-            axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[3][0] + '&lon=' + info[3][1] + '&format=json')
-              .then((response) => {
-                destDisplayName = response.data.display_name;
-                setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={async () => {
-                      // workaround to avoid two transactions before next step
-                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                      // TODO avoid 2 distinct transactions here
-                      await ride.methods.updateDriverAddress(account).send({ from: account })
-                        .once('receipt', async (receipt) => {
-                          console.log(receipt);
-                          await ride.methods.updateDriverConfirmation(true).send({ from: account })
-                            .once('receipt', async (receipt) => {
-                              console.log(receipt);
-                              setConfirmed(true);
-                              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                            });
-                        });
-                    }}
-                  >
-                    Accept
-                  </Button>
-                ]]);
-                isLoading(false);
-                console.log(rideRequests);
-              })
-              .catch((e) => {
-                console.log(e);
-              })
-          })
-          .catch((e) => {
-            console.log(e);
-          })
+        
+        let sourceDisplayName = localStorage.getItem('sourceName');
+        let destDisplayName = localStorage.getItem('destinationName');
+        setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={async () => {
+                // workaround to avoid two transactions before next step
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                // TODO avoid 2 distinct transactions here
+                await ride.methods.updateDriverAddress(account).send({ from: account })
+                  .once('receipt', async (receipt) => {
+                    console.log(receipt);
+                    await ride.methods.updateDriverConfirmation(true).send({ from: account })
+                      .once('receipt', async (receipt) => {
+                        console.log(receipt);
+                        setConfirmed(true);
+                        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                      });
+                  });
+              }}
+            >
+              Accept
+            </Button>
+        ]]);
+        isLoading(false);
 
       } else if (activeStep === 1) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -393,10 +403,10 @@ export default function RideShareSteps(props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={10}>
           <Card>
-            <CardHeader color="warning">
-              <h4 className={classes.cardTitleWhite}>Enjoy webI Rides</h4>
+            <CardHeader color="webi">
+              <h4 className={classes.cardTitleWhite}>webI Rides</h4>
               <p className={classes.cardCategoryWhite}>
-                Travel management made secure &amp; easy
+                Rideshare made easy
               </p>
             </CardHeader>
             <CardBody>
@@ -405,7 +415,9 @@ export default function RideShareSteps(props) {
                   <Step key={label}>
                     <StepLabel>{label}</StepLabel>
                     <StepContent>
-                      <Typography>{getStepContent(index)}</Typography>
+                      <div>
+                        {getStepContent(index)}
+                      </div>
                       <div className={classes.actionsContainer}>
                         <div>
                           <Button
@@ -431,7 +443,6 @@ export default function RideShareSteps(props) {
               </Stepper>
               {activeStep === steps.length && (
                 <Paper square elevation={0} className={classes.resetContainer}>
-                  <Typography>All steps completed - you&apos;re finished</Typography>
                   <Button onClick={handleReset} className={classes.button}>
                     Reset
                   </Button>

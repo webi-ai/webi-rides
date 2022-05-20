@@ -140,8 +140,8 @@ export default function UserProfile(props) {
             <form onSubmit={handleSubmit}>
               <Card>
                 <CardHeader color="primary">
-                  <h4 className={classes.cardTitleWhite}>User Profile</h4>
-                  <p className={classes.cardCategoryWhite}>Complete your profile</p>
+                  <h4 className={classes.cardTitleWhite}>Rider Profile</h4>
+                  <p className={classes.cardCategoryWhite}>Add your profile</p>
                 </CardHeader>
                 <CardBody>
                   <GridContainer>
@@ -187,7 +187,7 @@ export default function UserProfile(props) {
                   </GridContainer>
                 </CardBody>
                 <CardFooter>
-                  <Button color="primary" type="submit">Submit Profile</Button>
+                  <Button color="primary" type="submit">Submit</Button>
                 </CardFooter>
               </Card>
             </form>

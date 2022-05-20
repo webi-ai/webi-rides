@@ -107,17 +107,19 @@ export default function DriverProfile(props) {
       localStorage.setItem('name', formData.name)
       localStorage.setItem('contact', formData.contact)
       localStorage.setItem('email', formData.email)
-      localStorage.setItem('carNo', "MH1234")
+      localStorage.setItem('carNo', formData.carNo)
       localStorage.setItem('noOfSeats', formData.noOfSeats)
       localStorage.setItem('rating', formData.rating)
       localStorage.setItem('type', "1")
 
-      var n = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
-      var c = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
-      var e = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
-      var cn = web3.utils.padRight(web3.utils.fromAscii("MH1234"), 64);
+      var name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
+      var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
+      var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
+      var carNo = web3.utils.padRight(web3.utils.fromAscii(formData.carNo), 64);
 
-      props.rideManager.methods.registerDriver(n, c, e, cn, Number(formData.noOfSeats), 1, accounts[ 0 ]).send({ from: accounts[ 0 ] })
+      props.rideManager.methods
+        .registerDriver(name, contact, email, carNo, Number(formData.noOfSeats), 1, accounts[ 0 ])
+        .send({ from: accounts[ 0 ] })
         .once('receipt', (receipt) => {
           console.log(receipt);
           isLoading(false);
@@ -140,7 +142,7 @@ export default function DriverProfile(props) {
             <Card>
               <CardHeader color="primary">
                 <h4 className={classes.cardTitleWhite}>Driver Profile</h4>
-                <p className={classes.cardCategoryWhite}>Complete your profile</p>
+                <p className={classes.cardCategoryWhite}>Add your profile</p>
               </CardHeader>
               <CardBody>
                 <GridContainer>
@@ -214,7 +216,7 @@ export default function DriverProfile(props) {
                 </GridContainer>
               </CardBody>
               <CardFooter>
-                <Button color="primary" type="submit">Submit Profile</Button>
+                <Button color="primary" type="submit">Submit</Button>
               </CardFooter>
             </Card>
           </form>
@@ -237,27 +239,27 @@ export default function DriverProfile(props) {
                         <StyledTableRow>
                           <StyledTableCell component="th" scope="row">
                             Phone Number
-                        </StyledTableCell>
+                          </StyledTableCell>
                           <StyledTableCell align="right">{formData.contact}</StyledTableCell>
                         </StyledTableRow>
                         <StyledTableRow>
                           <StyledTableCell component="th" scope="row">
                             Email Address
-                        </StyledTableCell>
+                          </StyledTableCell>
                           <StyledTableCell align="right">{formData.email}</StyledTableCell>
 
                         </StyledTableRow>
                         <StyledTableRow>
                           <StyledTableCell component="th" scope="row">
                             License Plate Number
-                        </StyledTableCell>
+                          </StyledTableCell>
                           <StyledTableCell align="right">{formData.carNo}</StyledTableCell>
 
                         </StyledTableRow>
                         <StyledTableRow>
                           <StyledTableCell component="th" scope="row">
                             Number of Seats
-                        </StyledTableCell>
+                          </StyledTableCell>
                           <StyledTableCell align="right">{formData.noOfSeats}</StyledTableCell>
                         </StyledTableRow>
                       </TableBody>
