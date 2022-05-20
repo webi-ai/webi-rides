@@ -5,14 +5,11 @@ import LocationOn from "@material-ui/icons/LocationOn";
 // core components/views for Admin layout
 import UserProfile from "views/UserProfile/UserProfile.js";
 import DriverProfile from "views/DriverProfile/DriverProfile.js";
-import Maps from "views/Maps/Maps.js";
-import Map from "views/Map/map.js";
 import MapApp from "views/Map/MapApp.js";
 import { DriveEta } from "@material-ui/icons";
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import RideShareSteps from "views/RideShareSteps/RideShareSteps";
 
-// TODO naming?
 const dashboardRoutes = [
   
   {

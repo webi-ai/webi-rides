@@ -86,12 +86,7 @@ class MapApp extends React.Component {
     //   return !value.hasOwnProperty('_toggleAttribution') && !value.hasOwnProperty('_updateCompact');
     // })
     console.log(map._controls);
-    //https://api.maptiler.com/maps/eec8273f-d9d8-4d03-883a-cb9c35cc27d8/style.json?key=Z2xVIwqvxK06NnhO6lTM
-    //http://64.227.67.107:8080/styles/basic-preview/style.json for self hosted
-    //http://64.227.67.107/styles/osm-bright/style.json
-    //http://mapserver.webi.ai/styles/osm-bright/style.json
 
-    // TODO metric/imperial?
     const directions = new MapboxDirections({
       accessToken: mapboxgl.accessToken,
       unit: 'imperial',
@@ -103,15 +98,14 @@ class MapApp extends React.Component {
     });
     directions.on('route', function(response) {
       const origin = directions.getOrigin().geometry.coordinates;
-      console.log(directions.getOrigin());
       const destination = directions.getDestination().geometry.coordinates;
       localStorage.setItem('sourceLng', origin[0]);
       localStorage.setItem('sourceLat', origin[1]);
       localStorage.setItem('destinationLng', destination[0]);
       localStorage.setItem('destinationLat', destination[1]);
+
       axios.get('https://nominatim.openstreetmap.org/reverse?format=geojson&lat=' + localStorage.getItem('sourceLat') + '&lon=' + localStorage.getItem('sourceLng'))
         .then((response) => {
-          console.log(response.data.features[0].properties.display_name);
           localStorage.setItem('sourceName', response.data.features[0].properties.display_name);
         }).catch ((e) => {
           console.log(e);
@@ -119,7 +113,6 @@ class MapApp extends React.Component {
       
       axios.get('https://nominatim.openstreetmap.org/reverse?format=geojson&lat=' + localStorage.getItem('destinationLat') + '&lon=' + localStorage.getItem('destinationLng'))
         .then((response) => {
-          console.log(response.data.features[0].properties.display_name);
           localStorage.setItem('destinationName', response.data.features[0].properties.display_name);
         }).catch ((e) => {
           console.log(e);
@@ -133,13 +126,9 @@ class MapApp extends React.Component {
           localStorage.setItem('distance', response.data.features[0].properties.distance.toFixed(1) + ' miles');
           const timeMinutes = Math.round(response.data.features[0].properties.time / 60);
           localStorage.setItem('time', timeMinutes + ' minutes');
-          console.log(localStorage.getItem('time'));
         }).catch ((e) => {
           console.log(e);
         });
-      console.log('pickup coords : [' + localStorage.getItem('sourceLat') + ', ' + localStorage.getItem('sourceLng') + ']');
-      console.log('dropoff coords : [' + localStorage.getItem('destinationLat') + ', ' + localStorage.getItem('destinationLng') + ']');
-      console.log('distance: ' + localStorage.getItem('distance'));
     });
 
 
@@ -156,23 +145,14 @@ class MapApp extends React.Component {
       color: [255, 255, 255],
       intensity: 1.0
     });
-
     const dirLight = new SunLight({
       timestamp: Date.UTC(2019, 7, 1, 22),
       color: [255, 255, 255],
       intensity: 1.0,
       _shadow: true
     });
-
-
-
     const lightingEffect = new LightingEffect({ ambientLight, dirLight });
     lightingEffect.shadowColor = [0, 0, 0, 0.5];
-
-
-
-
-
 
 
     // Add geolocate control to the map.
@@ -210,7 +190,6 @@ class MapApp extends React.Component {
     });
 
     //terrain
-
     const terrainLayer = new TerrainLayer({
       elevationDecoder: {
         rScaler: 2,
@@ -248,11 +227,7 @@ class MapApp extends React.Component {
       pickable: true
     });
 
-
-
     //arc layer
-
-
     const arclayer = new ArcLayer({
       id: 'deckgl-arc',
       type: ArcLayer,
@@ -280,18 +255,13 @@ class MapApp extends React.Component {
     });
 
     //point cloud layer
-
     const pointCloudLayer = new PointCloudLayer({
       coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
       coordinateOrigin: [-122.4004935, 37.7900486, 100],  // anchor point in longitude/latitude/altitude
       data: [
         { position: [33.22, 109.87, 1.455] }, // meter offsets from the coordinate origin
-
       ],
-
     })
-
-
 
     //deck integration
     const deck = new Deck({
@@ -305,80 +275,35 @@ class MapApp extends React.Component {
       },
       controller: true
     });
-    // Add the geocoder to the map
-    // map.addControl(geocoder, "bottom-left");
 
 
     //add deck layer
     const deckLayers = new MapboxLayer({ id: "deck-gl-layer", deck });
     map.on("load", () => {
       map.addLayer(deckLayers);
-
-
-
-
-      //loads 3d building layer on map loading
-      //const firstLabelLayerId = map.getStyle().layers.find(layer => layer.type === 'symbol').id;
-
-
-      // map.addLayer({
-      //   'id': '3d-buildings',
-      //   'source': 'composite',
-      //   'source-layer': 'building',
-      //   'filter': ['==', 'extrude', 'true'],
-      //   'type': 'fill-extrusion',
-      //   'minzoom': 15,
-      //   'paint': {
-      //     'fill-extrusion-color': '#aaa',
-
-      //     // use an 'interpolate' expression to add a smooth transition effect to the
-      //     // buildings as the user zooms in
-      //     'fill-extrusion-height': [
-      //       "interpolate", ["linear"], ["zoom"],
-      //       15, 0,
-      //       15.05, ["get", "height"]
-      //     ],
-      //     'fill-extrusion-base': [
-      //       "interpolate", ["linear"], ["zoom"],
-      //       15, 0,
-      //       15.05, ["get", "min_height"]
-      //     ],
-      //     'fill-extrusion-opacity': .2
-      //   }
-      // }); //firstLabelLayerId before parentheses close to add buildings back in 
-
     });
-
-
-
-
-
   }
 
-
-
-  // TODO add webI logo here
   render() {
     return (
       <div style={{width: "100%", height:"80vh"}} ref={this.mapRef}>
         <img src={logo} style={{position:"absolute", left:"10px", bottom:"15px", zIndex:"999"}} width="90" height="75" alt="webI logo"></img>
         <Fab variant="extended"
-      color="secondary"
-      href="/admin/steps"
-      style={{
-        position: "absolute",
-        right: "55px",
-        bottom: "25px",
-        zIndex: "1000"
-      }}
-    >
-      <LocalTaxi />
-      Ride Now
-    </Fab>
+          color="secondary"
+          href="/admin/steps"
+          style={{
+            position: "absolute",
+            right: "55px",
+            bottom: "25px",
+            zIndex: "1000"
+          }}
+        >
+          <LocalTaxi />
+          Ride Now
+        </Fab>
       </div>
     );
   }
 }
 
 export default MapApp;
-

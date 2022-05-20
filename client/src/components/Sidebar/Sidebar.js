@@ -72,7 +72,7 @@ export default function Sidebar(props) {
       })}
     </List>
   );
-  // TODO pretty up brand
+  
   var brand = (
     <div className={classNames(classes.logo, classes.whiteFont)}>
       <div className={classes.logoImage}>

@@ -83,9 +83,7 @@ export default function RideShareSteps(props) {
   // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
     setqrcodeResult(data);
-    if (data !== null || data === rideContractAddress) {
-      // TODO shouldn't be alert
-      // alert('QR code verified successfully! Enjoy your ride!');
+    if (data !== null || data === rideContractAddress) { // TODO check for correct address
       setActiveStep(4);
     }
   }
@@ -145,7 +143,6 @@ export default function RideShareSteps(props) {
             </div>);
         case 1:
           // TODO constrain to 1-2 seats (or max seat limit)
-          // helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
           return (
             <div>
               <CardBody>
@@ -193,7 +190,6 @@ export default function RideShareSteps(props) {
             </div>;
         case 4:
           return '';
-          // return 'Ready to begin your webI Rides journey for eco-friendly rides at pocket-friendly rates';
         case 5:
           return `Ride Completed!`;
         default:
@@ -269,7 +265,6 @@ export default function RideShareSteps(props) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
           });
       } else if (activeStep === 2) {
-        // isLoading(true);
         // TODO precise geolocation
         axios.post('http://localhost:8000/api/rider/request-ride', {
           user: {
@@ -357,54 +352,33 @@ export default function RideShareSteps(props) {
         const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
         let info = await ride.methods.getRideInfo().call({ from: account });
         console.log('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json');
-        let sourceDisplayName = '';
-        let destDisplayName = '';
-
-        // TODO move to backend
-
-        // mock these out
-        // axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
-        //   .then((response) => {
-            // sourceDisplayName = response.data.display_name;
-            sourceDisplayName = localStorage.getItem('sourceName');
-            // axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[3][0] + '&lon=' + info[3][1] + '&format=json')
-            //   .then((response) => {
-                // destDisplayName = response.data.display_name;
-                destDisplayName = localStorage.getItem('destinationName');
-                setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={async () => {
-                      // workaround to avoid two transactions before next step
-                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                      // TODO avoid 2 distinct transactions here
-                      await ride.methods.updateDriverAddress(account).send({ from: account })
-                        .once('receipt', async (receipt) => {
-                          console.log(receipt);
-                          await ride.methods.updateDriverConfirmation(true).send({ from: account })
-                            .once('receipt', async (receipt) => {
-                              console.log(receipt);
-                              setConfirmed(true);
-                              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                            });
-                        });
-                    }}
-                  >
-                    Accept
-                  </Button>
-                ]]);
-                isLoading(false);
-                console.log(rideRequests);
-          //     })
-          //     .catch((e) => {
-          //       console.log(e);
-          //     })
-          // })
-          // .catch((e) => {
-          //   console.log(e);
-          // })
+        let sourceDisplayName = localStorage.getItem('sourceName');
+        let destDisplayName = localStorage.getItem('destinationName');
+        setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={async () => {
+                // workaround to avoid two transactions before next step
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                // TODO avoid 2 distinct transactions here
+                await ride.methods.updateDriverAddress(account).send({ from: account })
+                  .once('receipt', async (receipt) => {
+                    console.log(receipt);
+                    await ride.methods.updateDriverConfirmation(true).send({ from: account })
+                      .once('receipt', async (receipt) => {
+                        console.log(receipt);
+                        setConfirmed(true);
+                        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                      });
+                  });
+              }}
+            >
+              Accept
+            </Button>
+        ]]);
+        isLoading(false);
 
       } else if (activeStep === 1) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -470,7 +444,6 @@ export default function RideShareSteps(props) {
               </Stepper>
               {activeStep === steps.length && (
                 <Paper square elevation={0} className={classes.resetContainer}>
-                  {/* <Typography>All steps completed - you&apos;re finished</Typography> */}
                   <Button onClick={handleReset} className={classes.button}>
                     Reset
                   </Button>

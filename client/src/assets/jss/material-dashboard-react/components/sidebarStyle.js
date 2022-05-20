@@ -60,7 +60,6 @@ const sidebarStyle = theme => ({
       right: "auto !important"
     }
   },
-  // TODO improve logo layout
   logo: {
     position: "relative",
     padding: "15px 15px 0px 15px",
@@ -85,9 +84,7 @@ const sidebarStyle = theme => ({
     lineHeight: "30px",
     textDecoration: "none",
     backgroundColor: "transparent",
-    
     verticalAlign: "middle",
-    // top: "50%",
     "&,&:hover": {
       color: whiteColor
     }
@@ -97,14 +94,11 @@ const sidebarStyle = theme => ({
   },
   logoImage: {
     width: "50px",
-    // maxHeight: "80px",
     marginRight: "15px",
     display: "inline-block"
   },
   img: {
     width: "70px",
-    // top: "22px",
-    // position: "absolute",
     verticalAlign: "middle",
     border: "0"
   },

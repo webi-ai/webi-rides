@@ -38,7 +38,6 @@ export default function AdminNavbarLinks() {
     setOpenNotification(null);
   };
   const handleClickProfile = event => {
-    console.log('click');
     if('0' === localStorage.getItem('type')) {
       localStorage.setItem('type', '1');
     } else {
