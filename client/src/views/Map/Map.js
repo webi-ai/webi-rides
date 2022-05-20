@@ -75,17 +75,6 @@ class Map extends React.Component {
       center: [-122.5233, 37.6493], // starting position [lng, lat]
       zoom: 9 // starting zoom
     });
-    console.log(map);
-    map._controls.forEach(function(control) {
-      console.log(control);
-      if(control.hasOwnProperty('_toggleAttribution')) {
-        control._attribHTML = '';
-      }
-    });
-    // map._controls = map._controls.filter(function(value, index, arr){
-    //   return !value.hasOwnProperty('_toggleAttribution') && !value.hasOwnProperty('_updateCompact');
-    // })
-    console.log(map._controls);
 
     const directions = new MapboxDirections({
       accessToken: mapboxgl.accessToken,
