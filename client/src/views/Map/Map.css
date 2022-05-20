@@ -2,15 +2,14 @@
     width: 100vw;
     height: 100vh;
   }
-.mapboxgl-ctrl button.mapboxgl-ctrl-map .mapboxgl-ctrl-icon{
 
-    background-image: url('')
+.mapboxgl-ctrl button.mapboxgl-ctrl-map .mapboxgl-ctrl-icon{
+    background-image: url('');
 }
 
 .mapboxgl-ctrl button.mapboxgl-ctrl-traffic .mapboxgl-ctrl-icon{
-    background-image: url('')
+    background-image: url('');
 }
-
 
 body,
 html {
@@ -24,18 +23,11 @@ html {
   background-color: gray;
 }
 
-
 .img {
-
-    background-image: url('')
-
-
+    background-image: url('');
 }
 
 .a{
-
     background-image: url('');
     background-color: gray;
 }
-
-
