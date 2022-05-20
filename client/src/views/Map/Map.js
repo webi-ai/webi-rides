@@ -1,5 +1,5 @@
 import React from 'react';
-import './MapApp.css';
+import './Map.css';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions'
@@ -58,7 +58,7 @@ export const COLOR_SCALE = scaleThreshold()
   ]);
 
 
-class MapApp extends React.Component {
+class Map extends React.Component {
 
   constructor() {
     super();
@@ -306,4 +306,4 @@ class MapApp extends React.Component {
   }
 }
 
-export default MapApp;
+export default Map;
