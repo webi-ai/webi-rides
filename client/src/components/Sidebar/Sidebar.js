@@ -78,7 +78,7 @@ export default function Sidebar(props) {
       <div className={classes.logoImage}>
         <img src={logo} alt="logo" className={classes.img} />
       </div>
-      {logoText}
+      <div className={classNames(classes.logoText, classes.whiteFont)}>{logoText}</div>
     </div>
   );
   return (

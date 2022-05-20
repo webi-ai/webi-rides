@@ -63,7 +63,7 @@ const sidebarStyle = theme => ({
   // TODO improve logo layout
   logo: {
     position: "relative",
-    padding: "15px 15px",
+    padding: "15px 15px 0px 15px",
     zIndex: "4",
     "&:after": {
       content: '""',
@@ -75,17 +75,19 @@ const sidebarStyle = theme => ({
       backgroundColor: "rgba(" + hexToRgb(grayColor[6]) + ", 0.3)"
     }
   },
-  logoLink: {
+  logoText: {
     ...defaultFont,
-    textTransform: "uppercase",
     padding: "5px 0",
-    display: "block",
-    fontSize: "18px",
+    display: "inline-block",
+    fontSize: "24px",
     textAlign: "left",
     fontWeight: "400",
     lineHeight: "30px",
     textDecoration: "none",
     backgroundColor: "transparent",
+    
+    verticalAlign: "middle",
+    // top: "50%",
     "&,&:hover": {
       color: whiteColor
     }
@@ -94,16 +96,15 @@ const sidebarStyle = theme => ({
     textAlign: "right"
   },
   logoImage: {
-    width: "30px",
-    display: "inline-block",
-    maxHeight: "30px",
-    marginLeft: "10px",
-    marginRight: "15px"
+    width: "50px",
+    // maxHeight: "80px",
+    marginRight: "15px",
+    display: "inline-block"
   },
   img: {
-    width: "35px",
-    top: "22px",
-    position: "absolute",
+    width: "70px",
+    // top: "22px",
+    // position: "absolute",
     verticalAlign: "middle",
     border: "0"
   },
