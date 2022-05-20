@@ -22,6 +22,13 @@ import { LightingEffect, AmbientLight, _SunLight as SunLight } from '@deck.gl/co
 import { scaleThreshold } from 'd3-scale';
 import MapState from 'react-map-gl/src/utils/map-state';
 
+import logo from "assets/img/webi-rides.png"
+
+import { Fab } from "@material-ui/core";
+import { LocalTaxi } from "@material-ui/icons";
+
+import axios from 'axios';
+
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoid2ViY29kZXJ6IiwiYSI6ImNrcjZ1N3oxeDB0cHoyd3FsYjk0am9kY3MifQ.lw9n5DtqV-PjMyL4k6jwQA';
 
@@ -98,13 +105,41 @@ class MapApp extends React.Component {
       const origin = directions.getOrigin().geometry.coordinates;
       console.log(directions.getOrigin());
       const destination = directions.getDestination().geometry.coordinates;
-      // TODO confirm lat/lng order
-      localStorage.setItem('sourceLat', origin[0]);
-      localStorage.setItem('sourceLng', origin[1]);
-      localStorage.setItem('destinationLat', destination[0]);
-      localStorage.setItem('destinationLng', destination[1]);
+      localStorage.setItem('sourceLng', origin[0]);
+      localStorage.setItem('sourceLat', origin[1]);
+      localStorage.setItem('destinationLng', destination[0]);
+      localStorage.setItem('destinationLat', destination[1]);
+      axios.get('https://nominatim.openstreetmap.org/reverse?format=geojson&lat=' + localStorage.getItem('sourceLat') + '&lon=' + localStorage.getItem('sourceLng'))
+        .then((response) => {
+          console.log(response.data.features[0].properties.display_name);
+          localStorage.setItem('sourceName', response.data.features[0].properties.display_name);
+        }).catch ((e) => {
+          console.log(e);
+        });
+      
+      axios.get('https://nominatim.openstreetmap.org/reverse?format=geojson&lat=' + localStorage.getItem('destinationLat') + '&lon=' + localStorage.getItem('destinationLng'))
+        .then((response) => {
+          console.log(response.data.features[0].properties.display_name);
+          localStorage.setItem('destinationName', response.data.features[0].properties.display_name);
+        }).catch ((e) => {
+          console.log(e);
+        });
+
+      const routeUrl = 'https://api.geoapify.com/v1/routing?waypoints='+ localStorage.getItem('sourceLat') +'%2C' + localStorage.getItem('sourceLng') + '%7C'
+        + localStorage.getItem('destinationLat') + '%2C' + localStorage.getItem('destinationLng') + '&mode=drive&units=imperial'+
+        '&apiKey=df9f30a3e5bb4a80839133682e3489e5';
+      axios.get(routeUrl)
+        .then((response) => {
+          localStorage.setItem('distance', response.data.features[0].properties.distance.toFixed(1) + ' miles');
+          const timeMinutes = Math.round(response.data.features[0].properties.time / 60);
+          localStorage.setItem('time', timeMinutes + ' minutes');
+          console.log(localStorage.getItem('time'));
+        }).catch ((e) => {
+          console.log(e);
+        });
       console.log('pickup coords : [' + localStorage.getItem('sourceLat') + ', ' + localStorage.getItem('sourceLng') + ']');
       console.log('dropoff coords : [' + localStorage.getItem('destinationLat') + ', ' + localStorage.getItem('destinationLng') + ']');
+      console.log('distance: ' + localStorage.getItem('distance'));
     });
 
 
@@ -322,10 +357,25 @@ class MapApp extends React.Component {
 
 
 
-
+  // TODO add webI logo here
   render() {
     return (
-      <div style={{width: "100%", height:"80vh"}} ref={this.mapRef}/>
+      <div style={{width: "100%", height:"80vh"}} ref={this.mapRef}>
+        <img src={logo} style={{position:"absolute", left:"10px", bottom:"15px", zIndex:"999"}} width="90" height="75" alt="webI logo"></img>
+        <Fab variant="extended"
+      color="secondary"
+      href="/admin/steps"
+      style={{
+        position: "absolute",
+        right: "55px",
+        bottom: "25px",
+        zIndex: "1000"
+      }}
+    >
+      <LocalTaxi />
+      Ride Now
+    </Fab>
+      </div>
     );
   }
 }
