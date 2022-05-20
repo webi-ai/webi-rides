@@ -149,7 +149,6 @@ export default function RideShareSteps(props) {
               <TextField
                 type='number'
                 label="Number of Seats"
-                // id="filled-margin-none"
                 className={classes.textField}
                 value={seats}
                 variant="outlined"
