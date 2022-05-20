@@ -350,7 +350,7 @@ export default function RideShareSteps(props) {
 
         const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
         let info = await ride.methods.getRideInfo().call({ from: account });
-        console.log('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json');
+        
         let sourceDisplayName = localStorage.getItem('sourceName');
         let destDisplayName = localStorage.getItem('destinationName');
         setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
