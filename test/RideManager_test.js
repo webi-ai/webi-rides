@@ -31,12 +31,13 @@ contract('RideManager', (accounts) => {
 
   describe('registerRider', () => {
     it("should register a rider", async () => {
+      ridemanager = await RideManager.new({from: user1})
       const result = await ridemanager.registerRider(
-          web3.utils.fromAscii("Rider1"),
-          web3.utils.fromAscii("1234567890"),
-          web3.utils.fromAscii("rider1@webi.io"),
+          web3.utils.fromAscii("1"),
+          web3.utils.fromAscii("a"),
+          web3.utils.fromAscii("b"),
           web3.utils.fromAscii("rider"),
-          "0xa09f74450A9fc56238d111f3550a157edBc2E07E"
+          user1
           
       );
       console.log(result);
