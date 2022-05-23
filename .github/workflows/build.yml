@@ -4,7 +4,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: [self-hosted, macos] 
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
