@@ -49,3 +49,14 @@ pub struct Driver {
     addresses: Option<Vec<Principal>>,
     address: Principal,
 }
+
+// return driver array
+pub async fn returnDriversAvailable() -> Vec<Driver> {
+    let mut drivers = Vec::new();
+    for driver in Drivers {
+        if driver.currentstatus == CurrentStatus::active {
+            drivers.push(driver);
+        }
+    }
+    drivers
+}
