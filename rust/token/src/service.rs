@@ -60,3 +60,37 @@ pub async fn returnDriversAvailable() -> Vec<Driver> {
     }
     drivers
 }
+
+// get riders
+pub async fn getRiders() -> Vec<Rider> {
+    let mut riders = Vec::new();
+    for rider in Riders {
+        if rider.role == Roles::rider {
+            riders.push(rider);
+        }
+    }
+    riders
+}
+
+// get driver info
+pub async fn getDriverInfo(driver: Driver) -> Driver {
+    driver
+}
+
+// get rider info
+pub async fn getRiderInfo(rider: Rider) -> Rider {
+    rider
+}
+
+// register driver
+pub async fn registerDriver(driver: Driver) -> Driver {
+    Drivers.push(driver);
+    driver
+}
+
+// register rider
+pub async fn registerRider(rider: Rider) -> Rider {
+    Riders.push(rider);
+    rider
+}
+
