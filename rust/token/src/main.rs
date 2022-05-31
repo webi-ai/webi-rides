@@ -201,3 +201,12 @@ fn test_register_driver() {
     assert_eq!(get_drivers().len(), 1);
 }
 
+
+#[cfg(any(target_arch = "wasm32", test))]
+fn main() {}
+
+#[cfg(not(any(target_arch = "wasm32", test)))]
+fn main() {
+  candid::export_service!();
+  std::print!("{}", __export_service());
+}
