@@ -594,10 +594,10 @@ impl Ride {
         self.driverconfirmation.clone()
     }
     fn get_driver_rating(&self) -> f64 {
-        self.driverrating.clone()
+        self.driverrating
     }
     fn get_rider_rating(&self) -> f64 {
-        self.riderrating.clone()
+        self.riderrating
     }
     fn get_driver_feedback(&self) -> String {
         self.driverfeedback.clone()
@@ -606,10 +606,10 @@ impl Ride {
         self.riderfeedback.clone()
     }
     fn get_rating(&self) -> f64 {
-        self.rating.clone()
+        self.rating
     }
     fn get_status(&self) -> RideStatus {
-        self.status.clone()
+        self.status
     }
     fn get_timestamp(&self) -> String {
         self.timestamp.clone()
@@ -687,6 +687,34 @@ fn search_ride_by_id(rideid: String) -> Option<Ride> {
         }
     }
     None
+}
+
+//test search ride by id
+#[test]
+fn test_search_ride_by_id() {
+    //create ride
+    let ride = Ride {
+        rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        driver: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        rider: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        pickup: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        dropoff: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        status: RideStatus::Active,
+        timestamp: "2020-01-01T00:00:00.000Z".to_string(),
+        rating: 0.0,
+        driverrating: 0.0,
+        riderrating: 0.0,
+        driverfeedback: "".to_string(),
+        riderfeedback: "".to_string(),
+        riderconfirmation: "".to_string(),
+        driverconfirmation: "".to_string(),
+    };
+    //register ride
+    register_ride(ride.clone());
+    //search ride by id
+    let search_ride = search_ride_by_id(ride.clone().rideid);
+    //assert
+    assert_eq!(search_ride.unwrap().rideid, ride.clone().rideid);
 }
 
 
