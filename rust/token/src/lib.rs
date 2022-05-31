@@ -80,8 +80,7 @@ fn get_self() -> Profile {
         profile_store
             .borrow()
             .get(&id)
-            .cloned()
-            .unwrap_or_else(|| Profile::default())
+            .cloned().unwrap_or_default()
     })
 }
 
@@ -92,8 +91,7 @@ fn get(name: String) -> Profile {
             id_store
                 .borrow()
                 .get(&name)
-                .and_then(|id| profile_store.borrow().get(id).cloned())
-                .unwrap_or_else(|| Profile::default())
+                .and_then(|id| profile_store.borrow().get(id).cloned()).unwrap_or_default()
         })
     })
 }
@@ -115,13 +113,13 @@ fn update(profile: Profile) {
 //get riders
 #[query]
 fn get_riders() -> RiderStore {
-    return RIDER_STORE.with(|rider_store| rider_store.borrow().clone());
+    RIDER_STORE.with(|rider_store| rider_store.borrow().clone())
 }
 
 //get drivers
 #[query]
 fn get_drivers() -> DriverStore {
-    return DRIVER_STORE.with(|driver_store| driver_store.borrow().clone());
+    DRIVER_STORE.with(|driver_store| driver_store.borrow().clone())
 }
 
 //register rider
