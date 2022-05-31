@@ -7,108 +7,162 @@
 * Description   :  Token Service Contracts
 */
 
+use ic_cdk::{
+    export::{
+        candid::{CandidType, Deserialize},
+        Principal,
+    },
+};
 use ic_cdk_macros::*;
-use ic_kit::{ic, Principal};
+use std::cell::RefCell;
+use std::collections::BTreeMap;
 
-pub struct Drivers {
-  pub driver: Vec<Principal>,
-}
+type IdStore = BTreeMap<String, Principal>;
+type ProfileStore = BTreeMap<Principal, Profile>;
 
-enum Roles {
-    rider,
-    driver
-}
+type DriverStore = Vec<Driver>;
+type RiderStore = Vec<Rider>;
 
+#[derive(Clone, Copy, Debug, CandidType, Deserialize)]
 enum CurrentStatus {
-    active,
-    inactive
+    Active,
+    Inactive
 }
 
-pub struct Rider {
-    name: String,
-    contact: u32,
-    email: String,
-    role: Roles,
-    addresses: Option<Vec<Principal>>,
-    address: Principal,
+#[derive(Clone, Debug, CandidType, Deserialize)]
+struct Rider {
+    pub name: String,
+    pub contact: u32,
+    pub email: String,
+    pub role: String,
+    pub addresses: Option<Vec<Principal>>,
+    pub address: Principal,
 }
 
-pub struct Driver {
-    name: String,
-    contact: u32,
-    email: String,
-    role: Roles,
-    vehicleplatenumber: String,
-    vehicleseatnumber: String,
-    vehiclemake: String,
-    vehiclemodel: String,
-    vehiclecolor: String,
-    vehicletype: String,
-    vehicleyear: String,
-    rating: f64,
-    role: Roles,
-    currentstatus: CurrentStatus,
-    addresses: Option<Vec<Principal>>,
-    address: Principal,
+#[derive(Clone, Debug, CandidType, Deserialize)]
+struct Driver {
+    pub name: String,
+    pub contact: u32,
+    pub email: String,
+    pub role: String,
+    pub vehicleplatenumber: String,
+    pub vehicleseatnumber: String,
+    pub vehiclemake: String,
+    pub vehiclemodel: String,
+    pub vehiclecolor: String,
+    pub vehicletype: String,
+    pub vehicleyear: String,
+    pub rating: f64,
+    pub currentstatus: CurrentStatus,
+    pub addresses: Option<Vec<Principal>>,
+    pub address: Principal,
 }
 
-// return driver array
-pub async fn returnDriversAvailable() -> Vec<Driver> {
-    let mut drivers = Vec::new();
-    for driver in Drivers {
-        if driver.currentstatus == CurrentStatus::active {
-            drivers.push(driver);
-        }
-    }
-    drivers
+
+#[derive(Clone, Debug, Default, CandidType, Deserialize)]
+struct Profile {
+    pub name: String,
+    pub description: String,
+    pub keywords: Vec<String>,
 }
 
-// get riders
-pub async fn getRiders() -> Vec<Rider> {
-    let mut riders = Vec::new();
-    for rider in Riders {
-        if rider.role == Roles::rider {
-            riders.push(rider);
-        }
-    }
-    riders
+thread_local! {
+    static PROFILE_STORE: RefCell<ProfileStore> = RefCell::default();
+    static ID_STORE: RefCell<IdStore> = RefCell::default();
+    static DRIVER_STORE: RefCell<DriverStore> = RefCell::default();
+    static RIDER_STORE: RefCell<RiderStore> = RefCell::default();
 }
 
-// get driver info
-pub async fn getDriverInfo(driver: Driver) -> Driver {
-    driver
+#[query(name = "getSelf")]
+fn get_self() -> Profile {
+    let id = ic_cdk::api::caller();
+    PROFILE_STORE.with(|profile_store| {
+        profile_store
+            .borrow()
+            .get(&id)
+            .cloned()
+            .unwrap_or_else(|| Profile::default())
+    })
 }
 
-// get rider info
-pub async fn getRiderInfo(rider: Rider) -> Rider {
-    rider
+#[query]
+fn get(name: String) -> Profile {
+    ID_STORE.with(|id_store| {
+        PROFILE_STORE.with(|profile_store| {
+            id_store
+                .borrow()
+                .get(&name)
+                .and_then(|id| profile_store.borrow().get(id).cloned())
+                .unwrap_or_else(|| Profile::default())
+        })
+    })
 }
 
-// register driver
-pub async fn registerDriver(driver: Driver) -> Driver {
-    Drivers.push(driver);
-    driver
+#[update]
+fn update(profile: Profile) {
+    let principal_id = ic_cdk::api::caller();
+    ID_STORE.with(|id_store| {
+        id_store
+            .borrow_mut()
+            .insert(profile.name.clone(), principal_id);
+    });
+    PROFILE_STORE.with(|profile_store| {
+        profile_store.borrow_mut().insert(principal_id, profile);
+    });
 }
 
-// register rider
-pub async fn registerRider(rider: Rider) -> Rider {
-    Riders.push(rider);
-    rider
+
+//get riders
+#[query]
+fn get_riders() -> RiderStore {
+    return RIDER_STORE.with(|rider_store| rider_store.borrow().clone());
 }
 
+//get drivers
+#[query]
+fn get_drivers() -> DriverStore {
+    return DRIVER_STORE.with(|driver_store| driver_store.borrow().clone());
+}
+
+//register rider
+#[update]
+fn register_rider(rider: Rider) {
+    RIDER_STORE.with(|rider_store| {
+        rider_store.borrow_mut().push(rider);
+    });
+}
+
+//register driver
+#[update]
+fn register_driver(driver: Driver) {
+    DRIVER_STORE.with(|driver_store| {
+        driver_store.borrow_mut().push(driver);
+    });
+}
 
 // update driver rating value
-pub async fn updateDriverRating(driver: Driver, rating: f64) -> Driver {
-    driver.rating = rating;
-    driver
+#[query]
+fn update_driver_rating(driver_name: String, rating: f64) {
+    DRIVER_STORE.with(|driver_store| {
+        for driver in driver_store.borrow_mut().iter_mut() {
+            if driver.name == driver_name {
+                driver.rating = rating;
+            }
+        }
+    });
 }
 
 // update driver status value
-pub async fn updateDriverStatus(driver: Driver, status: CurrentStatus) -> Driver {
-    driver.currentstatus = status;
-    driver
+#[query]
+fn update_driver_status(driver_name: String, status: CurrentStatus) {
+    DRIVER_STORE.with(|driver_store| {
+        for driver in driver_store.borrow_mut().iter_mut() {
+            if driver.name == driver_name {
+                driver.currentstatus = status;
+            }
+        }
+    });
 }
-
 
 // test registerRider 
 #[test]
@@ -117,11 +171,11 @@ fn test_registerRider() {
         name: "Kelsey".to_string(),
         contact: 1234567890,
         email: "test@email.com".to_string(),
-        role: Roles::rider,
+        role: "rider".to_string(),
         addresses: None,
-        address: Principal::from_string("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
-    registerRider(rider);
-    assert_eq!(Riders.len(), 1);
+    register_rider(rider);
+    assert_eq!(get_riders().len(), 1);
 }
 
