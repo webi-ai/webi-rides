@@ -35,6 +35,29 @@ type Rider_2 = record {
 };
 
 
+
+type Ride_2 = record {
+    "id": text;
+    "driver": text;
+    "rider": text;
+    "status": text;
+    "pickup": text;
+    "dropoff": text;
+    "pickupaddress": text;
+    "dropoffaddress": text;
+    "pickupdatetime": text;
+    "dropoffdatetime": text;
+    "price": text;
+    "rating": text;
+    "driverrating": text;
+    "riderrating": text;
+    "driverfeedback": text;
+    "riderfeedback": text;
+    "driverconfirmation": text;
+    "riderconfirmation": text;
+    
+}
+
 service : {
     "getSelf": () -> (Profile_2) query;
     "get": (text) -> (Profile_2) query;

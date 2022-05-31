@@ -22,6 +22,7 @@ type ProfileStore = BTreeMap<Principal, Profile>;
 
 type DriverStore = Vec<Driver>;
 type RiderStore = Vec<Rider>;
+type RidesStore = Vec<Ride>;
 
 #[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
 enum CurrentStatus {
@@ -109,6 +110,7 @@ thread_local! {
     static ID_STORE: RefCell<IdStore> = RefCell::default();
     static DRIVER_STORE: RefCell<DriverStore> = RefCell::default();
     static RIDER_STORE: RefCell<RiderStore> = RefCell::default();
+    static RIDES_STORE: RefCell<RidesStore> = RefCell::default();
 }
 
 #[query(name = "getSelf")]
@@ -147,6 +149,12 @@ fn update(profile: Profile) {
     });
 }
 
+//get rides store   
+fn get_rides() -> RidesStore {
+    RIDES_STORE.with(|rides_store| {
+        rides_store.borrow().clone()
+    })
+}
 
 //get riders
 #[query]
@@ -362,11 +370,12 @@ fn test_search_driver_by_contact() {
 }
 
 
-//search for driver by any field and return the driver  
+//search for driver by field and return the driver  
 #[query]
 fn search_driver_by_field(_field: String, value: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow().iter() {
+            //todo convert this to match statement
             if _field == "name" {
                 if driver.name == value {
                     return Some(driver.clone());
@@ -506,8 +515,179 @@ fn test_search_driver_by_name() {
     assert_eq!(driver_found.unwrap().name, "Kelsey");
 }
 
+#[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
+enum RideStatus {
+    Active,
+    Completed,
+    Cancelled,
+}
+
+//Ride struct
+#[derive(Debug, Deserialize, Clone)]
+pub struct Ride {
+    pub rideid: String,
+    pub driver: String,
+    pub rider: String,
+    pub pickup: String,
+    pub dropoff: String,
+    status: RideStatus,
+    pub timestamp: String,
+    pub rating: f64,
+    pub driverrating: f64,
+    pub riderrating: f64,
+    pub driverfeedback: String,
+    pub riderfeedback: String,
+    pub riderconfirmation: String,
+    pub driverconfirmation: String,
+
+}
+
+impl Ride {
+    fn update_rider_confirmation(&mut self, confirmation: String) {
+        self.riderconfirmation = confirmation;
+    }
+
+    fn update_driver_confirmation(&mut self, confirmation: String) {
+        self.driverconfirmation = confirmation;
+    }
+    fn update_driver_rating(&mut self, rating: f64) {
+        self.driverrating = rating;
+    }
+    fn update_rider_rating(&mut self, rating: f64) {
+        self.riderrating = rating;
+    }
+    fn update_driver_feedback(&mut self, feedback: String) {
+        self.driverfeedback = feedback;
+    }
+    fn update_rider_feedback(&mut self, feedback: String) {
+        self.riderfeedback = feedback;
+    }
+    fn update_rating(&mut self, rating: f64) {
+        self.rating = rating;
+    }
+    fn update_status(&mut self, status: RideStatus) {
+        self.status = status;
+    }
+    fn update_timestamp(&mut self, timestamp: String) {
+        self.timestamp = timestamp;
+    }
+    fn update_dropoff(&mut self, dropoff: String) {
+        self.dropoff = dropoff;
+    }
+    fn update_pickup(&mut self, pickup: String) {
+        self.pickup = pickup;
+    }
+    fn update_rider(&mut self, rider: String) {
+        self.rider = rider;
+    }
+    fn update_driver(&mut self, driver: String) {
+        self.driver = driver;
+    }
+    fn update_rideid(&mut self, rideid: String) {
+        self.rideid = rideid;
+    }
+
+    fn get_rider_confirmation(&self) -> String {
+        self.riderconfirmation.clone()
+    }
+    fn get_driver_confirmation(&self) -> String {
+        self.driverconfirmation.clone()
+    }
+    fn get_driver_rating(&self) -> f64 {
+        self.driverrating.clone()
+    }
+    fn get_rider_rating(&self) -> f64 {
+        self.riderrating.clone()
+    }
+    fn get_driver_feedback(&self) -> String {
+        self.driverfeedback.clone()
+    }
+    fn get_rider_feedback(&self) -> String {
+        self.riderfeedback.clone()
+    }
+    fn get_rating(&self) -> f64 {
+        self.rating.clone()
+    }
+    fn get_status(&self) -> RideStatus {
+        self.status.clone()
+    }
+    fn get_timestamp(&self) -> String {
+        self.timestamp.clone()
+    }
+    fn get_dropoff(&self) -> String {
+        self.dropoff.clone()
+    }
+    fn get_pickup(&self) -> String {
+        self.pickup.clone()
+    }
+    fn get_rider(&self) -> String {
+        self.rider.clone()
+    }
+    fn get_driver(&self) -> String {
+        self.driver.clone()
+    }
+    fn get_rideid(&self) -> String {
+        self.rideid.clone()
+    }
+
+    fn get_id(&self) -> String {
+        self.rideid.clone()
+    }
+
+    fn get_type(&self) -> String {
+        "Ride".to_string()
+    }
+
+}
+
+//register ride to RIDES_STORE
+fn register_ride(ride: Ride) {
+    RIDES_STORE.with(|rides_store| {
+        rides_store.borrow_mut().push(ride);
+    });
+}
 
 
+//test create ride
+#[test]
+fn test_create_ride() {
+    //create ride
+    let ride = Ride {
+        rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        driver: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        rider: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        pickup: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        dropoff: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        status: RideStatus::Active,
+        timestamp: "2020-01-01T00:00:00.000Z".to_string(),
+        rating: 0.0,
+        driverrating: 0.0,
+        riderrating: 0.0,
+        driverfeedback: "".to_string(),
+        riderfeedback: "".to_string(),
+        riderconfirmation: "".to_string(),
+        driverconfirmation: "".to_string(),
+    };
+    //register ride
+    register_ride(ride);
+    //get list of all rides
+    let rides = get_rides();
+    //assert
+    assert_eq!(rides.len(), 1);
+
+}
+
+
+//search ride by id
+fn search_ride_by_id(rideid: String) -> Option<Ride> {
+    let mut rides = get_rides();
+    for ride in rides.iter_mut() {
+        if ride.rideid == rideid {
+            return Some(ride.clone());
+        }
+    }
+    None
+}
 
 
 #[cfg(any(target_arch = "wasm32", test))]
