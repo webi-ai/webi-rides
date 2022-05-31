@@ -33,7 +33,6 @@ type Rider_2 = record {
     "addresses": vec text;
     "address": text;
 };
-}
 
 service : {
     "getSelf": () -> (Profile_2) query;
