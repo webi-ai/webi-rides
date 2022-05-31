@@ -39,7 +39,7 @@ struct Rider {
     pub address: Principal,
 }
 
-#[derive(Clone, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 struct Driver {
     pub name: String,
     pub contact: u32,
@@ -57,6 +57,44 @@ struct Driver {
     pub addresses: Option<Vec<Principal>>,
     pub address: Principal,
 }
+
+//implement default() for Rider
+impl Default for Rider {
+    fn default() -> Rider {
+        Rider {
+            name: String::from(""),
+            contact: 0,
+            email: String::from(""),
+            role: String::from(""),
+            addresses: None,
+            address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+        }
+    }
+}
+
+//implement default() for driver
+impl Default for Driver {
+    fn default() -> Driver {
+        Driver {
+            name: String::from(""),
+            contact: 0,
+            email: String::from(""),
+            role: String::from(""),
+            vehicleplatenumber: String::from(""),
+            vehicleseatnumber: String::from(""),
+            vehiclemake: String::from(""),
+            vehiclemodel: String::from(""),
+            vehiclecolor: String::from(""),
+            vehicletype: String::from(""),
+            vehicleyear: String::from(""),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Inactive,
+            addresses: None,
+            address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+        }
+    }
+}
+
 
 
 #[derive(Clone, Debug, Default, CandidType, Deserialize)]
@@ -130,38 +168,6 @@ fn register_rider(rider: Rider) {
     });
 }
 
-//register driver
-#[update]
-fn register_driver(driver: Driver) {
-    DRIVER_STORE.with(|driver_store| {
-        driver_store.borrow_mut().push(driver);
-    });
-}
-
-// update driver rating value
-#[query]
-fn update_driver_rating(driver_name: String, rating: f64) {
-    DRIVER_STORE.with(|driver_store| {
-        for driver in driver_store.borrow_mut().iter_mut() {
-            if driver.name == driver_name {
-                driver.rating = rating;
-            }
-        }
-    });
-}
-
-// update driver status value
-#[query]
-fn update_driver_status(driver_name: String, status: CurrentStatus) {
-    DRIVER_STORE.with(|driver_store| {
-        for driver in driver_store.borrow_mut().iter_mut() {
-            if driver.name == driver_name {
-                driver.currentstatus = status;
-            }
-        }
-    });
-}
-
 // test registerRider 
 #[test]
 fn test_register_rider() {
@@ -178,6 +184,15 @@ fn test_register_rider() {
     //check if the rider is in the store
     assert_eq!(get_riders()[0].name, "Kelsey");
 
+}
+
+
+//register driver
+#[update]
+fn register_driver(driver: Driver) {
+    DRIVER_STORE.with(|driver_store| {
+        driver_store.borrow_mut().push(driver);
+    });
 }
 
 //test register driver
@@ -204,6 +219,60 @@ fn test_register_driver() {
     assert_eq!(get_drivers().len(), 1);
     //check the data was written to the store
     assert_eq!(get_drivers()[0].name, "Kelsey");
+}
+
+
+// update driver rating value
+#[query]
+fn update_driver_rating(driver_name: String, rating: f64) {
+    DRIVER_STORE.with(|driver_store| {
+        for driver in driver_store.borrow_mut().iter_mut() {
+            if driver.name == driver_name {
+                driver.rating = rating;
+            }
+        }
+    });
+}
+
+// test update_driver_rating
+#[test]
+fn test_update_driver_rating() {
+    let driver = Driver {
+        name: "Kelsey".to_string(),
+        contact: 1234567890,
+        email: "test@email.com".to_string(),
+        role: "driver".to_string(),
+        vehicleplatenumber: "ABC123".to_string(),
+        vehicleseatnumber: "1".to_string(),
+        vehiclemake: "Toyota".to_string(),
+        vehiclemodel: "Corolla".to_string(),
+        vehiclecolor: "Black".to_string(),
+        vehicletype: "SUV".to_string(),
+        vehicleyear: "2020".to_string(),
+        rating: 0.0,
+        currentstatus: CurrentStatus::Active,
+        addresses: None,
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_driver(driver);
+    assert_eq!(get_drivers().len(), 1);
+    //check the data was written to the store
+    assert_eq!(get_drivers()[0].name, "Kelsey");
+    update_driver_rating("Kelsey".to_string(), 5.0);
+    assert_eq!(get_drivers()[0].rating, 5.0);
+}
+
+
+// update driver status value
+#[query]
+fn update_driver_status(driver_name: String, status: CurrentStatus) {
+    DRIVER_STORE.with(|driver_store| {
+        for driver in driver_store.borrow_mut().iter_mut() {
+            if driver.name == driver_name {
+                driver.currentstatus = status;
+            }
+        }
+    });
 }
 
 //test update_driver_status
@@ -237,9 +306,25 @@ fn test_update_driver_status() {
     assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Active);
 }
 
-// test update_driver_status
+
+
+// search for driver by name and return the driver
+#[query]
+fn search_driver_by_name(driver_name: String) -> Option<Driver> {
+    DRIVER_STORE.with(|driver_store| {
+        for driver in driver_store.borrow().iter() {
+            if driver.name == driver_name {
+                return Some(driver.clone());
+            }
+        }
+        None
+    })
+}
+
+//test search for driver by name and return the driver
 #[test]
-fn test_update_driver_rating() {
+fn test_search_driver_by_name() {
+    //create driver
     let driver = Driver {
         name: "Kelsey".to_string(),
         contact: 1234567890,
@@ -258,12 +343,15 @@ fn test_update_driver_rating() {
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
-    assert_eq!(get_drivers().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_drivers()[0].name, "Kelsey");
-    update_driver_rating("Kelsey".to_string(), 5.0);
-    assert_eq!(get_drivers()[0].rating, 5.0);
+
+    //search for driver
+    let driver_found = search_driver_by_name("Kelsey".to_string());
+    //assert
+    assert_eq!(driver_found.unwrap().name, "Kelsey");
 }
+
+
+
 
 
 #[cfg(any(target_arch = "wasm32", test))]
