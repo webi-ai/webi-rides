@@ -23,7 +23,7 @@ type ProfileStore = BTreeMap<Principal, Profile>;
 type DriverStore = Vec<Driver>;
 type RiderStore = Vec<Rider>;
 
-#[derive(Clone, Copy, Debug, CandidType, Deserialize)]
+#[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
 enum CurrentStatus {
     Active,
     Inactive
@@ -175,6 +175,9 @@ fn test_register_rider() {
     };
     register_rider(rider);
     assert_eq!(get_riders().len(), 1);
+    //check if the rider is in the store
+    assert_eq!(get_riders()[0].name, "Kelsey");
+
 }
 
 //test register driver
@@ -199,8 +202,41 @@ fn test_register_driver() {
     };
     register_driver(driver);
     assert_eq!(get_drivers().len(), 1);
+    //check the data was written to the store
+    assert_eq!(get_drivers()[0].name, "Kelsey");
 }
 
+//test update_driver_status
+#[test]
+fn test_update_driver_status() {
+    let driver = Driver {
+        name: "Kelsey".to_string(),
+        contact: 1234567890,
+        email: "test@email.com".to_string(),
+        role: "driver".to_string(),
+        vehicleplatenumber: "ABC123".to_string(),
+        vehicleseatnumber: "1".to_string(),
+        vehiclemake: "Toyota".to_string(),
+        vehiclemodel: "Corolla".to_string(),
+        vehiclecolor: "Black".to_string(),
+        vehicletype: "SUV".to_string(),
+        vehicleyear: "2020".to_string(),
+        rating: 0.0,
+        currentstatus: CurrentStatus::Active,
+        addresses: None,
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_driver(driver);
+    assert_eq!(get_drivers().len(), 1);
+    //check the data was written to the store
+    assert_eq!(get_drivers()[0].name, "Kelsey");
+    update_driver_status("Kelsey".to_string(), CurrentStatus::Inactive);
+    assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Inactive);
+
+    update_driver_status("Kelsey".to_string(), CurrentStatus::Active);
+    assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Active);
+
+}
 
 #[cfg(any(target_arch = "wasm32", test))]
 fn main() {}
