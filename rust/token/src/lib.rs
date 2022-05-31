@@ -166,7 +166,7 @@ fn update_driver_status(driver_name: String, status: CurrentStatus) {
 
 // test registerRider 
 #[test]
-fn test_registerRider() {
+fn test_register_rider() {
     let rider = Rider {
         name: "Kelsey".to_string(),
         contact: 1234567890,
@@ -177,5 +177,29 @@ fn test_registerRider() {
     };
     register_rider(rider);
     assert_eq!(get_riders().len(), 1);
+}
+
+//test register driver
+#[test]
+fn test_register_driver() {
+    let driver = Driver {
+        name: "Kelsey".to_string(),
+        contact: 1234567890,
+        email: "test@email.com".to_string(),
+        role: "driver".to_string(),
+        vehicleplatenumber: "ABC123".to_string(),
+        vehicleseatnumber: "1".to_string(),
+        vehiclemake: "Toyota".to_string(),
+        vehiclemodel: "Corolla".to_string(),
+        vehiclecolor: "Black".to_string(),
+        vehicletype: "SUV".to_string(),
+        vehicleyear: "2020".to_string(),
+        rating: 0.0,
+        currentstatus: CurrentStatus::Active,
+        addresses: None,
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_driver(driver);
+    assert_eq!(get_drivers().len(), 1);
 }
 
