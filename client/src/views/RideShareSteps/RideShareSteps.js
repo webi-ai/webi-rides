@@ -100,80 +100,16 @@ export default function RideShareSteps(props) {
     if (isRider()) {
       switch (step) {
         case 0:
-          return (
-            <div>
-              <Card>
-                <CardActionArea>
-                  <CardMedia
-                    title="Google Maps"
-                    className={classes.media}
-                    image={image}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      webI Ride Location
-                    </Typography>
-                    {
-                      localStorage.getItem("destinationLng") === null ?
-                        <Typography variant="body2" color="textSecondary" component="p">
-                          To book a webI Ride all you would need to do is login to your webI Rides account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
-                        </Typography>
-                        :
-                        <Typography variant="body2" color="textSecondary" component="p">
-                          Time: {localStorage.getItem('time')}<br />
-                          Distance: {localStorage.getItem('distance')}<br />
-                        </Typography>
-                    }
-                  </CardContent>
-                </CardActionArea>
-                <CardActions>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    href="/admin/maps"
-                    className={classes.button}
-                    startIcon={<LocationOn />}
-                  >
-                    Go To Maps
-                  </Button>
-                </CardActions>
-              </Card>
-
-            </div>);
+          return riderRideDetailsCard;
         case 1:
           // TODO constrain to 1-2 seats (or max seat limit)
-          return (
-            <div>
-              <TextField
-                type='number'
-                label="No. of Seats"
-                id="filled-margin-none"
-                defaultValue={1}
-                className={classes.textField}
-                value={seats}
-                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
-                variant="outlined"
-              />
-            </div>);
+          return riderSeatCountPickerCard;
         case 2:
           // TODO fix loading doesn't work
-          return loading ? `` : <div>
-            <CardBody>
-              <Table
-                tableHeaderColor="primary"
-                tableHead={["Name", "Phone Number", "License Plate", "Rating", "Amount", ""]}
-                tableData={selectedDrivers}
-              />
-            </CardBody>
-          </div>;
+          return loading ? `` : riderPickDriverCard;
         case 3:
           // TODO wait for ride confirmation before showing QR reader?
-          return <QrReader
-            delay={100}
-            style={previewStyle}
-            onError={handleError}
-            onScan={handleScan}
-          />;
+          return riderQrReaderCard;
         case 4:
           return 'Ready to begin your webI Rides journey for eco-friendly rides at pocket-friendly rates';
         case 5:
@@ -185,15 +121,7 @@ export default function RideShareSteps(props) {
       switch (step) {
         case 0:
           // TODO fix loading doesn't work
-          return loading ? `` :  <div>
-            <CardBody>
-              <Table
-                tableHeaderColor="primary"
-                tableHead={["Ride Address", "Rider Address", "From", "To", ""]}
-                tableData={rideRequests}
-              />
-            </CardBody>
-          </div>;
+          return loading ? `` : driverRidePickerCard;
         case 1:
           // TODO wait for ride confirmation before showing QR?
           return <QRCode value={rideContractAddress} />; 
@@ -204,6 +132,96 @@ export default function RideShareSteps(props) {
       }
     }
   }
+
+  const riderRideDetailsCard = (
+    <div>
+      <Card>
+        <CardActionArea>
+          <CardMedia
+            title="Google Maps"
+            className={classes.media}
+            image={image}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              webI Ride Location
+            </Typography>
+            {
+              localStorage.getItem("destinationLng") === null ?
+                <Typography variant="body2" color="textSecondary" component="p">
+                  To book a webI Ride all you would need to do is login to your webI Rides account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                </Typography>
+                :
+                <Typography variant="body2" color="textSecondary" component="p">
+                  Time: {localStorage.getItem('time')}<br />
+                  Distance: {localStorage.getItem('distance')}<br />
+                </Typography>
+            }
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Button
+            variant="outlined"
+            color="secondary"
+            href="/admin/maps"
+            className={classes.button}
+            startIcon={<LocationOn />}
+          >
+            Go To Maps
+          </Button>
+        </CardActions>
+      </Card>
+    </div>
+  );
+
+  const riderSeatCountPickerCard = (
+    <div>
+      <TextField
+        type='number'
+        label="No. of Seats"
+        id="filled-margin-none"
+        defaultValue={1}
+        className={classes.textField}
+        value={seats}
+        helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
+        variant="outlined"
+      />
+    </div>
+  );
+
+  const riderPickDriverCard = (
+    <div>
+      <CardBody>
+        <Table
+          tableHeaderColor="primary"
+          tableHead={["Name", "Phone Number", "License Plate", "Rating", "Amount", ""]}
+          tableData={selectedDrivers}
+        />
+      </CardBody>
+    </div>
+  );
+
+  const riderQrReaderCard = (
+    <QrReader
+      delay={100}
+      style={previewStyle}
+      onError={handleError}
+      onScan={handleScan}
+    />
+  );
+
+  const driverRidePickerCard = (
+    <div>
+      <CardBody>
+        <Table
+          tableHeaderColor="primary"
+          tableHead={["Ride Address", "Rider Address", "From", "To", ""]}
+          tableData={rideRequests}
+        />
+      </CardBody>
+    </div>
+  );
+
 
   // TODO naming
   // TODO magic step number -> enum sequence
