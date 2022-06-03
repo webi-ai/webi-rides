@@ -78,11 +78,11 @@ export default function RideShareSteps(props) {
     height: 300,
     width: 300,
   });
-  const [qrcodeResult, setqrcodeResult] = React.useState('');
+  const [qrCodeResult, setQrCodeResult] = React.useState('');
   
   // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
-    setqrcodeResult(data);
+    setQrCodeResult(data);
     if (data === rideContractAddress) {
       // TODO shouldn't be alert
       alert('QR code verified successfully! Enjoy your ride!');
@@ -468,6 +468,6 @@ export default function RideShareSteps(props) {
       </GridContainer>
     </div>
   );
-  
+
   return cardContainerElement;
 }
