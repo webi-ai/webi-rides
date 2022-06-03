@@ -206,20 +206,38 @@ export default function RideShareSteps(props) {
   }
 
   // TODO naming
-  // TODO factor out steps
   // TODO magic step number -> enum sequence
   // TODO 'type' should be driver/rider enum
   // TODO handle first step without having to press next button
   const handleNext = async (e) => {
     const { value, id } = e.target;
     if (isRider()) {
-
       if (activeStep === 0) {
         console.log(account);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      }
-      else if (activeStep === 1) {
+      } else if (activeStep === 1) {
         updateSeats(value);
+        riderRequestRide();
+      } else if (activeStep === 2) {
+        riderRequestRide2();
+      } else if (activeStep === 3) {
+        riderConfirmRide();
+      } else if (activeStep === 4) {
+        riderCompleteRide();
+      }
+    } else {
+      //For Driver
+      if (activeStep === 0) { 
+        driverGetRides();
+      } else if (activeStep === 1) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      } else if (activeStep === 2) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+    }
+  };
+
+  const riderRequestRide = () => {
         // TODO make async
         rideManager.methods.requestRide(
             account,
@@ -235,149 +253,127 @@ export default function RideShareSteps(props) {
             setRideContractAddress(data[5][data[5].length - 1]);
             isLoading(false);
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
-          });
-      } else if (activeStep === 2) {
-        isLoading(true);
-        // TODO precise geolocation
-        axios.post('http://localhost:8000/api/rider/request-ride', {
-          user: {
-            "account": account,
-            "latitude": 25,
-            "longitude": 25
-          }
-        }).then((response) => {
-          console.log(response.data.selectedDrivers);
-          let temp = response.data.selectedDrivers;
-          // TODO fix all drivers the same
-          const tempList = temp.map(data => {
-            return (
-              [
-                web3.utils.hexToUtf8(data.name).trim(),
-                web3.utils.hexToUtf8(data.contact).trim(),
-                web3.utils.hexToUtf8(data.carNo).trim(),
-                data.rating.toString(),
-                "2 ETH", 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={() => {
-                    setUserSelectedDriver(data.ethAddress);
-                    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
-                      .send({ from: account })
-                      .once('receipt', async (receipt) => {
-                        console.log(receipt);
-                        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                      });
-                  }}
-                >
-                  Accept
-                </Button>
-              ]
-            );
-          });
-          console.log(tempList);
-          setSelectedDrivers(tempList);
-          isLoading(false);
-        }).catch((err) => {
-          console.log(err);
-        })
-        props.notifyNotificationListener("Sample")
-
-      } else if (activeStep === 3) {
-        const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
-        let events = await ride.getPastEvents('UpdateConfirmationEvent', { filter: { _riderAddr: account }, fromBlock: 0, toBlock: 'latest' });
-        events = events.filter((event) => {
-          return event.returnValues._riderAddr === account && event.returnValues._driverAddr === userSelectedDriver;
-        });
-        console.log(events);
-        if (events.length > 0) { 
-          alert('Driver has accepted request');
-          ride.methods.updateRiderConfirmation(true).send({ from: account })
-            .once('receipt', async (receipt) => {
-              console.log(receipt);
-            });
-          setConfirmed(true);
-          // TODO only move to next step on QR code read
-          setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        }
-
-      } else if (activeStep === 4) {
-        const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
-        ride.methods.updateRideComplete(true).send({ from: account })
-          .once('receipt', async (receipt) => {
-            console.log(receipt);
-            let info = await ride.methods.getRideInfo().call({ from: account });
-            console.log(info);
-            alert('Ride Completed!');
-          });
-      }
-    } else {
-      //For Driver
-      if (activeStep === 0) { 
-        let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
-        events = events.filter((event) => {
-          return event.returnValues._driverAddr === account;
-        });
-        console.log(events);
-        setRideContractAddress(events[events.length - 1].returnValues.rideAddr);
-
-        const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
-        let info = await ride.methods.getRideInfo().call({ from: account });
-        let sourceDisplayName = '';
-        let destDisplayName = '';
-
-        // TODO move to backend
-        axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
-          .then((response) => {
-            sourceDisplayName = response.data.display_name;
-            axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.2d0c7212a0ddd74af64c2be6c2df6621&lat=' + info[3][0] + '&lon=' + info[3][1] + '&format=json')
-              .then((response) => {
-                destDisplayName = response.data.display_name;
-                setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    onClick={async () => {
-                      // workaround to avoid two transactions before next step
-                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                      // TODO avoid 2 distinct transactions here
-                      await ride.methods.updateDriverAddress(account).send({ from: account })
-                        .once('receipt', async (receipt) => {
-                          console.log(receipt);
-                          await ride.methods.updateDriverConfirmation(true).send({ from: account })
-                            .once('receipt', async (receipt) => {
-                              console.log(receipt);
-                              setConfirmed(true);
-                              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                            });
-                        });
-                    }}
-                  >
-                    Accept
-                  </Button>
-                ]]);
-                isLoading(false);
-                console.log(rideRequests);
-              })
-              .catch((e) => {
-                console.log(e);
-              })
-          })
-          .catch((e) => {
-            console.log(e);
-          })
-
-      } else if (activeStep === 1) {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-
-      } else if (activeStep === 2) {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-
-      }
-    }
+          }); 
   };
+
+  // TODO naming
+  const riderRequestRide2 = () => {
+    // TODO precise geolocation
+    axios.post('http://localhost:8000/api/rider/request-ride', {
+      user: {
+        "account": account,
+        "latitude": 25,
+        "longitude": 25
+      }
+    }).then((response) => {
+      console.log(response.data.selectedDrivers);
+      let temp = response.data.selectedDrivers;
+      // TODO fix all drivers the same
+      const tempList = temp.map(data => {
+        return (
+          [
+            web3.utils.hexToUtf8(data.name).trim(),
+            web3.utils.hexToUtf8(data.contact).trim(),
+            web3.utils.hexToUtf8(data.carNo).trim(),
+            data.rating.toString(),
+            "0.01 ETH", 
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={() => {
+                setUserSelectedDriver(data.ethAddress);
+                rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
+                  .send({ from: account })
+                  .once('receipt', async (receipt) => {
+                    console.log(receipt);
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                  });
+              }}
+            >
+              Accept
+            </Button>
+          ]
+        );
+      });
+      console.log(tempList);
+      setSelectedDrivers(tempList);
+      isLoading(false);
+    }).catch((err) => {
+      console.log(err);
+    })
+  };
+
+  const riderConfirmRide = () => {
+    const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
+    let events = await ride.getPastEvents('UpdateConfirmationEvent', { filter: { _riderAddr: account }, fromBlock: 0, toBlock: 'latest' });
+    events = events.filter((event) => {
+      return event.returnValues._riderAddr === account && event.returnValues._driverAddr === userSelectedDriver;
+    });
+    console.log(events);
+    if (events.length > 0) { 
+      alert('Driver has accepted request');
+      ride.methods.updateRiderConfirmation(true).send({ from: account })
+        .once('receipt', async (receipt) => {
+          console.log(receipt);
+        });
+      setConfirmed(true);
+      // TODO only move to next step on QR code read
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+  }
+
+  const riderCompleteRide = () => {
+    const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
+    ride.methods.updateRideComplete(true)
+      .send({ from: account })
+      .once('receipt', async (receipt) => {
+        console.log(receipt);
+        let info = await ride.methods.getRideInfo().call({ from: account });
+        console.log(info);
+        // TODO remove alert
+        alert('Ride Completed!');
+      });
+  }
+
+  const driverGetRides = () => {
+    let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
+    events = events.filter((event) => {
+      return event.returnValues._driverAddr === account;
+    });
+    console.log(events);
+    setRideContractAddress(events[events.length - 1].returnValues.rideAddr)
+    const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
+    let info = await ride.methods.getRideInfo().call({ from: account });
+    
+    let sourceDisplayName = localStorage.getItem('sourceName');
+    let destDisplayName = localStorage.getItem('destinationName');
+    setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          onClick={async () => {
+            // workaround to avoid two transactions before next step
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            // TODO avoid 2 distinct transactions here
+            await ride.methods.updateDriverAddress(account).send({ from: account })
+              .once('receipt', async (receipt) => {
+                console.log(receipt);
+                await ride.methods.updateDriverConfirmation(true).send({ from: account })
+                  .once('receipt', async (receipt) => {
+                    console.log(receipt);
+                    setConfirmed(true);
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                  });
+              });
+          }}
+        >
+          Accept
+        </Button>
+    ]]);
+    isLoading(false);
+  }
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
