@@ -256,22 +256,22 @@ export default function RideShareSteps(props) {
   };
 
   const riderRequestRide = () => {
-        // TODO make async
-        rideManager.methods.requestRide(
-            account,
-            [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
-            [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
-            web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
-          )
-          .send({ from: account })
-          .once('receipt', async (receipt) => {
-            let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
-            console.log(data);
-            console.log(data[5][data[5].length - 1]);
-            setRideContractAddress(data[5][data[5].length - 1]);
-            isLoading(false);
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-          }); 
+    // TODO make async
+    rideManager.methods.requestRide(
+        account,
+        [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
+        [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
+        web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
+      )
+      .send({ from: account })
+      .once('receipt', async (receipt) => {
+        let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
+        console.log(data);
+        console.log(data[5][data[5].length - 1]);
+        setRideContractAddress(data[5][data[5].length - 1]);
+        isLoading(false);
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }); 
   };
 
   // TODO naming
@@ -295,22 +295,7 @@ export default function RideShareSteps(props) {
             web3.utils.hexToUtf8(data.carNo).trim(),
             data.rating.toString(),
             "0.01 ETH", 
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={() => {
-                setUserSelectedDriver(data.ethAddress);
-                rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
-                  .send({ from: account })
-                  .once('receipt', async (receipt) => {
-                    console.log(receipt);
-                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                  });
-              }}
-            >
-              Accept
-            </Button>
+            riderAcceptDriverButton
           ]
         );
       });
@@ -321,6 +306,27 @@ export default function RideShareSteps(props) {
       console.log(err);
     })
   };
+
+  const riderAcceptDriverButton = (
+    <Button
+      variant="contained"
+      color="primary"
+      className={classes.button}
+      onClick={handleRiderAcceptDriver()}
+    >
+      Accept
+    </Button>
+  );
+  const handleRiderAcceptDriver = () => {
+    setUserSelectedDriver(data.ethAddress);
+    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
+      .send({ from: account })
+      .once('receipt', async (receipt) => {
+        console.log(receipt);
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      });
+  };
+
 
   const riderConfirmRide = () => {
     const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
@@ -354,6 +360,7 @@ export default function RideShareSteps(props) {
       });
   }
 
+
   const driverGetRides = () => {
     let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
     events = events.filter((event) => {
@@ -366,32 +373,36 @@ export default function RideShareSteps(props) {
     
     let sourceDisplayName = localStorage.getItem('sourceName');
     let destDisplayName = localStorage.getItem('destinationName');
-    setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={async () => {
-            // workaround to avoid two transactions before next step
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            // TODO avoid 2 distinct transactions here
-            await ride.methods.updateDriverAddress(account).send({ from: account })
-              .once('receipt', async (receipt) => {
-                console.log(receipt);
-                await ride.methods.updateDriverConfirmation(true).send({ from: account })
-                  .once('receipt', async (receipt) => {
-                    console.log(receipt);
-                    setConfirmed(true);
-                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                  });
-              });
-          }}
-        >
-          Accept
-        </Button>
-    ]]);
+    setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton]]);
     isLoading(false);
   }
+
+  const driverAcceptRideButton = (
+    <Button
+      variant="contained"
+      color="primary"
+      className={classes.button}
+      onClick={handleDriverAcceptRide()}
+    >
+      Accept
+    </Button>
+  );
+  const handleDriverAcceptRide = async () => {
+    // workaround to avoid two transactions before next step
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // TODO avoid 2 distinct transactions here
+    await ride.methods.updateDriverAddress(account).send({ from: account })
+      .once('receipt', async (receipt) => {
+        console.log(receipt);
+        await ride.methods.updateDriverConfirmation(true).send({ from: account })
+          .once('receipt', async (receipt) => {
+            console.log(receipt);
+            setConfirmed(true);
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          });
+      });
+  };
+
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -402,7 +413,7 @@ export default function RideShareSteps(props) {
   };
 
   // TODO ui quirk - 'Finish' displays when last step started to move to but still in transition
-  return (
+  const cardContainerElement = (
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={10}>
@@ -457,4 +468,6 @@ export default function RideShareSteps(props) {
       </GridContainer>
     </div>
   );
+  
+  return cardContainerElement;
 }
