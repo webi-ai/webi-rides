@@ -231,13 +231,12 @@ export default function RideShareSteps(props) {
     const { value, id } = e.target;
     if (isRider()) {
       if (activeStep === 0) {
-        console.log(account);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else if (activeStep === 1) {
         updateSeats(value);
         riderRequestRide();
       } else if (activeStep === 2) {
-        riderRequestRide2();
+        riderRetrieveDrivers();
       } else if (activeStep === 3) {
         riderConfirmRide();
       } else if (activeStep === 4) {
@@ -275,7 +274,7 @@ export default function RideShareSteps(props) {
   };
 
   // TODO naming
-  const riderRequestRide2 = () => {
+  const riderRetrieveDrivers = () => {
     // TODO precise geolocation
     axios.post('http://localhost:8000/api/rider/request-ride', {
       user: {
