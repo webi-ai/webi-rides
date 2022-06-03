@@ -19,7 +19,6 @@ type Driver_2 = record {
     "vehicleyear": text;
     "rating": text;
     "currentstatus": text;
-    "addresses": vec text;
     "address": text;
 };
 
@@ -30,7 +29,6 @@ type Rider_2 = record {
     "contact": text;
     "email": text;
     "role": text;
-    "addresses": vec text;
     "address": text;
 };
 

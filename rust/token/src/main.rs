@@ -36,7 +36,6 @@ struct Rider {
     pub contact: u64,
     pub email: String,
     pub role: String,
-    pub addresses: Option<Vec<Principal>>,
     pub address: Principal,
 }
 
@@ -55,7 +54,6 @@ struct Driver {
     pub vehicleyear: String,
     pub rating: f64,
     pub currentstatus: CurrentStatus,
-    pub addresses: Option<Vec<Principal>>,
     pub address: Principal,
 }
 
@@ -67,7 +65,6 @@ impl Default for Rider {
             contact: 0,
             email: String::from(""),
             role: String::from(""),
-            addresses: None,
             address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
         }
     }
@@ -90,7 +87,6 @@ impl Default for Driver {
             vehicleyear: String::from(""),
             rating: 0.0,
             currentstatus: CurrentStatus::Inactive,
-            addresses: None,
             address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
         }
     }
@@ -184,7 +180,6 @@ fn test_register_rider() {
         contact: 1234567890,
         email: "test@email.com".to_string(),
         role: "rider".to_string(),
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_rider(rider);
@@ -220,7 +215,6 @@ fn test_register_driver() {
         vehicleyear: "2020".to_string(),
         rating: 0.0,
         currentstatus: CurrentStatus::Active,
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
@@ -259,7 +253,6 @@ fn test_update_driver_rating() {
         vehicleyear: "2020".to_string(),
         rating: 0.0,
         currentstatus: CurrentStatus::Active,
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
@@ -300,7 +293,6 @@ fn test_update_driver_status() {
         vehicleyear: "2020".to_string(),
         rating: 0.0,
         currentstatus: CurrentStatus::Active,
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
@@ -359,7 +351,6 @@ fn test_search_driver_by_contact() {
         vehicleyear: "2020".to_string(),
         rating: 0.0,
         currentstatus: CurrentStatus::Active,
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
@@ -461,7 +452,6 @@ fn test_search_driver_by_field() {
         vehicleyear: "2020".to_string(),
         rating: 0.0,
         currentstatus: CurrentStatus::Active,
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
@@ -504,7 +494,6 @@ fn test_search_driver_by_name() {
         vehicleyear: "2020".to_string(),
         rating: 0.0,
         currentstatus: CurrentStatus::Active,
-        addresses: None,
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
     };
     register_driver(driver);
