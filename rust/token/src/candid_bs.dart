@@ -53,7 +53,7 @@ type Ride_2 = record {
     "riderfeedback": text;
     "driverconfirmation": text;
     "riderconfirmation": text;
-    
+
 }
 
 service : {
@@ -61,4 +61,10 @@ service : {
     "get": (text) -> (Profile_2) query;
     "update": (Profile_2) -> ();
     "search": (text) -> (opt Profile_2) query;
+    "getDriver": (text) -> (Driver_2) query;
+    "getRider": (text) -> (Rider_2) query;
+    "getRide": (text) -> (Ride_2) query;
+    "getRides": () -> (vec Ride_2) query;
+    "getDrivers": () -> (vec Driver_2) query;
+    "getRiders": () -> (vec Rider_2) query;
 }

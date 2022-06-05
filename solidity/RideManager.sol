@@ -3,6 +3,9 @@ pragma experimental ABIEncoderV2;
 
 import './Ride.sol';
 
+//ridemanager contract handles taking payment from riders and creating ride objects
+//pays drivers after ride is setCompleted
+
 contract RideManager {
     
     //// Inits ////

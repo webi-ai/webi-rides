@@ -1,6 +1,9 @@
 pragma solidity >=0.4.21 <0.7.0;
 pragma experimental ABIEncoderV2;
 
+//ride object, used by ridemanager after a ride has been purchased
+
+
 contract Ride {
 
     address payable riderAddr;
@@ -26,6 +29,8 @@ contract Ride {
         confirmedByDriver = false;
     }
     
+//these functions used by ridemanager
+
     function getRideInfo() view public returns(address, address, string[] memory, string[] memory, bytes32, bool, bool, bool) {
         return (riderAddr, driverAddr, fromAddr, toAddr, amount, complete, confirmedByRider, confirmedByDriver);
     }
