@@ -282,9 +282,9 @@ checksum = "c1db59621ec70f09c5e9b597b220c7a2b43611f4710dc03ceb8748637775692c"
 
 [[package]]
 name = "candid"
-version = "0.7.11"
+version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5531982124b31420dc41d0c8c0abbdd03e97d561dfb2af027b9140ee2b1f50c"
+checksum = "ba9e536514a3c655568e23e36e68cbef20ee6595f641719ade03a849a13ed0ac"
 dependencies = [
  "anyhow",
  "binread",
@@ -642,13 +642,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "ic-cdk"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "953c6f940bbf1f79460849fa61cd3ac04768f8f0deb743d185860892f65cbff2"
+dependencies = [
+ "candid",
+ "cfg-if",
+ "serde",
+]
+
+[[package]]
 name = "ic-cdk-macros"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08bac2578a4779c3ae6d24c766ec7127872d73f29a9e7d70b6607a2fdedd0dde"
 dependencies = [
  "candid",
- "ic-cdk",
+ "ic-cdk 0.3.3",
  "proc-macro2",
  "quote",
  "serde",
@@ -664,10 +675,25 @@ checksum = "2a0d4a05326865a582add1d6bcdec2b5d2af0415a12f6ef2431f3e93e52c347a"
 dependencies = [
  "async-std",
  "futures",
- "ic-cdk",
+ "ic-cdk 0.3.3",
  "ic-cdk-macros",
  "serde",
  "serde_bytes",
+]
+
+[[package]]
+name = "ic-ledger-types"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e5538e50e22dcdc395c0e3161b62fae088c4ff74342aaee4770ac0caddbce69"
+dependencies = [
+ "candid",
+ "crc32fast",
+ "hex",
+ "ic-cdk 0.5.1",
+ "serde",
+ "serde_bytes",
+ "sha2",
 ]
 
 [[package]]
@@ -899,9 +925,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.9.0"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da32515d9f6e6e489d7bc9d84c71b060db7247dc035bbe44eac88cf87486d8d5"
+checksum = "7709cef83f0c1f58f666e746a08b21e0085f7440fa6a29cc194d68aac97a4225"
 
 [[package]]
 name = "opaque-debug"
@@ -1249,9 +1275,11 @@ dependencies = [
  "assert-panic",
  "async-std",
  "candid",
- "ic-cdk",
+ "digest",
+ "ic-cdk 0.3.3",
  "ic-cdk-macros",
  "ic-kit",
+ "ic-ledger-types",
  "serde",
 ]
 

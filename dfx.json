@@ -5,11 +5,21 @@
       "package": "token",
       "candid": "token/token.did",
       "type": "rust"
+    },
+    "ledger": {
+      "type": "custom",
+      "wasm": "ledger.wasm",
+      "candid": "ledger.public.did"
     }
   },
   "defaults": {
     "build": {
       "packtool": ""
+    },
+    "defaults":{
+      "replica": {
+        "subnet_type":"system"
+      }
     }
   },
   "networks": {
