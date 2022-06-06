@@ -18,7 +18,6 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use ic_ledger_types::{BlockIndex, Block, GetBlocksArgs, query_blocks, query_archived_blocks, AccountIdentifier, DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID, Memo, Subaccount, Tokens};
 use serde::{Deserialize, Serialize};
-use ic_cdk::api::call::CallResult;
 
 type IdStore = BTreeMap<String, Principal>;
 type ProfileStore = BTreeMap<Principal, Profile>;
@@ -834,14 +833,14 @@ async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Pr
 }
 
 //use ic_utils::call::SyncCall to call query_blocks 
-pub fn sync_query_blocks(ledger: Principal, args: GetBlocksArgs) -> Option<Block> {
-    let result = ic_utils::call::SyncCall::new(query_blocks(ledger, args.clone()));
-    if result.is_ok() {
-        if let Some(blocks) = result.unwrap().unwrap().blocks {
-            if blocks.len() != 0 {
-                return blocks.first().cloned();
-            }
-        }
-    }
-    None
-}
+//pub fn sync_query_blocks(ledger: Principal, args: GetBlocksArgs) -> Option<Block> {
+//    let result = ic_utils::call::SyncCall::new(query_blocks(ledger, args.clone()));
+//    if result.is_ok() {
+//        if let Some(blocks) = result.unwrap().unwrap().blocks {
+//            if blocks.len() != 0 {
+//                return blocks.first().cloned();
+//            }
+//        }
+//    }
+//    None
+//}
