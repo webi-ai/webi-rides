@@ -53,12 +53,42 @@ type Ride_2 = record {
     "riderfeedback": text;
     "driverconfirmation": text;
     "riderconfirmation": text;
-    
+
 }
 
-service : {
+type Tokens = record {
+    e8s: nat64
+};
+
+type Conf = record {
+  transaction_fee : Tokens;
+  subaccount : opt vec nat8;
+  ledger_canister_id : principal;
+};
+
+type TransferArgs = record {
+    amount: Tokens;
+    to_principal: principal;
+    to_subaccount: opt blob
+};
+
+type Memo = nat64;
+
+type TransferResult = variant {
+    Ok: Memo;
+    Err: text;
+};
+
+service : (Conf) {
+    "transfer": (TransferArgs) -> (TransferResult);
     "getSelf": () -> (Profile_2) query;
     "get": (text) -> (Profile_2) query;
     "update": (Profile_2) -> ();
     "search": (text) -> (opt Profile_2) query;
+    "getDriver": (text) -> (Driver_2) query;
+    "getRider": (text) -> (Rider_2) query;
+    "getRide": (text) -> (Ride_2) query;
+    "getRides": () -> (vec Ride_2) query;
+    "getDrivers": () -> (vec Driver_2) query;
+    "getRiders": () -> (vec Rider_2) query;
 }

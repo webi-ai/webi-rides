@@ -9,13 +9,15 @@
 
 use ic_cdk::{
     export::{
-        candid::{CandidType, Deserialize},
+        candid::{CandidType, candid_method},
         Principal,
     },
 };
 use ic_cdk_macros::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+use ic_ledger_types::{BlockIndex, Block, GetBlocksArgs, query_blocks, query_archived_blocks, AccountIdentifier, DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID, Memo, Subaccount, Tokens};
+use serde::{Deserialize, Serialize};
 
 type IdStore = BTreeMap<String, Principal>;
 type ProfileStore = BTreeMap<Principal, Profile>;
@@ -23,6 +25,27 @@ type ProfileStore = BTreeMap<Principal, Profile>;
 type DriverStore = Vec<Driver>;
 type RiderStore = Vec<Rider>;
 type RidesStore = Vec<Ride>;
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, Hash, PartialEq)]
+pub struct Conf {
+    ledger_canister_id: Principal,
+    // The subaccount of the account identifier that will be used to withdraw tokens and send them
+    // to another account identifier. If set to None then the default subaccount will be used.
+    // See the [Ledger doc](https://smartcontracts.org/docs/integration/ledger-quick-start.html#_accounts).
+    subaccount: Option<Subaccount>,
+    transaction_fee: Tokens
+}
+
+impl Default for Conf {
+    fn default() -> Self {
+        Conf {
+            ledger_canister_id: MAINNET_LEDGER_CANISTER_ID,
+            subaccount: None,
+            transaction_fee: Tokens::from_e8s(10_000),
+        }
+    }
+}
+
 
 #[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
 enum CurrentStatus {
@@ -107,6 +130,7 @@ thread_local! {
     static DRIVER_STORE: RefCell<DriverStore> = RefCell::default();
     static RIDER_STORE: RefCell<RiderStore> = RefCell::default();
     static RIDES_STORE: RefCell<RidesStore> = RefCell::default();
+    static CONF: RefCell<Conf> = RefCell::new(Conf::default());
 }
 
 #[query(name = "getSelf")]
@@ -715,3 +739,108 @@ fn main() {
   candid::export_service!();
   std::print!("{}", __export_service());
 }
+
+
+#[init]
+#[candid_method(init)]
+fn init(conf: Conf) {
+    CONF.with(|c| c.replace(conf));
+}
+
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug, Hash)]
+pub struct TransferArgs {
+    amount: Tokens,
+    to_principal: Principal,
+    to_subaccount: Option<Subaccount>,
+}
+
+
+#[update]
+#[candid_method(update)]
+async fn transfer(args: TransferArgs) -> Result<BlockIndex, String> {
+    ic_cdk::println!("Transferring {} tokens to principal {} subaccount {:?}", &args.amount, &args.to_principal, &args.to_subaccount);
+    let ledger_canister_id = CONF.with(|conf| conf.borrow().ledger_canister_id);
+    let to_subaccount = args.to_subaccount.unwrap_or(DEFAULT_SUBACCOUNT);
+    let transfer_args = CONF.with(|conf| {
+        let conf = conf.borrow();
+        ic_ledger_types::TransferArgs {
+            memo: Memo(0),
+            amount: args.amount,
+            fee: conf.transaction_fee,
+            from_subaccount: conf.subaccount,
+            to: AccountIdentifier::new(&args.to_principal, &to_subaccount),
+            created_at_time: None,
+        }
+    });
+    ic_ledger_types::transfer(ledger_canister_id, transfer_args).await
+        .map_err(|e| format!("failed to call ledger: {:?}", e))?
+        .map_err(|e| format!("ledger transfer error {:?}", e))
+}
+
+
+
+/// async fn query_one_block(ledger: Principal, block_index: BlockIndex) -> CallResult<Option<Block>> {
+///   let args = GetBlocksArgs { start: block_index, length: 1 };
+///
+///   let blocks_result = query_blocks(ledger, args.clone()).await?;
+///
+///   if blocks_result.blocks.len() >= 1 {
+///       debug_assert_eq!(blocks_result.first_block_index, block_index);
+///       return Ok(blocks_result.blocks.into_iter().next());
+///   }
+///
+///   if let Some(func) = blocks_result
+///       .archived_blocks
+///       .into_iter()
+///       .find_map(|b| (b.start <= block_index && (block_index - b.start) < b.length).then(|| b.callback)) {
+///       match query_archived_blocks(&func, args).await? {
+///           Ok(range) => return Ok(range.blocks.into_iter().next()),
+///           _ => (),
+///       }
+///   }
+///   Ok(None)}
+
+//get one 
+
+pub type BlockHeight = u64;
+
+//get block from ledger with height
+async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Principal) -> Option<Block> {
+    //set arguments for get blocks
+    let args = GetBlocksArgs {
+        start: block_height,
+        length: 1,
+    };
+    //set ledger to mainnet
+    if let Ok(result) = query_blocks(ledger_canister_id, args.clone()).await {
+        //get block from result
+        if result.blocks.len() != 0 {
+            return result.blocks.first().cloned();
+        }
+        //get block from archived blocks
+        if let Some(b) = result
+            .archived_blocks
+            .into_iter()
+            .find(|b| (b.start <= block_height && (block_height - b.start) < b.length))
+        {
+            if let Ok(Ok(range)) = query_archived_blocks(&b.callback, args).await {
+                return range.blocks.get((block_height - b.start) as usize).cloned();
+            }
+        }
+    }
+    None
+}
+
+//use ic_utils::call::SyncCall to call query_blocks 
+//pub fn sync_query_blocks(ledger: Principal, args: GetBlocksArgs) -> Option<Block> {
+//    let result = ic_utils::call::SyncCall::new(query_blocks(ledger, args.clone()));
+//    if result.is_ok() {
+//        if let Some(blocks) = result.unwrap().unwrap().blocks {
+//            if blocks.len() != 0 {
+//                return blocks.first().cloned();
+//            }
+//        }
+//    }
+//    None
+//}
