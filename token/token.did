@@ -54,7 +54,7 @@ type Ride_2 = record {
     "driverconfirmation": text;
     "riderconfirmation": text;
 
-}
+};
 
 type Tokens = record {
     e8s: nat64
@@ -79,7 +79,7 @@ type TransferResult = variant {
     Err: text;
 };
 
-service : (Conf) {
+service : (Conf) -> {
     "transfer": (TransferArgs) -> (TransferResult);
     "getSelf": () -> (Profile_2) query;
     "get": (text) -> (Profile_2) query;
