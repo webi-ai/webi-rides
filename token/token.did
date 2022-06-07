@@ -60,12 +60,6 @@ type Tokens = record {
     e8s: nat64
 };
 
-type Conf = record {
-  transaction_fee : Tokens;
-  subaccount : opt vec nat8;
-  ledger_canister_id : principal;
-};
-
 type TransferArgs = record {
     amount: Tokens;
     to_principal: principal;
@@ -79,7 +73,7 @@ type TransferResult = variant {
     Err: text;
 };
 
-service : (Conf) -> {
+service : () -> {
     "transfer": (TransferArgs) -> (TransferResult);
     "getSelf": () -> (Profile_2) query;
     "get": (text) -> (Profile_2) query;
