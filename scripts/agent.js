@@ -124,5 +124,6 @@ const actor = Actor.createActor(idlFactory, {
 });
 
 
-
+//export actor as a module
+export default actor;
 
