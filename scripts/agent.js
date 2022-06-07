@@ -127,3 +127,22 @@ const actor = Actor.createActor(idlFactory, {
 //export actor as a module
 export default actor;
 
+
+//create a test registerRider data object
+record_insert = {
+    "name": "Kelsey",
+    "contact" : 1234567890,
+    "email" : "test@email.com",
+    "role" : "rider",
+    "address" : "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae"
+}
+
+//call actor.registerRider with the data object
+actor.registerRider(record_insert).then(res => {
+    console.log(res);
+}
+).catch(err => {
+    console.log(err);
+}
+);
+
