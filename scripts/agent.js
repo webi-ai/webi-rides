@@ -1,11 +1,22 @@
+// Name: agent.js 
+// Description: rust contract integration test in javascript
+// Maintainer: Kelsey
+// Copyright: Webi.ai (c) 2022
+
+//import dfinity actor and agent
 import {
     Actor,
     HttpAgent
   } from '@dfinity/agent';
+
+  //import to generate an identity
   import { Ed25519KeyIdentity } from '@dfinity/identity';
 
+  //generate the identity using ed25519
   const identity = Ed25519KeyIdentity.generate(require('crypto').randomBytes(32));
 
+
+  //create the agent and give it the local replica addresss
   const agent = new HttpAgent({
     //identity,
     fetch,
@@ -13,6 +24,8 @@ import {
   });
 
 
+//idl factory generated with the following command:
+//didc bind token.did --target js
   export const idlFactory = ({ IDL }) => {
     const Tokens = IDL.Record({ 'e8s' : IDL.Nat64 });
     const Conf = IDL.Record({
@@ -99,11 +112,12 @@ import {
     return [Conf];
   };
 
-
+//fetch keys, this is not needed in production
   if (true) {
     await agent.fetchRootKey(); // TODO this should be removed in production
   }
   
+  //need to set this canister id properly, currently set to sudograph as placeholder
   const actor = Actor.createActor(idlFactory, {
     agent,
     canisterId: 'rrkah-fqaaa-aaaaa-aaaaq-cai' //'uqklt-lyaaa-aaaai-aajqa-cai'//for prod //rrkah-fqaaa-aaaaa-aaaaq-cai for local dev
