@@ -79,10 +79,12 @@ service : () -> {
     "get": (text) -> (Profile_2) query;
     "update": (Profile_2) -> ();
     "search": (text) -> (opt Profile_2) query;
-    "getDriver": (text) -> (Driver_2) query;
-    "getRider": (text) -> (Rider_2) query;
-    "getRide": (text) -> (Ride_2) query;
-    "getRides": () -> (vec Ride_2) query;
-    "getDrivers": () -> (vec Driver_2) query;
-    "getRiders": () -> (vec Rider_2) query;
+    "get_driver": (text) -> (Driver_2) query;
+    "get_rider": (text) -> (Rider_2) query;
+    "get_ride": (text) -> (Ride_2) query;
+    "get_rides": () -> (vec Ride_2) query;
+    "get_drivers": () -> (vec Driver_2) query;
+    "get_riders": () -> (vec Rider_2) query;
+    "register_rider": (text) -> (Rider_2) query;
+    "register_driver": (text) -> (Driver_2) query;
 }
