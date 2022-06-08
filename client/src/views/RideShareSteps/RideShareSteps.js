@@ -273,7 +273,6 @@ export default function RideShareSteps(props) {
       }); 
   };
 
-  // TODO naming
   const riderRetrieveDrivers = () => {
     // TODO precise geolocation
     axios.post('http://localhost:8000/api/rider/request-ride', {
