@@ -72,12 +72,13 @@ export default function Sidebar(props) {
       })}
     </List>
   );
+  
   var brand = (
-    <div className={classes.logo}>
+    <div className={classNames(classes.logo, classes.whiteFont)}>
       <div className={classes.logoImage}>
         <img src={logo} alt="logo" className={classes.img} />
       </div>
-      {logoText}
+      <div className={classNames(classes.logoText, classes.whiteFont)}>{logoText}</div>
     </div>
   );
   return (

@@ -1,7 +1,7 @@
 import React from "react";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
-import image from "assets/img/ride.png";
+import mapImage from "assets/img/map-image.png";
 
 // core components
 import Table from "components/Table/Table.js";
@@ -49,9 +49,9 @@ const useStyles = makeStyles((theme) => {
 
 function getSteps() {
   if (isRider()) {
-    return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
+    return [ 'Confirm Pickup / Dropoff Location', 'Enter Number of Seats', 'Select Driver', 'Confirm Pickup', 'Confirm Dropoff' ];
   } else {
-    return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
+    return [ 'Accept Ride', 'Confirm Pickup', 'Confirm Dropoff' ];
   }
 }
 
@@ -75,7 +75,7 @@ export default function RideShareSteps(props) {
   const [rideContractAddress, setRideContractAddress] = React.useState('');
   const [confirmed, setConfirmed] = React.useState(false);
   const [previewStyle, setPreviewStyle] = React.useState({
-    height: 300,
+    height: 220,
     width: 300,
   });
   const [qrCodeResult, setQrCodeResult] = React.useState('');
@@ -84,8 +84,6 @@ export default function RideShareSteps(props) {
   function handleScan(data) {
     setQrCodeResult(data);
     if (data === rideContractAddress) {
-      // TODO shouldn't be alert
-      alert('QR code verified successfully! Enjoy your ride!');
       setActiveStep(4);
     }
   }
@@ -111,7 +109,7 @@ export default function RideShareSteps(props) {
           // TODO wait for ride confirmation before showing QR reader?
           return riderQrReaderCard;
         case 4:
-          return 'Ready to begin your webI Rides journey for eco-friendly rides at pocket-friendly rates';
+          return '';
         case 5:
           return `Ride Completed!`;
         default:
@@ -124,7 +122,21 @@ export default function RideShareSteps(props) {
           return loading ? `` : driverRidePickerCard;
         case 1:
           // TODO wait for ride confirmation before showing QR?
-          return <QRCode value={rideContractAddress} />; 
+          return <div>
+            <Card>
+              <CardActionArea>
+                <CardContent style={{padding:'10px 20px 5px 15px'}}>
+                  <QRCode value={rideContractAddress} />
+                </CardContent>
+              </CardActionArea>
+              <CardActions style={{padding:'5px 20px 10px 20px'}}>
+                <Typography variant="body2" color="textSecondary" component="p">
+                  Show this QR code to your rider to scan to begin the ride
+                </Typography>
+              </CardActions>
+            </Card> 
+          </div>
+          ; 
         case 2:
           return ``;
         default:
@@ -416,10 +428,10 @@ export default function RideShareSteps(props) {
       <GridContainer>
         <GridItem xs={12} sm={12} md={10}>
           <Card>
-            <CardHeader color="warning">
-              <h4 className={classes.cardTitleWhite}>Enjoy webI Rides</h4>
+            <CardHeader color="webi">
+              <h4 className={classes.cardTitleWhite}>webI Rides</h4>
               <p className={classes.cardCategoryWhite}>
-                Travel management made secure &amp; easy
+                Rideshare made easy
               </p>
             </CardHeader>
             <CardBody>
@@ -428,7 +440,9 @@ export default function RideShareSteps(props) {
                   <Step key={label}>
                     <StepLabel>{label}</StepLabel>
                     <StepContent>
-                      <Typography>{getStepContent(index)}</Typography>
+                      <div>
+                        {getStepContent(index)}
+                      </div>
                       <div className={classes.actionsContainer}>
                         <div>
                           <Button
@@ -454,7 +468,6 @@ export default function RideShareSteps(props) {
               </Stepper>
               {activeStep === steps.length && (
                 <Paper square elevation={0} className={classes.resetContainer}>
-                  <Typography>All steps completed - you&apos;re finished</Typography>
                   <Button onClick={handleReset} className={classes.button}>
                     Reset
                   </Button>

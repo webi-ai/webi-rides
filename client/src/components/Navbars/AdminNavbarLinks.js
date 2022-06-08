@@ -38,6 +38,12 @@ export default function AdminNavbarLinks() {
     setOpenNotification(null);
   };
   const handleClickProfile = event => {
+    if('0' === localStorage.getItem('type')) {
+      localStorage.setItem('type', '1');
+    } else {
+      localStorage.setItem('type', '0');
+    }
+
     if (openProfile && openProfile.contains(event.target)) {
       setOpenProfile(null);
     } else {

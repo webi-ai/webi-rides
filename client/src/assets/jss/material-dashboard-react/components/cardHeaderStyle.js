@@ -5,6 +5,7 @@ import {
   infoCardHeader,
   primaryCardHeader,
   roseCardHeader,
+  webiCardHeader,
   whiteColor
 } from "assets/jss/material-dashboard-react.js";
 
@@ -65,7 +66,7 @@ const cardHeaderStyle = {
     }
   },
   cardHeaderIcon: {
-    "&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
+    "&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader,&$webiCardHeader": {
       background: "transparent",
       boxShadow: "none"
     },
@@ -117,6 +118,12 @@ const cardHeaderStyle = {
     color: whiteColor,
     "&:not($cardHeaderIcon)": {
       ...roseCardHeader
+    }
+  },
+  webiCardHeader: {
+    color: whiteColor,
+    "&:not($cardHeaderIcon)": {
+      ...webiCardHeader
     }
   }
 };

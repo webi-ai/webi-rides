@@ -1,0 +1,33 @@
+.mapWrapper {
+    width: 100vw;
+    height: 100vh;
+  }
+
+.mapboxgl-ctrl button.mapboxgl-ctrl-map .mapboxgl-ctrl-icon{
+    background-image: url('');
+}
+
+.mapboxgl-ctrl button.mapboxgl-ctrl-traffic .mapboxgl-ctrl-icon{
+    background-image: url('');
+}
+
+body,
+html {
+  margin: 0;
+  height: 100%;
+}
+
+#map,
+#root {
+  height: 100%;
+  background-color: gray;
+}
+
+.img {
+    background-image: url('');
+}
+
+.a{
+    background-image: url('');
+    background-color: gray;
+}
