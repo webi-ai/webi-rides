@@ -326,7 +326,7 @@ export default function RideShareSteps(props) {
   };
 
 
-  const riderConfirmRide = () => {
+  const riderConfirmRide = async () => {
     const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
     let events = await ride.getPastEvents('UpdateConfirmationEvent', { filter: { _riderAddr: account }, fromBlock: 0, toBlock: 'latest' });
     events = events.filter((event) => {
@@ -359,7 +359,7 @@ export default function RideShareSteps(props) {
   }
 
 
-  const driverGetRides = () => {
+  const driverGetRides = async () => {
     let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
     events = events.filter((event) => {
       return event.returnValues._driverAddr === account;
