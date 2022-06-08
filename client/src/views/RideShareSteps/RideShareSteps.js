@@ -152,7 +152,7 @@ export default function RideShareSteps(props) {
           <CardMedia
             title="Google Maps"
             className={classes.media}
-            image={image}
+            image={mapImage}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
