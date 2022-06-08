@@ -29,6 +29,8 @@ import QRCode from 'qrcode.react';
 import QrReader from 'react-qr-scanner'
 
 
+const BACKEND_URL = 'http://localhost:8000';
+
 const useStyles = makeStyles((theme) => {
   return {
     ...styles,
@@ -73,7 +75,7 @@ export default function RideShareSteps(props) {
   const [userSelectedDriver, setUserSelectedDriver] = React.useState('');
   const [rideRequests, setRideRequests] = React.useState([]);
   const [rideContractAddress, setRideContractAddress] = React.useState('');
-  const [confirmed, setConfirmed] = React.useState(false);
+  const [rideConfirmed, setRideConfirmed] = React.useState(false);
   const [previewStyle, setPreviewStyle] = React.useState({
     height: 220,
     width: 300,
@@ -266,28 +268,32 @@ export default function RideShareSteps(props) {
     }
   };
 
+  // TODO fix distance
   const riderRequestRide = () => {
-    // TODO make async
-    rideManager.methods.requestRide(
-        account,
-        [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
-        [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
-        web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
-      )
-      .send({ from: account })
-      .once('receipt', async (receipt) => {
-        let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
-        console.log(data);
-        console.log(data[5][data[5].length - 1]);
-        setRideContractAddress(data[5][data[5].length - 1]);
-        isLoading(false);
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      }); 
+    console.log('requesting ride');
+    console.log('distance: ' + localStorage.getItem('distance'));
+    // TODO distance shouldn't be frontend accessible
+    axios.post(BACKEND_URL + '/api/rider/ride/request', {
+      "account": account,
+      "sourceCoords": {
+        "lat": String(localStorage.getItem('sourceLat')),
+        "lng": String(localStorage.getItem('sourceLng'))
+      },
+      "destinationCoords": {
+        "lat": String(localStorage.getItem('destinationLat')),
+        "lng": String(localStorage.getItem('destinationLng'))
+      },
+      "distance": web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
+    }).then((response) => {
+      setRideContractAddress(response.rideContractAddress);
+      isLoading(false);
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    });
   };
 
   const riderRetrieveDrivers = () => {
     // TODO precise geolocation
-    axios.post('http://localhost:8000/api/rider/request-ride', {
+    axios.post(BACKEND_URL + 'api/rider/driver/retrieveLocal', {
       user: {
         "account": account,
         "latitude": 25,
@@ -322,95 +328,118 @@ export default function RideShareSteps(props) {
       variant="contained"
       color="primary"
       className={classes.button}
-      onClick={handleRiderAcceptDriver(data)}
+      onClick={() => handleRiderAcceptDriver(data)}
     >
       Accept
     </Button>
   );
   const handleRiderAcceptDriver = (data) => {
     setUserSelectedDriver(data.ethAddress);
-    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
-      .send({ from: account })
-      .once('receipt', async (receipt) => {
-        console.log(receipt);
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      });
+    axios.post(BACKEND_URL + '/rider/driver/request', {
+      'riderAddress': account,
+      'driverAddress': data.ethAddress,
+      'rideContractAddress': rideContractAddress
+    }).then((response) => {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
 
+
   const riderConfirmRide = async () => {
-    const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
-    let events = await ride.getPastEvents('UpdateConfirmationEvent', { filter: { _riderAddr: account }, fromBlock: 0, toBlock: 'latest' });
-    events = events.filter((event) => {
-      return event.returnValues._riderAddr === account && event.returnValues._driverAddr === userSelectedDriver;
-    });
-    console.log(events);
-    if (events.length > 0) { 
+    const driverConfirmed = await isDriverConfirmed(rideContractAddress);
+    if (driverConfirmed) { 
       alert('Driver has accepted request');
-      ride.methods.updateRiderConfirmation(true).send({ from: account })
-        .once('receipt', async (receipt) => {
-          console.log(receipt);
-        });
-      setConfirmed(true);
-      // TODO only move to next step on QR code read
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      axios.post(BACKEND_URL + '/rider/ride/confirm', {
+        'rideContractAddress': rideContractAddress,
+        'rideStatus': true
+      }).then((response) => {
+        setConfirmed(true);
+        // TODO only move to next step on QR code read
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }).catch((err) => {
+        console.log(err);
+      });
     }
+  }
+  
+  const isDriverConfirmed = async (rideContractAddress) => {
+    axios.get(BACKEND_URL + '/ride/driver/isConfirmed', {
+      'rideContractAddress': rideContractAddress
+    }).then((response) => {
+      return response.data.isDriverConfirmed;
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
   const riderCompleteRide = () => {
-    const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
-    ride.methods.updateRideComplete(true)
-      .send({ from: account })
-      .once('receipt', async (receipt) => {
-        console.log(receipt);
-        let info = await ride.methods.getRideInfo().call({ from: account });
-        console.log(info);
-        // TODO remove alert
-        alert('Ride Completed!');
-      });
+    axios.post(BACKEND_URL + '/rider/ride/complete', {
+      'rideContractAddress': rideContractAddress,
+      'rideComplete': true
+    }).then((response) => {
+      // TODO remove alert
+      alert('Ride Completed!');
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
 
   const driverGetRides = async () => {
-    let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
-    events = events.filter((event) => {
-      return event.returnValues._driverAddr === account;
-    });
-    console.log(events);
-    setRideContractAddress(events[events.length - 1].returnValues.rideAddr)
-    const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
-    let info = await ride.methods.getRideInfo().call({ from: account });
+    // TODO should display multiple and not just the latest
+    let rideContractAddress = await getLatestRideContractAddress(account);
+    setRideContractAddress(rideContractAddress);
+
+    let info = await getRideInfo(rideContractAddress);
     
     let sourceDisplayName = localStorage.getItem('sourceName');
     let destDisplayName = localStorage.getItem('destinationName');
-    setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(ride)]]);
+    setRideRequests([rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]]);
     isLoading(false);
   }
 
-  const driverAcceptRideButton = (ride) => (
+  const getLatestRideContractAddress = async (driverAddress) => {
+    axios.get(BACKEND_URL + '/requests/latest', {
+    }).then((response) => {
+      return response.data.rideContractAddress;
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  const getRideInfo = async (rideContractAddress) => {
+    axios.get(BACKEND_URL + '/ride/info', {
+      'rideContractAddress': rideContractAddress
+    }).then((response) => {
+      return response.data.rideInfo;
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  const driverAcceptRideButton = (rideContractAddress) => (
     <Button
       variant="contained"
       color="primary"
       className={classes.button}
-      onClick={handleDriverAcceptRide(ride)}
+      onClick={() => handleDriverAcceptRide(rideContractAddress)}
     >
       Accept
     </Button>
   );
-  const handleDriverAcceptRide = async (ride) => {
-    // workaround to avoid two transactions before next step
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    // TODO avoid 2 distinct transactions here
-    await ride.methods.updateDriverAddress(account).send({ from: account })
-      .once('receipt', async (receipt) => {
-        console.log(receipt);
-        await ride.methods.updateDriverConfirmation(true).send({ from: account })
-          .once('receipt', async (receipt) => {
-            console.log(receipt);
-            setConfirmed(true);
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-          });
-      });
+  const handleDriverAcceptRide = async (rideContractAddress) => {
+    axios.post(BACKEND_URL + '/driver/ride/accept', {
+      'rideContractAddress': rideContractAddress,
+      'driverAddress': account
+    }).then((response) => {
+      setRideConfirmed(true);
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }).catch((err) => {
+      console.log(err);
+    });
   };
 
 
