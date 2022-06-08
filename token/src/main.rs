@@ -37,7 +37,7 @@ enum CurrentStatus {
 #[derive(Clone, Debug, CandidType, Deserialize)]
 struct Rider {
     pub name: String,
-    pub contact: u64,
+    pub contact: String,
     pub email: String,
     pub role: String,
     pub address: Principal,
@@ -66,7 +66,7 @@ impl Default for Rider {
     fn default() -> Rider {
         Rider {
             name: String::from(""),
-            contact: 0,
+            contact: String::from(""),
             email: String::from(""),
             role: String::from(""),
             address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
@@ -169,7 +169,7 @@ fn get_drivers() -> DriverStore {
 }
 
 //register rider
-#[update]
+#[update (name = "registerRider")]
 fn register_rider(rider: Rider) {
     RIDER_STORE.with(|rider_store| {
         rider_store.borrow_mut().push(rider);
@@ -343,7 +343,7 @@ fn search_driver_by_contact(contact: u64) -> Option<Driver> {
 fn test_search_driver_by_contact() {
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890",
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
