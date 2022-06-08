@@ -293,7 +293,7 @@ export default function RideShareSteps(props) {
             web3.utils.hexToUtf8(data.carNo).trim(),
             data.rating.toString(),
             "0.01 ETH", 
-            riderAcceptDriverButton
+            riderAcceptDriverButton(data)
           ]
         );
       });
@@ -305,17 +305,17 @@ export default function RideShareSteps(props) {
     })
   };
 
-  const riderAcceptDriverButton = (
+  const riderAcceptDriverButton = (data) => (
     <Button
       variant="contained"
       color="primary"
       className={classes.button}
-      onClick={handleRiderAcceptDriver()}
+      onClick={handleRiderAcceptDriver(data)}
     >
       Accept
     </Button>
   );
-  const handleRiderAcceptDriver = () => {
+  const handleRiderAcceptDriver = (data) => {
     setUserSelectedDriver(data.ethAddress);
     rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress)
       .send({ from: account })
@@ -371,21 +371,21 @@ export default function RideShareSteps(props) {
     
     let sourceDisplayName = localStorage.getItem('sourceName');
     let destDisplayName = localStorage.getItem('destinationName');
-    setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton]]);
+    setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(ride)]]);
     isLoading(false);
   }
 
-  const driverAcceptRideButton = (
+  const driverAcceptRideButton = (ride) => (
     <Button
       variant="contained"
       color="primary"
       className={classes.button}
-      onClick={handleDriverAcceptRide()}
+      onClick={handleDriverAcceptRide(ride)}
     >
       Accept
     </Button>
   );
-  const handleDriverAcceptRide = async () => {
+  const handleDriverAcceptRide = async (ride) => {
     // workaround to avoid two transactions before next step
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     // TODO avoid 2 distinct transactions here
