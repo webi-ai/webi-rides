@@ -269,8 +269,7 @@ export default function RideShareSteps(props) {
 
   // TODO fix distance
   const riderRequestRide = () => {
-    console.log('requesting ride');
-    console.log('distance: ' + localStorage.getItem('distance'));
+    const distance = web3.utils.utf8ToHex(localStorage.getItem('distance').split(" ")[0]);
     // TODO distance shouldn't be frontend accessible
     axios.post(BACKEND_URL + '/rider/ride/request', {
       "account": account,
@@ -282,7 +281,7 @@ export default function RideShareSteps(props) {
         "lat": String(localStorage.getItem('destinationLat')),
         "lng": String(localStorage.getItem('destinationLng'))
       },
-      "distance": web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)
+      "distance": distance
     }).then((response) => {
       setRideContractAddress(response.rideContractAddress);
       isLoading(false);
@@ -291,7 +290,7 @@ export default function RideShareSteps(props) {
   };
 
   const riderRetrieveDrivers = () => {
-    // TODO precise geolocation
+    // TODO retrieve nearby drivers for rider geolocation
     axios.post(BACKEND_URL + '/rider/driver/retrieveLocal', {
       user: {
         "account": account,
@@ -299,7 +298,6 @@ export default function RideShareSteps(props) {
         "longitude": 25
       }
     }).then((response) => {
-      console.log(response.data.selectedDrivers);
       let temp = response.data.selectedDrivers;
       // TODO fix all drivers the same
       const tempList = temp.map(data => {
@@ -314,7 +312,6 @@ export default function RideShareSteps(props) {
           ]
         );
       });
-      console.log(tempList);
       setSelectedDrivers(tempList);
       isLoading(false);
     }).catch((err) => {
@@ -389,31 +386,23 @@ export default function RideShareSteps(props) {
 
   const driverGetRides = async () => {
     // TODO should display multiple and not just the latest
-    let rideContractAddress = await getLatestRideContractAddress(account);
-    setRideContractAddress(rideContractAddress);
-
-    let info = await getRideInfo(rideContractAddress);
-    
-    let sourceDisplayName = localStorage.getItem('sourceName');
-    let destDisplayName = localStorage.getItem('destinationName');
-    setRideRequests([rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]);
-    isLoading(false);
-  }
-
-  const getLatestRideContractAddress = async (driverAddress) => {
     axios.get(BACKEND_URL + '/driver/requests/latest', {
     }).then((response) => {
-      return response.data.rideContractAddress;
-    }).catch((err) => {
-      console.log(err);
-    });
-  }
+      let rideContractAddress = response.data.rideContractAddress;
+      setRideContractAddress(rideContractAddress);
 
-  const getRideInfo = async (rideContractAddress) => {
-    axios.get(BACKEND_URL + '/ride/info', {
-      'rideContractAddress': rideContractAddress
-    }).then((response) => {
-      return response.data.rideInfo;
+      axios.get(BACKEND_URL + '/ride/info', {
+        'rideContractAddress': rideContractAddress
+      }).then((response) => {
+        let info = response.data.rideInfo;
+        let sourceDisplayName = localStorage.getItem('sourceName');
+        let destDisplayName = localStorage.getItem('destinationName');
+
+        setRideRequests([[rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]]);
+        isLoading(false);
+      }).catch((err) => {
+        console.log(err);
+      });
     }).catch((err) => {
       console.log(err);
     });

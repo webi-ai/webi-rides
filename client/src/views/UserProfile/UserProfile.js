@@ -143,7 +143,7 @@ export default function UserProfile(props) {
       <div>
         <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
           <Alert onClose={handleClose} severity="success">
-            Success Wallet Address {localStorage.getItem('account')}!
+            Added Rider Profile
           </Alert>
         </Snackbar>
         <GridContainer>

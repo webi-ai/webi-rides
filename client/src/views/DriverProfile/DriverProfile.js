@@ -143,7 +143,7 @@ export default function DriverProfile(props) {
     <div>
       <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
-          Success Wallet Address {localStorage.getItem('account')}!
+          Added Driver Profile
         </Alert>
       </Snackbar>
       <GridContainer>
