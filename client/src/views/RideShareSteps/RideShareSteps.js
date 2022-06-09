@@ -393,6 +393,7 @@ export default function RideShareSteps(props) {
     setRideContractAddress(rideContractAddress);
 
     let info = await getRideInfo(rideContractAddress);
+    console.log(info);
     
     let sourceDisplayName = localStorage.getItem('sourceName');
     let destDisplayName = localStorage.getItem('destinationName');
@@ -401,7 +402,7 @@ export default function RideShareSteps(props) {
   }
 
   const getLatestRideContractAddress = async (driverAddress) => {
-    axios.get(BACKEND_URL + '/requests/latest', {
+    axios.get(BACKEND_URL + '/driver/requests/latest', {
     }).then((response) => {
       return response.data.rideContractAddress;
     }).catch((err) => {
@@ -413,6 +414,7 @@ export default function RideShareSteps(props) {
     axios.get(BACKEND_URL + '/ride/info', {
       'rideContractAddress': rideContractAddress
     }).then((response) => {
+      console.log(response.data.rideInfo);
       return response.data.rideInfo;
     }).catch((err) => {
       console.log(err);
