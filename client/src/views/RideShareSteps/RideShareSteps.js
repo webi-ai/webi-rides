@@ -23,13 +23,12 @@ import CardMedia from '@material-ui/core/CardMedia';
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { LocationOn } from "@material-ui/icons";
 import { CardActionArea, TextField } from "@material-ui/core";
-import Ride from '../../contracts/Ride.json';
 import axios from 'axios';
 import QRCode from 'qrcode.react';
 import QrReader from 'react-qr-scanner'
 
 
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = 'http://localhost:8000/api';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -273,7 +272,7 @@ export default function RideShareSteps(props) {
     console.log('requesting ride');
     console.log('distance: ' + localStorage.getItem('distance'));
     // TODO distance shouldn't be frontend accessible
-    axios.post(BACKEND_URL + '/api/rider/ride/request', {
+    axios.post(BACKEND_URL + '/rider/ride/request', {
       "account": account,
       "sourceCoords": {
         "lat": String(localStorage.getItem('sourceLat')),
@@ -293,7 +292,7 @@ export default function RideShareSteps(props) {
 
   const riderRetrieveDrivers = () => {
     // TODO precise geolocation
-    axios.post(BACKEND_URL + 'api/rider/driver/retrieveLocal', {
+    axios.post(BACKEND_URL + '/rider/driver/retrieveLocal', {
       user: {
         "account": account,
         "latitude": 25,
@@ -356,7 +355,7 @@ export default function RideShareSteps(props) {
         'rideContractAddress': rideContractAddress,
         'rideStatus': true
       }).then((response) => {
-        setConfirmed(true);
+        setRideConfirmed(true);
         // TODO only move to next step on QR code read
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       }).catch((err) => {
@@ -397,7 +396,7 @@ export default function RideShareSteps(props) {
     
     let sourceDisplayName = localStorage.getItem('sourceName');
     let destDisplayName = localStorage.getItem('destinationName');
-    setRideRequests([rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]]);
+    setRideRequests([rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]);
     isLoading(false);
   }
 

@@ -20,6 +20,7 @@ import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } fr
 import Paper from '@material-ui/core/Paper';
 import Loader from '../../components/Loader/Loader';
 import RideManager from '../../contracts/RideManager.json';
+import axios from 'axios';
 
 // const myPrivateEthereumNode = {
 //   nodeUrl: 'HTTP://127.0.0.1:8545',
@@ -28,6 +29,8 @@ import RideManager from '../../contracts/RideManager.json';
 
 // const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
 // const web3 = new Web3(portis.provider);
+
+const BACKEND_URL = 'http://localhost:8000/api';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -115,12 +118,20 @@ export default function UserProfile(props) {
     var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
     var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
 
-
-    await props.rideManager.methods.registerRider(name, contact, email, 0, accounts[ 0 ]).send({ from: accounts[ 0 ] })
-      .once('receipt', (receipt) => {
-        console.log(receipt);
-        isLoading(false);
-      });
+    
+    axios.post(BACKEND_URL + '/rider/register', {
+      rider: {
+        name: name,
+        contact: contact,
+        email: email,
+        role: 0,
+        account: accounts[0]
+      }
+    }).then((response) => {
+      isLoading(false);
+    }).catch((err) => {
+      console.log(err);
+    });
     handleSuccess();
   }
 
