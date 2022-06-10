@@ -39,7 +39,7 @@ type Ride_2 = record {
     "id": text;
     "driver": Driver;
     "rider": Rider;
-    "status": text;
+    "status": variant {Active; Completed; Cancelled;};
     "pickup": text;
     "dropoff": text;
     "pickupaddress": text;
@@ -47,9 +47,9 @@ type Ride_2 = record {
     "pickupdatetime": text;
     "dropoffdatetime": text;
     "price": text;
-    "rating": text;
-    "driverrating": text;
-    "riderrating": text;
+    "rating": float64;
+    "driverrating": float64;
+    "riderrating": float64;
     "driverfeedback": text;
     "riderfeedback": text;
     "driverconfirmation": text;

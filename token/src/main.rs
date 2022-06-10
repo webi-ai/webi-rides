@@ -513,7 +513,7 @@ fn test_search_driver_by_name() {
 }
 
 #[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
-enum RideStatus {
+pub enum RideStatus {
     Active,
     Completed,
     Cancelled,
@@ -527,7 +527,7 @@ pub struct Ride {
     pub rider: Rider,
     pub pickup: String,
     pub dropoff: String,
-    status: RideStatus,
+    pub status: RideStatus,
     pub timestamp: String,
     pub rating: f64,
     pub driverrating: f64,
