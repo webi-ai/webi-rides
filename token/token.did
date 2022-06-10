@@ -37,8 +37,8 @@ type Ride = Ride_2;
 
 type Ride_2 = record {
     "id": text;
-    "driver": text;
-    "rider": text;
+    "driver": Driver;
+    "rider": Rider;
     "status": text;
     "pickup": text;
     "dropoff": text;

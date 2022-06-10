@@ -7,6 +7,8 @@
 * Description   :  Token Service Contracts
 */
 
+//allow for candid_method incase we need it later
+#[allow(unused_imports)]
 use ic_cdk::{
     export::{
         candid::{CandidType, candid_method},
@@ -16,6 +18,8 @@ use ic_cdk::{
 use ic_cdk_macros::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+//allow for ledger_types incase we need it later
+#[allow(unused_imports)]
 use ic_ledger_types::{BlockIndex, Block, GetBlocksArgs, query_blocks, query_archived_blocks, AccountIdentifier, DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID, Memo, Subaccount, Tokens};
 use serde::{Deserialize, Serialize};
 
@@ -29,13 +33,13 @@ type RidesStore = Vec<Ride>;
 
 
 #[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
-enum CurrentStatus {
+pub enum CurrentStatus {
     Active,
     Inactive
 }
 
 #[derive(Clone, Debug, CandidType, Deserialize)]
-struct Rider {
+pub struct Rider {
     pub name: String,
     pub contact: String,
     pub email: String,
@@ -44,7 +48,7 @@ struct Rider {
 }
 
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
-struct Driver {
+pub struct Driver {
     pub name: String,
     pub contact: String,
     pub email: String,
@@ -520,8 +524,8 @@ enum RideStatus {
 #[derive(Debug, Deserialize, Clone, CandidType)]
 pub struct Ride {
     pub rideid: String,
-    pub driver: String,
-    pub rider: String,
+    pub driver: Driver,
+    pub rider: Rider,
     pub pickup: String,
     pub dropoff: String,
     status: RideStatus,
@@ -536,6 +540,7 @@ pub struct Ride {
 
 }
 
+#[allow(dead_code)]
 impl Ride {
     fn update_rider_confirmation(&mut self, confirmation: String) {
         self.riderconfirmation = confirmation;
@@ -571,10 +576,10 @@ impl Ride {
     fn update_pickup(&mut self, pickup: String) {
         self.pickup = pickup;
     }
-    fn update_rider(&mut self, rider: String) {
+    fn update_rider(&mut self, rider: Rider) {
         self.rider = rider;
     }
-    fn update_driver(&mut self, driver: String) {
+    fn update_driver(&mut self, driver: Driver) {
         self.driver = driver;
     }
     fn update_rideid(&mut self, rideid: String) {
@@ -614,10 +619,10 @@ impl Ride {
     fn get_pickup(&self) -> String {
         self.pickup.clone()
     }
-    fn get_rider(&self) -> String {
+    fn get_rider(&self) -> Rider {
         self.rider.clone()
     }
-    fn get_driver(&self) -> String {
+    fn get_driver(&self) -> Driver {
         self.driver.clone()
     }
     fn get_rideid(&self) -> String {
@@ -673,7 +678,8 @@ fn test_create_ride() {
 }
 
 
-//search ride by id
+//search ride by 
+#[allow(dead_code)]
 fn search_ride_by_id(rideid: String) -> Option<Ride> {
     let mut rides = get_rides();
     for ride in rides.iter_mut() {
@@ -760,6 +766,7 @@ pub struct TransferArgs {
 pub type BlockHeight = u64;
 
 //get block from ledger with height
+#[allow(dead_code)]
 async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Principal) -> Option<Block> {
     //set arguments for get blocks
     let args = GetBlocksArgs {
