@@ -3,8 +3,8 @@
 * Copyright     :  2022 Webi.ai
 * License       :  Not Yet Licensed for Public Use
 * Maintainer    :  Kelsey 
-* Stability     :  Passes Lint, Passes Tests
-* Run Tests     :  $ cargo clippy && cargo test
+* Stability     :  Passes Lint, Passes Tests, Dependancies up to date
+* Run Tests     :  $ cargo clippy && cargo test && cargo audit
 * Description   :  Rideshare Service Contracts
 */
 
