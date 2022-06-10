@@ -830,7 +830,7 @@ async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Pr
     //set ledger to mainnet
     if let Ok(result) = query_blocks(ledger_canister_id, args.clone()).await {
         //get block from result
-        if result.blocks.len() != 0 {
+        if !result.blocks.is_empty() {
             return result.blocks.first().cloned();
         }
         //get block from archived blocks
