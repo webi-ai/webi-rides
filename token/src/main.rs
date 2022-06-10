@@ -432,14 +432,12 @@ fn search_driver_by_field(_field: String, value: String) -> Option<Driver> {
                 {
                     return Some(driver.clone());
                 }
-            } else if _field == "address" {
-                if driver.address == value.parse::<Principal>().unwrap()
+            } else if _field == "address" && driver.address == value.parse::<Principal>().unwrap() 
                 {
                     return Some(driver.clone());
                 }
             }
-        }
-
+        
         None
     })
 }
