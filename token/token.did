@@ -17,9 +17,9 @@ type Driver_2 = record {
     "vehiclecolor": text;
     "vehicletype": text;
     "vehicleyear": text;
-    "rating": text;
+    "rating": float64;
     "currentstatus": text;
-    "address": text;
+    "address": principal;
 };
 
 type Driver = Driver_2;
@@ -86,5 +86,5 @@ service : () -> {
     "get_drivers": () -> (vec Driver_2) query;
     "get_riders": () -> (vec Rider_2) query;
     "registerRider": (Rider_2) -> ();
-    "register_driver": (text) -> (Driver_2) query;
+    "registerDriver": (Driver_2) -> ();
 }

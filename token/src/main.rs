@@ -1,9 +1,9 @@
 /**
-* Module        :  service.rs
+* Module        :  main.rs
 * Copyright     :  2022 Webi.ai
 * License       :  GPL 3.0
 * Maintainer    :  Kelsey 
-* Stability     :  Passes Lint and Test
+* Stability     :  Does not Lint, Passes Tests
 * Description   :  Token Service Contracts
 */
 
@@ -46,7 +46,7 @@ struct Rider {
 #[derive(PartialEq, Clone, Debug, CandidType, Deserialize)]
 struct Driver {
     pub name: String,
-    pub contact: u64,
+    pub contact: String,
     pub email: String,
     pub role: String,
     pub vehicleplatenumber: String,
@@ -79,7 +79,7 @@ impl Default for Driver {
     fn default() -> Driver {
         Driver {
             name: String::from(""),
-            contact: 0,
+            contact: String::from(""),
             email: String::from(""),
             role: String::from(""),
             vehicleplatenumber: String::from(""),
@@ -195,7 +195,7 @@ fn test_register_rider() {
 
 
 //register driver
-#[update]
+#[update (name = "registerDriver")]
 fn register_driver(driver: Driver) {
     DRIVER_STORE.with(|driver_store| {
         driver_store.borrow_mut().push(driver);
@@ -207,7 +207,7 @@ fn register_driver(driver: Driver) {
 fn test_register_driver() {
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
@@ -229,7 +229,7 @@ fn test_register_driver() {
 
 
 // update driver rating value
-#[query]
+#[update (name = "updateDriverRating")]
 fn update_driver_rating(driver_name: String, rating: f64) {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow_mut().iter_mut() {
@@ -245,7 +245,7 @@ fn update_driver_rating(driver_name: String, rating: f64) {
 fn test_update_driver_rating() {
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
@@ -285,7 +285,7 @@ fn update_driver_status(driver_name: String, status: CurrentStatus) {
 fn test_update_driver_status() {
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
@@ -327,7 +327,7 @@ fn search_driver_by_name(driver_name: String) -> Option<Driver> {
 
 // search for driver by contect and return the driver
 #[query]
-fn search_driver_by_contact(contact: u64) -> Option<Driver> {
+fn search_driver_by_contact(contact: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow().iter() {
             if driver.contact == contact {
@@ -343,7 +343,7 @@ fn search_driver_by_contact(contact: u64) -> Option<Driver> {
 fn test_search_driver_by_contact() {
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: "1234567890",
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
@@ -376,7 +376,7 @@ fn search_driver_by_field(_field: String, value: String) -> Option<Driver> {
                     return Some(driver.clone());
                 }
             } else if _field == "contact" {
-                if driver.contact == value.parse::<u64>().unwrap() {
+                if driver.contact == value  {
                     return Some(driver.clone());
                 }
             } else if _field == "email" {
@@ -444,7 +444,7 @@ fn search_driver_by_field(_field: String, value: String) -> Option<Driver> {
 fn test_search_driver_by_field() {
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
@@ -486,7 +486,7 @@ fn test_search_driver_by_name() {
     //create driver
     let driver = Driver {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "driver".to_string(),
         vehicleplatenumber: "ABC123".to_string(),
