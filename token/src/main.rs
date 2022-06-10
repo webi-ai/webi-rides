@@ -181,7 +181,7 @@ fn register_rider(rider: Rider) {
 fn test_register_rider() {
     let rider = Rider {
         name: "Kelsey".to_string(),
-        contact: 1234567890,
+        contact: "1234567890".to_string(),
         email: "test@email.com".to_string(),
         role: "rider".to_string(),
         address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
@@ -361,7 +361,7 @@ fn test_search_driver_by_contact() {
     assert_eq!(get_drivers().len(), 1);
     //check the data was written to the store
     assert_eq!(get_drivers()[0].name, "Kelsey");
-    assert_eq!(search_driver_by_contact(1234567890).unwrap().name, "Kelsey");
+    assert_eq!(search_driver_by_contact("1234567890".to_string()).unwrap().name, "Kelsey");
 }
 
 
