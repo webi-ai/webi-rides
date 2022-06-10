@@ -18,7 +18,7 @@ type Driver_2 = record {
     "vehicletype": text;
     "vehicleyear": text;
     "rating": float64;
-    "currentstatus": text;
+    "currentstatus": variant {Active; Inactive;};
     "address": principal;
 };
 
