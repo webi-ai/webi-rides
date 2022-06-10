@@ -33,6 +33,7 @@ type Rider_2 = record {
 };
 
 
+type Ride = Ride_2;
 
 type Ride_2 = record {
     "id": text;
@@ -87,4 +88,5 @@ service : () -> {
     "get_riders": () -> (vec Rider_2) query;
     "registerRider": (Rider_2) -> ();
     "registerDriver": (Driver_2) -> ();
+    "registerRide": (Ride_2) -> ();
 }

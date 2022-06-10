@@ -54,3 +54,5 @@ echo "Testing DFX CLI - Test 4 get drivers "
 
 #get drivers with dfx
 dfx canister call token get_drivers
+
+

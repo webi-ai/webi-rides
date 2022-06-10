@@ -516,7 +516,7 @@ enum RideStatus {
 }
 
 //Ride struct
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, CandidType)]
 pub struct Ride {
     pub rideid: String,
     pub driver: String,
@@ -634,6 +634,7 @@ impl Ride {
 }
 
 //register ride to RIDES_STORE
+#[update (name="registerRide")]
 fn register_ride(ride: Ride) {
     RIDES_STORE.with(|rides_store| {
         rides_store.borrow_mut().push(ride);
