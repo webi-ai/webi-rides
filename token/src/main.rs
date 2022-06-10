@@ -1,11 +1,11 @@
 /**
-* Module        :  main.rs
+* Module        :  contracts/token/main.rs
 * Copyright     :  2022 Webi.ai
 * License       :  Not Yet Licensed for Public Use
 * Maintainer    :  Kelsey 
 * Stability     :  Passes Lint, Passes Tests
 * Run Tests     :  $ cargo clippy && cargo test
-* Description   :  Token Service Contracts
+* Description   :  Rideshare Service Contracts
 */
 
 //allow for candid_method incase we need it later
