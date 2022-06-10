@@ -46,7 +46,10 @@ const idlFactory = ({ IDL }) => {
     'email' : IDL.Text,
     'address' : IDL.Principal,
     'vehicleseatnumber' : IDL.Text,
-    'currentstatus' : IDL.Text,
+    'currentstatus' : IDL.Variant({
+      'Inactive' : IDL.Null,
+      'Active' : IDL.Null,
+    }),
     'rating' : IDL.Float64,
     'vehiclemodel' : IDL.Text,
   });
@@ -102,6 +105,8 @@ const idlFactory = ({ IDL }) => {
   });
 };
 const init = ({ IDL }) => { return []; };
+
+
 //fetch keys, this is not needed in production
 if (true) {
   agent.fetchRootKey(); // TODO this should be removed in production
