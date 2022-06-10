@@ -157,8 +157,8 @@ record_driver_insert = {
   vehiclecolor: "Black",
   vehicletype: "SUV",
   vehicleyear: "2020",
-  rating: "0.0",
-  currentstatus: "available",
+  rating: 4.5,
+  currentstatus: {Active: null},
   address: Principal.Principal.fromText("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae"),
 }
 
