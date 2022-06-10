@@ -1,9 +1,10 @@
 /**
 * Module        :  main.rs
 * Copyright     :  2022 Webi.ai
-* License       :  GPL 3.0
+* License       :  Not Yet Licensed for Public Use
 * Maintainer    :  Kelsey 
-* Stability     :  Does not Lint, Passes Tests
+* Stability     :  Passes Lint, Passes Tests
+* Run Tests     :  $ cargo clippy && cargo test
 * Description   :  Token Service Contracts
 */
 
