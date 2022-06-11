@@ -155,7 +155,7 @@ fn update(profile: Profile) {
 }
 
 //get rides store   
-#[allow(dead_code)]
+#[query(name = "getRides")]
 fn get_rides() -> RidesStore {
     RIDES_STORE.with(|rides_store| {
         rides_store.borrow().clone()

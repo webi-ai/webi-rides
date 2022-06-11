@@ -103,4 +103,4 @@ dfx canister call token registerRide '(
 echo "================================================"
 echo "Testing DFX CLI - Test 6 get rides "
 
-dfx canister call token get_rides
+dfx canister call token getRides
