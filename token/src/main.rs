@@ -344,6 +344,46 @@ fn search_driver_by_contact(contact: String) -> Option<Driver> {
     })
 }
 
+//search for driver by principal_id and return the driver
+#[query]
+fn search_driver_by_principal_id(principal_id: String) -> Option<Driver> {
+    DRIVER_STORE.with(|driver_store| {
+        for driver in driver_store.borrow().iter() {
+            if driver.address.to_string() == principal_id {
+                return Some(driver.clone());
+            }
+        }
+        None
+    })
+}
+
+//test search for driver by principal_id
+#[test]
+fn test_search_driver_by_principal_id() {
+    let driver = Driver {
+        name: "Kelsey".to_string(),
+        contact: "1234567890".to_string(),
+        email: "test@email.com".to_string(),
+        role: "driver".to_string(),
+        vehicleplatenumber: "ABC123".to_string(),
+        vehicleseatnumber: "1".to_string(),
+        vehiclemake: "Toyota".to_string(),
+        vehiclemodel: "Corolla".to_string(),
+        vehiclecolor: "Black".to_string(),
+        vehicletype: "SUV".to_string(),
+        vehicleyear: "2020".to_string(),
+        rating: 0.0,
+        currentstatus: CurrentStatus::Active,
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_driver(driver);
+    assert_eq!(get_drivers().len(), 1);
+    //check the data was written to the store
+    assert_eq!(get_drivers()[0].name, "Kelsey");
+    assert_eq!(search_driver_by_principal_id("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()).unwrap().name, "Kelsey");
+}
+
+
 // test search for driver_by_contact
 #[test]
 fn test_search_driver_by_contact() {
