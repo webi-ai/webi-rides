@@ -383,6 +383,37 @@ fn test_search_driver_by_principal_id() {
     assert_eq!(search_driver_by_principal_id("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()).unwrap().name, "Kelsey");
 }
 
+//search for rider by principal_id and return the rider
+#[query]
+fn search_rider_by_principal_id(principal_id: String) -> Option<Rider> {
+    RIDER_STORE.with(|rider_store| {
+        for rider in rider_store.borrow().iter() {
+            if rider.address.to_string() == principal_id {
+                return Some(rider.clone());
+            }
+        }
+        None
+    })
+}
+
+//test search for rider by principal_id
+#[test]
+fn test_search_rider_by_principal_id() {
+    let rider = Rider {
+        name: "Kelsey".to_string(),
+        contact: "1234567890".to_string(),
+        email: "test@email.com".to_string(),
+        role: "rider".to_string(),
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_rider(rider);
+    assert_eq!(get_riders().len(), 1);
+    //check the data was written to the store
+    assert_eq!(get_riders()[0].name, "Kelsey");
+    assert_eq!(search_rider_by_principal_id("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()).unwrap().name, "Kelsey");
+}
+
+
 
 // test search for driver_by_contact
 #[test]
