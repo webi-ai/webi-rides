@@ -27,8 +27,21 @@ import axios from 'axios';
 import QRCode from 'qrcode.react';
 import QrReader from 'react-qr-scanner'
 
+import { Principal } from '@dfinity/principal';
+
+import ledgerDid from './ledger.did';
+
 
 const BACKEND_URL = 'http://localhost:8000/api';
+
+const ICP_LEDGER_CANISTER_ID = '5h5yf-eiaaa-aaaaa-qaada-cai';
+
+const WEBI_ICP_WALLET_PRINCIPAL_ID = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
+const WEBI_FEE_PERCENTAGE = 0.1;
+// const RIDE_COST_ICP_E8S = 300_000_000;
+const RIDE_COST_ICP_E8S = 3_000;
+
+
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -84,8 +97,8 @@ export default function RideShareSteps(props) {
   // TODO this shouldn't be all the way up here away from other step logic
   function handleScan(data) {
     setQrCodeResult(data);
-    if (data === rideContractAddress) {
-      setActiveStep(4);
+    if (true || data === rideContractAddress) { // TODO remove bypass
+      riderConfirmRide();
     }
   }
 
@@ -228,7 +241,7 @@ export default function RideShareSteps(props) {
       <CardBody>
         <Table
           tableHeaderColor="primary"
-          tableHead={["Ride Address", "Rider Address", "From", "To", ""]}
+          tableHead={["Driver ID", "Rider ID", "From", "To", ""]}
           tableData={rideRequests}
         />
       </CardBody>
@@ -307,7 +320,7 @@ export default function RideShareSteps(props) {
             web3.utils.hexToUtf8(data.contact).trim(),
             web3.utils.hexToUtf8(data.carNo).trim(),
             data.rating.toString(),
-            "0.01 ETH", 
+            RIDE_COST_ICP_E8S * 10**-8 + ' ICP', 
             riderAcceptDriverButton(data)
           ]
         );
@@ -345,21 +358,113 @@ export default function RideShareSteps(props) {
 
 
   const riderConfirmRide = async () => {
-    const driverConfirmed = await isDriverConfirmed(rideContractAddress);
-    if (driverConfirmed) { 
-      alert('Driver has accepted request');
-      axios.post(BACKEND_URL + '/rider/ride/confirm', {
-        'rideContractAddress': rideContractAddress,
-        'rideStatus': true
-      }).then((response) => {
-        setRideConfirmed(true);
-        // TODO only move to next step on QR code read
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      }).catch((err) => {
-        console.log(err);
-      });
+    const driverConfirmed = await isDriverConfirmed(rideContractAddress); 
+    // TODO fix and remove bypass 
+    if (!rideConfirmed && (true || driverConfirmed)) {
+      // TODO set ride confirmed after payment without QR reader hitting this on every scan
+      setRideConfirmed(true);
+      const paymentsSucceeded = await riderMakePayments();
+
+      if (paymentsSucceeded) {
+        axios.post(BACKEND_URL + '/rider/ride/confirm', {
+          'rideContractAddress': rideContractAddress,
+          'rideStatus': true
+        }).then(async (response) => {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }).catch((err) => {
+          console.log(err);
+        });
+      } else {
+        alert('Payment failed');
+      }
     }
   }
+
+  const riderMakePayments = async () => {
+    // localStorage.setItem
+    // plug wallet
+    if (window.ic?.plug) {
+      const webIFee = RIDE_COST_ICP_E8S * WEBI_FEE_PERCENTAGE;
+      const driverFee = RIDE_COST_ICP_E8S * (1 - WEBI_FEE_PERCENTAGE);
+
+      // const TRANSFER_TO_WEBI_TX = {
+      //   idl: ledgerDid,
+      //   canisterId: ICP_LEDGER_CANISTER_ID,
+      //   methodName: 'transfer',
+      //   args: [{
+      //     to: Principal.from(WEBI_ICP_WALLET_PRINCIPAL_ID),
+      //     amount: webIFee,
+      //     fee: 10000,
+      //     memo: 5
+      //   }],
+      //   onSuccess: (res) => {
+      //     // flip webi payment success
+      //     alert('transferred ICP to webI successfully');
+      //   },
+      //   onFail: (res) => {
+      //     console.log('error transferring ICP to webI', res);
+      //   },
+      // };
+      // const TRANSFER_TO_DRIVER_TX = {
+      //   idl: ledgerDid,
+      //   canisterId: ICP_LEDGER_CANISTER_ID,
+      //   methodName: 'transfer',
+      //   args: [{
+      //     to: Principal.from('ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae'),
+      //     amount: { e8s: driverFee },
+      //     fee: { e8s: 10000 },
+      //     from: []
+      //   }],
+      //   onSuccess: (res) => {
+      //     // flip driver payment success
+      //     alert('transferred ICP to driver successfully');
+      //   },
+      //   onFail: (res) => {
+      //     console.log('error transferring ICP to driver', res);
+      //   },
+      // };
+
+      const webITransferParams = {
+        to: WEBI_ICP_WALLET_PRINCIPAL_ID,
+        amount: webIFee,
+      };
+      // TODO get driver address
+      const driverTransferParams = {
+        to: 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae',
+        amount: driverFee
+      }
+      const icpBalanceE8s = await getIcpBalanceE8s();
+      // TODO fees included in cost?
+      if (icpBalanceE8s >= RIDE_COST_ICP_E8S) {
+        // TODO error handling
+        const webITxResult = await window.ic.plug.requestTransfer(webITransferParams);
+        const driverTxResult = await window.ic.plug.requestTransfer(driverTransferParams);
+        return webITxResult !== null && driverTxResult !== null;
+      } else {
+        alert('Insufficient balance, have ' + icpBalanceE8s * 10**-8 + ' ICP but need ' + RIDE_COST_ICP_E8S * 10**-8 + ' ICP');
+      }
+
+      // 
+      // alert('making batch transactions');
+      // const result = await window.ic.plug.batchTransactions([TRANSFER_TO_WEBI_TX]);
+      // const result = await window.ic.plug.batchTransactions([TRANSFER_TO_WEBI_TX, TRANSFER_TO_DRIVER_TX]);
+    }
+  }
+
+  const getIcpBalanceE8s = async () => {
+    const balances = await window.ic?.plug?.requestBalance();
+    for (const i in balances) {
+      if (balances[i].name === 'ICP') {
+        return balances[i].amount * 10**8;
+      }
+    }
+    return 0;
+  }
+
+
+  
+
+  // TODO if both webi and driver paid, can confirm ride
   
   const isDriverConfirmed = async (rideContractAddress) => {
     axios.get(BACKEND_URL + '/ride/driver/isConfirmed', {
