@@ -8,7 +8,7 @@
 * Description   :  Rideshare Service Contracts
 */
 
-//allow for candid_method incase we need it later
+///allow for candid_method incase we need it later
 #[allow(unused_imports)]
 use ic_cdk::{
     export::{
@@ -19,7 +19,7 @@ use ic_cdk::{
 use ic_cdk_macros::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
-//allow for ledger_types incase we need it later
+///allow for ledger_types incase we need it later
 #[allow(unused_imports)]
 use ic_ledger_types::{BlockIndex, Block, GetBlocksArgs, query_blocks, query_archived_blocks, AccountIdentifier, DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID, Memo, Subaccount, Tokens};
 use serde::{Deserialize, Serialize};
@@ -66,7 +66,7 @@ pub struct Driver {
     pub address: Principal,
 }
 
-//implement default() for Rider
+///implement default() for Rider
 impl Default for Rider {
     fn default() -> Rider {
         Rider {
@@ -79,7 +79,7 @@ impl Default for Rider {
     }
 }
 
-//implement default() for driver
+///implement default() for driver
 impl Default for Driver {
     fn default() -> Driver {
         Driver {
@@ -154,7 +154,7 @@ fn update(profile: Profile) {
     });
 }
 
-//get rides store   
+///get rides store   
 #[query(name = "getRides")]
 fn get_rides() -> RidesStore {
     RIDES_STORE.with(|rides_store| {
@@ -162,19 +162,19 @@ fn get_rides() -> RidesStore {
     })
 }
 
-//get riders
+///get riders
 #[query]
 fn get_riders() -> RiderStore {
     RIDER_STORE.with(|rider_store| rider_store.borrow().clone())
 }
 
-//get drivers
+///get drivers
 #[query]
 fn get_drivers() -> DriverStore {
     DRIVER_STORE.with(|driver_store| driver_store.borrow().clone())
 }
 
-//register rider
+///register rider
 #[update (name = "registerRider")]
 fn register_rider(rider: Rider) {
     RIDER_STORE.with(|rider_store| {
@@ -182,7 +182,7 @@ fn register_rider(rider: Rider) {
     });
 }
 
-// test registerRider 
+/// test registerRider 
 #[test]
 fn test_register_rider() {
     let rider = Rider {
@@ -200,7 +200,7 @@ fn test_register_rider() {
 }
 
 
-//register driver
+///register driver
 #[update (name = "registerDriver")]
 fn register_driver(driver: Driver) {
     DRIVER_STORE.with(|driver_store| {
@@ -208,7 +208,7 @@ fn register_driver(driver: Driver) {
     });
 }
 
-//test register driver
+///test register driver
 #[test]
 fn test_register_driver() {
     let driver = Driver {
@@ -234,7 +234,7 @@ fn test_register_driver() {
 }
 
 
-// update driver rating value
+/// update driver rating value
 #[update (name = "updateDriverRating")]
 fn update_driver_rating(driver_name: String, rating: f64) {
     DRIVER_STORE.with(|driver_store| {
@@ -246,7 +246,7 @@ fn update_driver_rating(driver_name: String, rating: f64) {
     });
 }
 
-// test update_driver_rating
+/// test update_driver_rating
 #[test]
 fn test_update_driver_rating() {
     let driver = Driver {
@@ -274,7 +274,7 @@ fn test_update_driver_rating() {
 }
 
 
-// update driver status value
+/// update driver status value
 #[query]
 fn update_driver_status(driver_name: String, status: CurrentStatus) {
     DRIVER_STORE.with(|driver_store| {
@@ -286,7 +286,7 @@ fn update_driver_status(driver_name: String, status: CurrentStatus) {
     });
 }
 
-//test update_driver_status
+///test update_driver_status
 #[test]
 fn test_update_driver_status() {
     let driver = Driver {
@@ -318,7 +318,7 @@ fn test_update_driver_status() {
 
 
 
-// search for driver by name and return the driver
+/// search for driver by name and return the driver
 #[query]
 fn search_driver_by_name(driver_name: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
@@ -331,7 +331,7 @@ fn search_driver_by_name(driver_name: String) -> Option<Driver> {
     })
 }
 
-// search for driver by contect and return the driver
+/// search for driver by contect and return the driver
 #[query]
 fn search_driver_by_contact(contact: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
@@ -344,7 +344,7 @@ fn search_driver_by_contact(contact: String) -> Option<Driver> {
     })
 }
 
-//search for driver by principal_id and return the driver
+///search for driver by principal_id and return the driver
 #[query]
 fn search_driver_by_principal_id(principal_id: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
@@ -357,7 +357,7 @@ fn search_driver_by_principal_id(principal_id: String) -> Option<Driver> {
     })
 }
 
-//test search for driver by principal_id
+///test search for driver by principal_id
 #[test]
 fn test_search_driver_by_principal_id() {
     let driver = Driver {
@@ -383,7 +383,7 @@ fn test_search_driver_by_principal_id() {
     assert_eq!(search_driver_by_principal_id("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()).unwrap().name, "Kelsey");
 }
 
-//search for rider by principal_id and return the rider
+///search for rider by principal_id and return the rider
 #[query]
 fn search_rider_by_principal_id(principal_id: String) -> Option<Rider> {
     RIDER_STORE.with(|rider_store| {
@@ -396,7 +396,7 @@ fn search_rider_by_principal_id(principal_id: String) -> Option<Rider> {
     })
 }
 
-//test search for rider by principal_id
+///test search for rider by principal_id
 #[test]
 fn test_search_rider_by_principal_id() {
     let rider = Rider {
@@ -415,7 +415,7 @@ fn test_search_rider_by_principal_id() {
 
 
 
-// test search for driver_by_contact
+/// test search for driver_by_contact
 #[test]
 fn test_search_driver_by_contact() {
     let driver = Driver {
@@ -442,7 +442,7 @@ fn test_search_driver_by_contact() {
 }
 
 
-//search for driver by field and return the driver  
+///search for driver by field and return the driver  
 #[query]
 fn search_driver_by_field(_field: String, value: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
@@ -514,7 +514,7 @@ fn search_driver_by_field(_field: String, value: String) -> Option<Driver> {
     })
 }
 
-//test search for driver by field
+///test search for driver by field and return the driver
 #[test]
 fn test_search_driver_by_field() {
     let driver = Driver {
@@ -555,10 +555,10 @@ fn test_search_driver_by_field() {
 }
 
 
-//test search for driver by name and return the driver
+///test search for driver by name and return the driver
 #[test]
 fn test_search_driver_by_name() {
-    //create driver
+    //!create driver
     let driver = Driver {
         name: "Kelsey".to_string(),
         contact: "1234567890".to_string(),
@@ -583,6 +583,8 @@ fn test_search_driver_by_name() {
     assert_eq!(driver_found.unwrap().name, "Kelsey");
 }
 
+
+/// ridestatus enum for ride struct to represent the status of the ride
 #[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
 pub enum RideStatus {
     Active,
@@ -590,7 +592,7 @@ pub enum RideStatus {
     Cancelled,
 }
 
-//Ride struct
+///Ride struct for the ride table
 #[derive(Debug, Deserialize, Clone, CandidType)]
 pub struct Ride {
     pub rideid: String,
@@ -611,6 +613,7 @@ pub struct Ride {
 }
 
 #[allow(dead_code)]
+/// implement the ride struct with the following functions
 impl Ride {
     fn update_rider_confirmation(&mut self, confirmation: String) {
         self.riderconfirmation = confirmation;
@@ -709,7 +712,7 @@ impl Ride {
 
 }
 
-//register ride to RIDES_STORE
+///register ride to RIDES_STORE
 #[update (name="registerRide")]
 fn register_ride(ride: Ride) {
     RIDES_STORE.with(|rides_store| {
@@ -718,10 +721,10 @@ fn register_ride(ride: Ride) {
 }
 
 
-//test create ride
+///test create ride
 #[test]
 fn test_create_ride() {
-    //create driver
+    //!create driver
     let driver = Driver {
         name: "Kelsey".to_string(),
         contact: "1234567890".to_string(),
@@ -776,7 +779,7 @@ fn test_create_ride() {
 }
 
 
-//search ride by 
+///search ride by 
 #[allow(dead_code)]
 fn search_ride_by_id(rideid: String) -> Option<Ride> {
     let mut rides = get_rides();
@@ -788,7 +791,7 @@ fn search_ride_by_id(rideid: String) -> Option<Ride> {
     None
 }
 
-//test search ride by id
+///test search ride by id
 #[test]
 fn test_search_ride_by_id() {
         //create driver
@@ -866,35 +869,14 @@ pub struct TransferArgs {
 
 
 
-/// async fn query_one_block(ledger: Principal, block_index: BlockIndex) -> CallResult<Option<Block>> {
-///   let args = GetBlocksArgs { start: block_index, length: 1 };
-///
-///   let blocks_result = query_blocks(ledger, args.clone()).await?;
-///
-///   if blocks_result.blocks.len() >= 1 {
-///       debug_assert_eq!(blocks_result.first_block_index, block_index);
-///       return Ok(blocks_result.blocks.into_iter().next());
-///   }
-///
-///   if let Some(func) = blocks_result
-///       .archived_blocks
-///       .into_iter()
-///       .find_map(|b| (b.start <= block_index && (block_index - b.start) < b.length).then(|| b.callback)) {
-///       match query_archived_blocks(&func, args).await? {
-///           Ok(range) => return Ok(range.blocks.into_iter().next()),
-///           _ => (),
-///       }
-///   }
-///   Ok(None)}
 
-//get one 
-
+///get one 
 pub type BlockHeight = u64;
 
-//get block from ledger with height
+///get block from ledger with height
 #[allow(dead_code)]
 async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Principal) -> Option<Block> {
-    //set arguments for get blocks
+    //!set arguments for get blocks
     let args = GetBlocksArgs {
         start: block_height,
         length: 1,
@@ -919,15 +901,3 @@ async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Pr
     None
 }
 
-//use ic_utils::call::SyncCall to call query_blocks 
-//pub fn sync_query_blocks(ledger: Principal, args: GetBlocksArgs) -> Option<Block> {
-//    let result = ic_utils::call::SyncCall::new(query_blocks(ledger, args.clone()));
-//    if result.is_ok() {
-//        if let Some(blocks) = result.unwrap().unwrap().blocks {
-//            if blocks.len() != 0 {
-//                return blocks.first().cloned();
-//            }
-//        }
-//    }
-//    None
-//}
