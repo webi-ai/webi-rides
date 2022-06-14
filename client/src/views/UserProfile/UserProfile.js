@@ -97,7 +97,7 @@ export default function UserProfile(props) {
     setHide(true);
     
     // TODO replace placeholder IC principal with address from auth & wallet connect
-    // TODO should these be set globally?
+    // TODO do these need to be in localStorage?
     localStorage.setItem('account', 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae');
     localStorage.setItem('name', formData.name);
     localStorage.setItem('contact', formData.contact);
