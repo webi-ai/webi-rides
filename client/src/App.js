@@ -28,6 +28,7 @@ class App extends Component {
     async componentWillMount() {
         await this.loadWeb3();
         await this.loadBlockChain();
+        await this.connectPlug();
     }
 
     async loadWeb3() {
@@ -60,6 +61,12 @@ class App extends Component {
             this.setState({ 'rideManager': rideManager, 'loading': false, 'web3': web3 });
         } else {
             window.alert('Ride Manager contract not deployed to detected network.');
+        }
+    }
+
+    async connectPlug() {
+        if (window.ic?.plug) {
+            await window.ic.plug.requestConnect();
         }
     }
 
