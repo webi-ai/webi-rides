@@ -239,7 +239,7 @@ export default function RideShareSteps(props) {
   ); // TODO add fee explainer fine text - webI takes just a 15% fee in order to keep our services running
   function handleQRScan(data) {
     setQrCodeResult(data);
-    if (true || data === rideContractAddress) { // TODO remove bypass
+    if (data === rideContractAddress) {
       riderConfirmRide();
     }
   }
