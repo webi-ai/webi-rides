@@ -12,12 +12,11 @@ import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import Snackbar from '@material-ui/core/Snackbar';
-import Portis from '@portis/web3';
 import MuiAlert from '@material-ui/lab/Alert';
-import Web3 from 'web3';
 import avatar from "assets/img/faces/driver.png";
-import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
+import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
+import axios from 'axios';
 
 // const myPrivateEthereumNode = {
 //   nodeUrl: 'HTTP://127.0.0.1:8545',
@@ -25,6 +24,9 @@ import Paper from '@material-ui/core/Paper';
 // };
 
 // const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
+
+// TODO config one place
+const BACKEND_URL = 'http://localhost:8000/api';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -117,13 +119,21 @@ export default function DriverProfile(props) {
       var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
       var carNo = web3.utils.padRight(web3.utils.fromAscii(formData.carNo), 64);
 
-      props.rideManager.methods
-        .registerDriver(name, contact, email, carNo, Number(formData.noOfSeats), 1, accounts[ 0 ])
-        .send({ from: accounts[ 0 ] })
-        .once('receipt', (receipt) => {
-          console.log(receipt);
-          isLoading(false);
-        })
+      axios.post(BACKEND_URL + '/driver/register', {
+        driver: {
+          name: name,
+          contact: contact,
+          email: email,
+          carNo: carNo,
+          noOfSeats: Number(formData.noOfSeats),
+          role: 1,
+          account: accounts[0]
+        }
+      }).then((response) => {
+        isLoading(false);
+      }).catch((err) => {
+        console.log(err);
+      });
     });
     handleSuccess()
     event.preventDefault();
@@ -133,7 +143,7 @@ export default function DriverProfile(props) {
     <div>
       <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
-          Success Wallet Address {localStorage.getItem('account')}!
+          Added Driver Profile
         </Alert>
       </Snackbar>
       <GridContainer>
