@@ -392,8 +392,8 @@ export default function RideShareSteps(props) {
   }
 
   const riderMakePayments = async () => {
-    localStorage.setItem('driverTxHeight', null);
-    localStorage.setItem('webITxHeight', null);
+    localStorage.removeItem('driverTxHeight');
+    localStorage.removeItem('webITxHeight');
     // plug wallet
     if (window.ic?.plug) {
       const webIFee = RIDE_COST_ICP_E8S * WEBI_FEE_PERCENTAGE;
@@ -405,7 +405,7 @@ export default function RideShareSteps(props) {
         methodName: 'send_dfx',
         args: [{
           to: getAccountId(Principal.fromText(WEBI_ICP_WALLET_PRINCIPAL_ID)),
-          amount: { e8s: webIFee},
+          amount: { e8s: webIFee },
           fee: { e8s: 10000 },
           memo: RandomBigInt(32),
           from_subaccount: [],
