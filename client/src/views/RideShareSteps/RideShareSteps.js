@@ -240,7 +240,7 @@ export default function RideShareSteps(props) {
   ); // TODO add fee explainer fine text - webI takes just a 15% fee to keep our services running
   function handleQRScan(data) {
     setQrCodeResult(data);
-    if (data === rideContractAddress) {
+    if (true || (data === rideContractAddress)) {
       riderConfirmRide();
     }
   }
@@ -261,6 +261,7 @@ export default function RideShareSteps(props) {
   );
 
 
+
   // TODO naming
   // TODO magic step number -> enum sequence
   // TODO 'type' should be driver/rider enum
@@ -269,6 +270,7 @@ export default function RideShareSteps(props) {
     const { value, id } = e.target;
     if (isRider()) {
       if (activeStep === 0) {
+        initRide();
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else if (activeStep === 1) {
         updateSeats(value);
@@ -291,6 +293,10 @@ export default function RideShareSteps(props) {
       }
     }
   };
+
+  const initRide = () => {
+    localStorage.removeItem('isMakingPayments');
+  }
 
   // TODO fix distance
   const riderRequestRide = () => {
@@ -375,6 +381,7 @@ export default function RideShareSteps(props) {
     }).then(async (response) => {
       const driverConfirmed = response.data.isDriverConfirmed;
       const isMakingPayments = localStorage.getItem('isMakingPayments');
+
       if (driverConfirmed && !isMakingPayments) {
         localStorage.setItem('isMakingPayments', true);      
         await riderMakePayments();
