@@ -419,6 +419,7 @@ impl Driver {
 
 ///search for rider by field and return the rider
 #[query]
+#[export_name = "search_rider_by_field"]
 fn search_rider_by_field(field: String, value: String) -> Option<Rider> {
     RIDER_STORE.with(|rider_store| {
         for rider in rider_store.borrow().iter() {
@@ -634,7 +635,7 @@ fn search_ride_by_id(rideid: String) -> Option<Ride> {
 
 export_service!();
 
-#[ic_cdk_macros::query(name = "__get_candid_interface_tmp_hack")]
+#[query(name = "getCandid")]
 fn export_candid() -> String {
     __export_service()
 }
