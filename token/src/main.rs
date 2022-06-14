@@ -902,13 +902,12 @@ async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Pr
 }
 
 ///request a ride
-#[allow(dead_code)]
-async fn request_ride(
-    rider: &Rider,
-    pickup: &String,
-    dropoff: &String,
-    timestamp: &String,
-    fare: f64,
+#[update]
+pub fn request_ride(
+    rider: Rider,
+    pickup: String,
+    dropoff: String,
+    timestamp: String,
 ) -> () {
     //!set arguments for request ride
     //find an available driver
