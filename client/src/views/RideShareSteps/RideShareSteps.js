@@ -16,6 +16,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
+import Muted from "components/Typography/Muted.js";
 import Paper from '@material-ui/core/Paper';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -227,16 +228,16 @@ export default function RideShareSteps(props) {
               onError={handleQRError}
               onScan={handleQRScan}
             />
+            
           </CardContent>
         </CardActionArea>
         <CardActions>
           After scanning your driver's QR code, your wallet will request a pair of transactions: these are your driver's fee and webI's processing fee.<br/>
           As soon as you approve these transfers, you're ready to ride!
-
         </CardActions>
       </Card>
     </div>
-  ); // TODO add fee explainer fine text - webI takes just a 15% fee in order to keep our services running
+  ); // TODO add fee explainer fine text - webI takes just a 15% fee to keep our services running
   function handleQRScan(data) {
     setQrCodeResult(data);
     if (data === rideContractAddress) {
