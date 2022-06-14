@@ -27,8 +27,8 @@ class App extends Component {
 
     async componentWillMount() {
         await this.loadWeb3();
-        await this.loadBlockChain();
         await this.connectPlug();
+        this.setState({ 'loading': false, 'web3': window.web3 });
     }
 
     async loadWeb3() {
