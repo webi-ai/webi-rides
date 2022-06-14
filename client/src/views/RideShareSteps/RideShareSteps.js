@@ -370,8 +370,7 @@ export default function RideShareSteps(props) {
 
   const riderConfirmRide = async () => {
     const driverConfirmed = await isDriverConfirmed(rideContractAddress); 
-    // TODO fix and remove bypass 
-    if (!rideConfirmed && (true || driverConfirmed)) {
+    if (!rideConfirmed && driverConfirmed) {
       // TODO set ride confirmed after payment without QR reader hitting this on every scan
       setRideConfirmed(true);
       await riderMakePayments();
