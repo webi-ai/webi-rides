@@ -367,21 +367,16 @@ export default function RideShareSteps(props) {
   };
 
 
-
   const riderConfirmRide = async () => {
-    const driverConfirmed = await isDriverConfirmed(rideContractAddress); 
-    if (!rideConfirmed && driverConfirmed) {
-      // TODO set ride confirmed after payment without QR reader hitting this on every scan
-      setRideConfirmed(true);
-      await riderMakePayments();
-    }
-  }
-
-  const isDriverConfirmed = async (rideContractAddress) => {
     axios.get(BACKEND_URL + '/ride/driver/isConfirmed', {
       'rideContractAddress': rideContractAddress
-    }).then((response) => {
-      return response.data.isDriverConfirmed;
+    }).then(async (response) => {
+      const driverConfirmed = response.data.isDriverConfirmed;
+      const isMakingPayments = localStorage.getItem('isMakingPayments');
+      if (driverConfirmed && !isMakingPayments) {
+        localStorage.setItem('isMakingPayments', true);      
+        await riderMakePayments();
+      }
     }).catch((err) => {
       console.log(err);
     });
@@ -415,6 +410,7 @@ export default function RideShareSteps(props) {
           console.log('error transferring ICP to webI', res);
         },
       };
+
       const TRANSFER_TO_DRIVER_TX = {
         idl: ledgerIDL,
         canisterId: NNS_LEDGER_CANISTER_ID,
@@ -436,6 +432,7 @@ export default function RideShareSteps(props) {
           console.log('error transferring ICP to driver', res);
         },
       };
+      
       const icpBalanceE8s = await getIcpBalanceE8s();
       // TODO fees included in cost?
       if (icpBalanceE8s >= RIDE_COST_ICP_E8S) {
@@ -476,6 +473,8 @@ export default function RideShareSteps(props) {
       'rideContractAddress': rideContractAddress,
       'rideStatus': true
     }).then(async (response) => {
+      setRideConfirmed(true);
+      localStorage.setItem('isMakingPayments', false);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }).catch((err) => {
       console.log(err);
