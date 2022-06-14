@@ -343,6 +343,7 @@ export default function RideShareSteps(props) {
     })
   };
 
+  // riderAcceptDriverButton() is a function that returns a button that accepts the driver
   const riderAcceptDriverButton = (data) => (
     <Button
       variant="contained"
