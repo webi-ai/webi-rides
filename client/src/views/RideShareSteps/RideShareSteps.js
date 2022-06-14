@@ -40,7 +40,7 @@ const NNS_LEDGER_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 
 const WEBI_ICP_WALLET_PRINCIPAL_ID = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
 
-const WEBI_FEE_PERCENTAGE = 0.1;
+const WEBI_FEE_PERCENTAGE = 0.15;
 // const RIDE_COST_ICP_E8S = 300_000_000;
 const RIDE_COST_ICP_E8S = 3_000;
 
@@ -147,6 +147,7 @@ export default function RideShareSteps(props) {
     }
   }
 
+  // TODO improve ui text
   const riderRideDetailsCard = (
     <div>
       <Card>
@@ -197,7 +198,7 @@ export default function RideShareSteps(props) {
         defaultValue={1}
         className={classes.textField}
         value={seats}
-        helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your webI Ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
+        helperText="Pick the number of seats you'll need on your ride."
         variant="outlined"
       />
     </div>
@@ -217,14 +218,34 @@ export default function RideShareSteps(props) {
 
   const riderQrReaderCard = (
     <div>
-      <QrReader
-        delay={100}
-        style={previewStyle}
-        onError={handleQRError}
-        onScan={handleQRScan}
-      />
+      <Card>
+        <CardActionArea>
+          <CardContent>
+            <QrReader
+              delay={100}
+              style={previewStyle}
+              onError={handleQRError}
+              onScan={handleQRScan}
+            />
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          After scanning your driver's QR code, your wallet will request a pair of transactions: these are your driver's fee and webI's processing fee.<br/>
+          As soon as you approve these transfers, you're ready to ride!
+
+        </CardActions>
+      </Card>
     </div>
-  ); // TODO add indication that wallet will ask to do a pair of transactions (1 for fee, 1 for driver) upon QR scan
+  ); // TODO add fee explainer fine text - webI takes just a 15% fee in order to keep our services running
+  function handleQRScan(data) {
+    setQrCodeResult(data);
+    if (true || data === rideContractAddress) { // TODO remove bypass
+      riderConfirmRide();
+    }
+  }
+  function handleQRError(err) {
+    console.error(err)
+  }
 
   const driverRidePickerCard = (
     <div>
@@ -237,17 +258,6 @@ export default function RideShareSteps(props) {
       </CardBody>
     </div>
   );
-
-  function handleQRScan(data) {
-    setQrCodeResult(data);
-    if (true || data === rideContractAddress) { // TODO remove bypass
-      riderConfirmRide();
-    }
-  }
-  function handleQRError(err) {
-    console.error(err)
-  }
-
 
 
   // TODO naming
