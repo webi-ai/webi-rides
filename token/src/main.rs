@@ -11,7 +11,7 @@
 ///allow for candid_method incase we need it later
 #[allow(unused_imports)]
 use ic_cdk::export::{
-    candid::{candid_method, CandidType},
+    candid::{candid_method, CandidType, export_service},
     Principal,
 };
 use ic_cdk_macros::*;
@@ -32,7 +32,6 @@ type ProfileStore = BTreeMap<Principal, Profile>;
 type DriverStore = Vec<Driver>;
 type RiderStore = Vec<Rider>;
 type RidesStore = Vec<Ride>;
-
 
 #[derive(PartialEq, Clone, Copy, Debug, CandidType, Deserialize)]
 pub enum CurrentStatus {
@@ -186,53 +185,12 @@ fn register_rider(rider: Rider) {
     });
 }
 
-/// test registerRider
-#[test]
-fn test_register_rider() {
-    let rider = Rider {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "rider".to_string(),
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_rider(rider);
-    assert_eq!(get_riders().len(), 1);
-    //check if the rider is in the store
-    assert_eq!(get_riders()[0].name, "Kelsey");
-}
-
 ///register driver
 #[update(name = "registerDriver")]
 fn register_driver(driver: Driver) {
     DRIVER_STORE.with(|driver_store| {
         driver_store.borrow_mut().push(driver);
     });
-}
-
-///test register driver
-#[test]
-fn test_register_driver() {
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-    assert_eq!(get_drivers().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_drivers()[0].name, "Kelsey");
 }
 
 /// update driver rating value
@@ -247,33 +205,6 @@ fn update_driver_rating(driver_name: String, rating: f64) {
     });
 }
 
-/// test update_driver_rating
-#[test]
-fn test_update_driver_rating() {
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-    assert_eq!(get_drivers().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_drivers()[0].name, "Kelsey");
-    update_driver_rating("Kelsey".to_string(), 5.0);
-    assert_eq!(get_drivers()[0].rating, 5.0);
-}
-
 /// update driver status value
 #[query]
 fn update_driver_status(driver_name: String, status: CurrentStatus) {
@@ -284,36 +215,6 @@ fn update_driver_status(driver_name: String, status: CurrentStatus) {
             }
         }
     });
-}
-
-///test update_driver_status
-#[test]
-fn test_update_driver_status() {
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-    assert_eq!(get_drivers().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_drivers()[0].name, "Kelsey");
-    update_driver_status("Kelsey".to_string(), CurrentStatus::Inactive);
-    assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Inactive);
-
-    update_driver_status("Kelsey".to_string(), CurrentStatus::Active);
-    assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Active);
 }
 
 /// search for driver by name and return the driver
@@ -355,39 +256,6 @@ fn search_driver_by_address(principal_id: String) -> Option<Driver> {
     })
 }
 
-///test search for driver by principal_id
-#[test]
-fn test_search_driver_by_address() {
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-    assert_eq!(get_drivers().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_drivers()[0].name, "Kelsey");
-    assert_eq!(
-        search_driver_by_address(
-            "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()
-        )
-        .unwrap()
-        .name,
-        "Kelsey"
-    );
-}
-
 ///search for rider by principal_id and return the rider
 #[query]
 fn search_rider_by_principal_id(principal_id: String) -> Option<Rider> {
@@ -399,61 +267,6 @@ fn search_rider_by_principal_id(principal_id: String) -> Option<Rider> {
         }
         None
     })
-}
-
-///test search for rider by principal_id
-#[test]
-fn test_search_rider_by_principal_id() {
-    let rider = Rider {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "rider".to_string(),
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_rider(rider);
-    assert_eq!(get_riders().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_riders()[0].name, "Kelsey");
-    assert_eq!(
-        search_rider_by_principal_id(
-            "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()
-        )
-        .unwrap()
-        .name,
-        "Kelsey"
-    );
-}
-
-/// test search for driver_by_contact
-#[test]
-fn test_search_driver_by_contact() {
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-    assert_eq!(get_drivers().len(), 1);
-    //check the data was written to the store
-    assert_eq!(get_drivers()[0].name, "Kelsey");
-    assert_eq!(
-        search_driver_by_contact("1234567890".to_string())
-            .unwrap()
-            .name,
-        "Kelsey"
-    );
 }
 
 impl Rider {
@@ -472,6 +285,9 @@ impl Rider {
             role,
             address,
         } //create a new rider
+    }
+    pub fn get_name(&self) -> String {
+        self.name.clone()
     }
     pub fn name(&self) -> &str {
         &self.name
@@ -535,6 +351,9 @@ impl Driver {
             address,
         }
     }
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    } // get the name of the driver
     pub fn name(&self) -> &str {
         &self.name
     } // get the name of the driver
@@ -611,27 +430,6 @@ fn search_rider_by_field(field: String, value: String) -> Option<Rider> {
     })
 }
 
-///test search riders by field and return the rider
-#[test]
-fn test_search_rider_by_field() {
-    let rider = Rider::new(
-        "Kelsey".to_string(),
-        "1234567890".to_string(),
-        "test@email.com".to_string(),
-        "rider".to_string(),
-        "123 Main St".to_string(),
-    );
-    RIDER_STORE.with(|rider_store| {
-        rider_store.borrow_mut().push(rider.clone());
-    });
-    assert_eq!(
-        search_rider_by_field("name".to_string(), "Kelsey".to_string())
-            .unwrap()
-            .name,
-        "Kelsey"
-    );
-}
-
 ///search for driver by field and return the driver  
 #[query]
 fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
@@ -645,61 +443,17 @@ fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
     })
 }
 
-///test search for driver by field and return the driver
-#[test]
-fn test_search_driver_by_field() {
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-    assert_eq!(
-        search_driver_by_field("name".to_string(), "Kelsey".to_string())
-            .unwrap()
-            .name,
-        "Kelsey"
-    );
-    
-}
-
-///test search for driver by name and return the driver
-#[test]
-fn test_search_driver_by_name() {
-    //!create driver
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver);
-
-    //search for driver
-    let driver_found = search_driver_by_name("Kelsey".to_string());
-    //assert
-    assert_eq!(driver_found.unwrap().name, "Kelsey");
+//search for ride by field and return the ride
+#[query]
+fn search_ride_by_field(field: String, value: String) -> Option<Ride> {
+    RIDES_STORE.with(|ride_store| {
+        for ride in ride_store.borrow().iter() {
+            if ride.get_field(field.clone()) == value {
+                return Some(ride.clone());
+            }
+        }
+        None
+    })
 }
 
 /// ridestatus enum for ride struct to represent the status of the ride
@@ -708,6 +462,16 @@ pub enum RideStatus {
     Active,
     Completed,
     Cancelled,
+}
+
+impl fmt::Display for RideStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            RideStatus::Active => write!(f, "Active"),
+            RideStatus::Completed => write!(f, "Completed"),
+            RideStatus::Cancelled => write!(f, "Cancelled"),
+        }
+    }
 }
 
 ///Ride struct for the ride table
@@ -826,6 +590,26 @@ impl Ride {
     fn get_type(&self) -> String {
         "Ride".to_string()
     }
+
+    fn get_field(&self, field: String) -> String {
+        match field.as_str() {
+            "rideid" => self.rideid.clone(),
+            "driver" => self.driver.get_name(),
+            "rider" => self.rider.get_name(),
+            "pickup" => self.pickup.clone(),
+            "dropoff" => self.dropoff.clone(),
+            "status" => self.status.to_string(),
+            "timestamp" => self.timestamp.clone(),
+            "rating" => self.rating.to_string(),
+            "driverrating" => self.driverrating.to_string(),
+            "riderrating" => self.riderrating.to_string(),
+            "driverfeedback" => self.driverfeedback.clone(),
+            "riderfeedback" => self.riderfeedback.clone(),
+            "riderconfirmation" => self.riderconfirmation.clone(),
+            "driverconfirmation" => self.driverconfirmation.clone(),
+            _ => "".to_string(),
+        }
+    }
 }
 
 ///register ride to RIDES_STORE
@@ -834,62 +618,6 @@ fn register_ride(ride: Ride) {
     RIDES_STORE.with(|rides_store| {
         rides_store.borrow_mut().push(ride);
     });
-}
-
-///test create ride
-#[test]
-fn test_create_ride() {
-    //!create driver
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver.clone());
-    //create rider
-    let rider = Rider {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "rider".to_string(),
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_rider(rider.clone());
-
-    //create ride
-    let ride = Ride {
-        rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-        driver: driver,
-        rider: rider,
-        pickup: "new york".to_string(),
-        dropoff: "san francisco".to_string(),
-        status: RideStatus::Active,
-        timestamp: "2020-01-01T00:00:00.000Z".to_string(),
-        rating: 0.0,
-        driverrating: 0.0,
-        riderrating: 0.0,
-        driverfeedback: "".to_string(),
-        riderfeedback: "".to_string(),
-        riderconfirmation: "".to_string(),
-        driverconfirmation: "".to_string(),
-    };
-    //register ride
-    register_ride(ride);
-    //get list of all rides
-    let rides = get_rides();
-    //assert
-    assert_eq!(rides.len(), 1);
 }
 
 ///search ride by
@@ -904,59 +632,11 @@ fn search_ride_by_id(rideid: String) -> Option<Ride> {
     None
 }
 
-///test search ride by id
-#[test]
-fn test_search_ride_by_id() {
-    //create driver
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver.clone());
-    //create rider
-    let rider = Rider {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "rider".to_string(),
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_rider(rider.clone());
-    //create ride
-    let ride = Ride {
-        rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-        driver: driver,
-        rider: rider,
-        pickup: "new york".to_string(),
-        dropoff: "san francisco".to_string(),
-        status: RideStatus::Active,
-        timestamp: "2020-01-01T00:00:00.000Z".to_string(),
-        rating: 0.0,
-        driverrating: 0.0,
-        riderrating: 0.0,
-        driverfeedback: "".to_string(),
-        riderfeedback: "".to_string(),
-        riderconfirmation: "".to_string(),
-        driverconfirmation: "".to_string(),
-    };
-    //register ride
-    register_ride(ride.clone());
-    //search ride by id
-    let search_ride = search_ride_by_id(ride.clone().rideid);
-    //assert
-    assert_eq!(search_ride.unwrap().rideid, ride.clone().rideid);
+export_service!();
+
+#[ic_cdk_macros::query(name = "__get_candid_interface_tmp_hack")]
+fn export_candid() -> String {
+    __export_service()
 }
 
 #[cfg(any(target_arch = "wasm32", test))]
@@ -1044,48 +724,465 @@ pub fn request_ride(rider: Rider, pickup: String, dropoff: String, timestamp: St
     register_ride(ride.clone());
 }
 
-///test request ride
-#[test]
-fn test_request_ride() {
-    //create driver
-    let driver = Driver {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "driver".to_string(),
-        vehicleplatenumber: "ABC123".to_string(),
-        vehicleseatnumber: "1".to_string(),
-        vehiclemake: "Toyota".to_string(),
-        vehiclemodel: "Corolla".to_string(),
-        vehiclecolor: "Black".to_string(),
-        vehicletype: "SUV".to_string(),
-        vehicleyear: "2020".to_string(),
-        rating: 0.0,
-        currentstatus: CurrentStatus::Active,
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_driver(driver.clone());
-    //create rider
-    let rider = Rider {
-        name: "Kelsey".to_string(),
-        contact: "1234567890".to_string(),
-        email: "test@email.com".to_string(),
-        role: "rider".to_string(),
-        address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
-    };
-    register_rider(rider.clone());
-    //request a ride
-    request_ride(
-        rider.clone(),
-        "new york".to_string(),
-        "san francisco".to_string(),
-        "2020-01-01T00:00:00.000Z".to_string(),
-    );
-    //get rides
-    let rides = get_rides();
-    //get first ride
-    let ride = rides.first().unwrap();
-    //assert ride exists
-    assert_eq!(ride.rider.name, rider.name);
-    assert_eq!(ride.driver.name, driver.name);
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    /// test registerRider
+    #[test]
+    fn test_register_rider() {
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider);
+        assert_eq!(get_riders().len(), 1);
+        //check if the rider is in the store
+        assert_eq!(get_riders()[0].name, "Kelsey");
+    }
+
+    ///test register driver
+    #[test]
+    fn test_register_driver() {
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+        assert_eq!(get_drivers().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_drivers()[0].name, "Kelsey");
+    }
+    /// test update_driver_rating
+    #[test]
+    fn test_update_driver_rating() {
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+        assert_eq!(get_drivers().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_drivers()[0].name, "Kelsey");
+        update_driver_rating("Kelsey".to_string(), 5.0);
+        assert_eq!(get_drivers()[0].rating, 5.0);
+    }
+    ///test update_driver_status
+    #[test]
+    fn test_update_driver_status() {
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+        assert_eq!(get_drivers().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_drivers()[0].name, "Kelsey");
+        update_driver_status("Kelsey".to_string(), CurrentStatus::Inactive);
+        assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Inactive);
+
+        update_driver_status("Kelsey".to_string(), CurrentStatus::Active);
+        assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Active);
+    }
+    ///test search for driver by principal_id
+    #[test]
+    fn test_search_driver_by_address() {
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+        assert_eq!(get_drivers().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_drivers()[0].name, "Kelsey");
+        assert_eq!(
+            search_driver_by_address(
+                "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()
+            )
+            .unwrap()
+            .name,
+            "Kelsey"
+        );
+    }
+    ///test search for rider by principal_id
+    #[test]
+    fn test_search_rider_by_principal_id() {
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider);
+        assert_eq!(get_riders().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_riders()[0].name, "Kelsey");
+        assert_eq!(
+            search_rider_by_principal_id(
+                "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()
+            )
+            .unwrap()
+            .name,
+            "Kelsey"
+        );
+    }
+
+    /// test search for driver_by_contact
+    #[test]
+    fn test_search_driver_by_contact() {
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+        assert_eq!(get_drivers().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_drivers()[0].name, "Kelsey");
+        assert_eq!(
+            search_driver_by_contact("1234567890".to_string())
+                .unwrap()
+                .name,
+            "Kelsey"
+        );
+    }
+    ///test create ride
+    #[test]
+    fn test_create_ride() {
+        //!create driver
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver.clone());
+        //create rider
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider.clone());
+
+        //create ride
+        let ride = Ride {
+            rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+            driver: driver,
+            rider: rider,
+            pickup: "new york".to_string(),
+            dropoff: "san francisco".to_string(),
+            status: RideStatus::Active,
+            timestamp: "2020-01-01T00:00:00.000Z".to_string(),
+            rating: 0.0,
+            driverrating: 0.0,
+            riderrating: 0.0,
+            driverfeedback: "".to_string(),
+            riderfeedback: "".to_string(),
+            riderconfirmation: "".to_string(),
+            driverconfirmation: "".to_string(),
+        };
+        //register ride
+        register_ride(ride);
+        //get list of all rides
+        let rides = get_rides();
+        //assert
+        assert_eq!(rides.len(), 1);
+    }
+    ///test search riders by field and return the rider
+    #[test]
+    fn test_search_rider_by_field() {
+        let rider = Rider::new(
+            "Kelsey".to_string(),
+            "1234567890".to_string(),
+            "test@email.com".to_string(),
+            "rider".to_string(),
+            "123 Main St".to_string(),
+        );
+        RIDER_STORE.with(|rider_store| {
+            rider_store.borrow_mut().push(rider.clone());
+        });
+        assert_eq!(
+            search_rider_by_field("name".to_string(), "Kelsey".to_string())
+                .unwrap()
+                .name,
+            "Kelsey"
+        );
+    }
+    ///test search for driver by field and return the driver
+    #[test]
+    fn test_search_driver_by_field() {
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+        assert_eq!(
+            search_driver_by_field("name".to_string(), "Kelsey".to_string())
+                .unwrap()
+                .name,
+            "Kelsey"
+        );
+    }
+
+    ///test search for driver by name and return the driver
+    #[test]
+    fn test_search_driver_by_name() {
+        //!create driver
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver);
+
+        //search for driver
+        let driver_found = search_driver_by_name("Kelsey".to_string());
+        //assert
+        assert_eq!(driver_found.unwrap().name, "Kelsey");
+    }
+    ///test search ride by id
+    #[test]
+    fn test_search_ride_by_id() {
+        //create driver
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver.clone());
+        //create rider
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider.clone());
+        //create ride
+        let ride = Ride {
+            rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+            driver: driver,
+            rider: rider,
+            pickup: "new york".to_string(),
+            dropoff: "san francisco".to_string(),
+            status: RideStatus::Active,
+            timestamp: "2020-01-01T00:00:00.000Z".to_string(),
+            rating: 0.0,
+            driverrating: 0.0,
+            riderrating: 0.0,
+            driverfeedback: "".to_string(),
+            riderfeedback: "".to_string(),
+            riderconfirmation: "".to_string(),
+            driverconfirmation: "".to_string(),
+        };
+        //register ride
+        register_ride(ride.clone());
+        //search ride by id
+        let search_ride = search_ride_by_id(ride.clone().rideid);
+        //assert
+        assert_eq!(search_ride.unwrap().rideid, ride.clone().rideid);
+    }
+    ///test request ride
+    #[test]
+    fn test_request_ride() {
+        //create driver
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver.clone());
+        //create rider
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider.clone());
+        //request a ride
+        request_ride(
+            rider.clone(),
+            "new york".to_string(),
+            "san francisco".to_string(),
+            "2020-01-01T00:00:00.000Z".to_string(),
+        );
+        //get rides
+        let rides = get_rides();
+        //get first ride
+        let ride = rides.first().unwrap();
+        //assert ride exists
+        assert_eq!(ride.rider.name, rider.name);
+        assert_eq!(ride.driver.name, driver.name);
+    }
+    //test search ride by field
+    #[test]
+    fn test_search_ride_by_field() {
+        //create driver
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+
+        register_driver(driver.clone());
+        //create rider
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider.clone());
+        //request a ride
+        request_ride(
+            rider.clone(),
+            "new york".to_string(),
+            "san francisco".to_string(),
+            "2020-01-01T00:00:00.000Z".to_string(),
+        );
+        //get rides
+        let rides = get_rides();
+        //get first ride
+        let ride = rides.first().unwrap();
+        //assert ride exists
+        assert_eq!(ride.rider.name, rider.name);
+        assert_eq!(ride.driver.name, driver.name);
+        //search ride by pickup
+    }
 }
