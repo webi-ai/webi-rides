@@ -243,7 +243,7 @@ fn search_driver_by_contact(contact: String) -> Option<Driver> {
     })
 }
 
-///search for driver by principal_id and return the driver
+///search for driver by address and return the driver
 #[query]
 fn search_driver_by_address(principal_id: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
@@ -256,9 +256,9 @@ fn search_driver_by_address(principal_id: String) -> Option<Driver> {
     })
 }
 
-///search for rider by principal_id and return the rider
+///search for rider by address and return the rider
 #[query]
-fn search_rider_by_principal_id(principal_id: String) -> Option<Rider> {
+fn search_rider_by_address(principal_id: String) -> Option<Rider> {
     RIDER_STORE.with(|rider_store| {
         for rider in rider_store.borrow().iter() {
             if rider.address.to_string() == principal_id {
@@ -824,7 +824,7 @@ mod test {
         update_driver_status("Kelsey".to_string(), CurrentStatus::Active);
         assert_eq!(get_drivers()[0].currentstatus, CurrentStatus::Active);
     }
-    ///test search for driver by principal_id
+    ///test search for driver by address
     #[test]
     fn test_search_driver_by_address() {
         let driver = Driver {
@@ -856,9 +856,9 @@ mod test {
             "Kelsey"
         );
     }
-    ///test search for rider by principal_id
+    ///test search for rider by address
     #[test]
-    fn test_search_rider_by_principal_id() {
+    fn test_search_rider_by_address() {
         let rider = Rider {
             name: "Kelsey".to_string(),
             contact: "1234567890".to_string(),
@@ -871,7 +871,7 @@ mod test {
         //check the data was written to the store
         assert_eq!(get_riders()[0].name, "Kelsey");
         assert_eq!(
-            search_rider_by_principal_id(
+            search_rider_by_address(
                 "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string()
             )
             .unwrap()
