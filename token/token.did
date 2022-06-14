@@ -17,9 +17,9 @@ type Driver_2 = record {
     "vehiclecolor": text;
     "vehicletype": text;
     "vehicleyear": text;
-    "rating": text;
-    "currentstatus": text;
-    "address": text;
+    "rating": float64;
+    "currentstatus": variant {Active; Inactive;};
+    "address": principal;
 };
 
 type Driver = Driver_2;
@@ -29,41 +29,35 @@ type Rider_2 = record {
     "contact": text;
     "email": text;
     "role": text;
-    "address": text;
+    "address": principal;
 };
 
+type Rider = Rider_2;
 
 
 type Ride_2 = record {
-    "id": text;
-    "driver": text;
-    "rider": text;
-    "status": text;
+    "rideid": text;
+    "driver": Driver;
+    "rider": Rider;
+    "status": variant {Active; Completed; Cancelled;};
     "pickup": text;
     "dropoff": text;
-    "pickupaddress": text;
-    "dropoffaddress": text;
-    "pickupdatetime": text;
-    "dropoffdatetime": text;
-    "price": text;
-    "rating": text;
-    "driverrating": text;
-    "riderrating": text;
+    "timestamp": text;
+    "rating": float64;
+    "driverrating": float64;
+    "riderrating": float64;
     "driverfeedback": text;
     "riderfeedback": text;
     "driverconfirmation": text;
     "riderconfirmation": text;
 
-}
+};
+
+type Ride = Ride_2;
+
 
 type Tokens = record {
     e8s: nat64
-};
-
-type Conf = record {
-  transaction_fee : Tokens;
-  subaccount : opt vec nat8;
-  ledger_canister_id : principal;
 };
 
 type TransferArgs = record {
@@ -79,16 +73,19 @@ type TransferResult = variant {
     Err: text;
 };
 
-service : (Conf) {
+service : () -> {
     "transfer": (TransferArgs) -> (TransferResult);
     "getSelf": () -> (Profile_2) query;
     "get": (text) -> (Profile_2) query;
     "update": (Profile_2) -> ();
     "search": (text) -> (opt Profile_2) query;
-    "getDriver": (text) -> (Driver_2) query;
-    "getRider": (text) -> (Rider_2) query;
-    "getRide": (text) -> (Ride_2) query;
+    "get_driver": (text) -> (Driver_2) query;
+    "get_rider": (text) -> (Rider_2) query;
+    "get_ride": (text) -> (Ride_2) query;
     "getRides": () -> (vec Ride_2) query;
-    "getDrivers": () -> (vec Driver_2) query;
-    "getRiders": () -> (vec Rider_2) query;
+    "get_drivers": () -> (vec Driver_2) query;
+    "get_riders": () -> (vec Rider_2) query;
+    "registerRider": (Rider_2) -> ();
+    "registerDriver": (Driver_2) -> ();
+    "registerRide": (Ride_2) -> ();
 }
