@@ -23,27 +23,26 @@ import CardMedia from '@material-ui/core/CardMedia';
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { LocationOn } from "@material-ui/icons";
 import { CardActionArea, TextField } from "@material-ui/core";
+
 import axios from 'axios';
 import QRCode from 'qrcode.react';
 import QrReader from 'react-qr-scanner';
 import RandomBigInt from 'random-bigint';
-
 import { Principal } from '@dfinity/principal';
+import { getAccountId } from './ICPUtils.js';
 
-import { getAccountId } from './utils';
 import ledgerIDL from './nns_ledger.did.js';
 
 
 const BACKEND_URL = 'http://localhost:8000/api';
 
-const ICP_LEDGER_CANISTER_ID = '5h5yf-eiaaa-aaaaa-qaada-cai';
 const NNS_LEDGER_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 
 const WEBI_ICP_WALLET_PRINCIPAL_ID = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
+
 const WEBI_FEE_PERCENTAGE = 0.1;
 // const RIDE_COST_ICP_E8S = 300_000_000;
 const RIDE_COST_ICP_E8S = 3_000;
-
 
 
 const useStyles = makeStyles((theme) => {
@@ -77,10 +76,8 @@ const isRider = () => {
 }
 
 // TODO fix widgets not showing on step load
-
 export default function RideShareSteps(props) {
   const classes = useStyles();
-  const [rideManager, setRideManager] = React.useState(props.rideManager);
   const [account, setAccount] = React.useState(props.account);
   const [web3, setWeb3] = React.useState(props.web3);
   const [activeStep, setActiveStep] = React.useState(0);
@@ -97,18 +94,6 @@ export default function RideShareSteps(props) {
   });
   const [qrCodeResult, setQrCodeResult] = React.useState('');
   
-  // TODO this shouldn't be all the way up here away from other step logic
-  function handleScan(data) {
-    setQrCodeResult(data);
-    if (true || data === rideContractAddress) { // TODO remove bypass
-      riderConfirmRide();
-    }
-  }
-
-  function handleError(err) {
-    console.error(err)
-  }
-
   const steps = getSteps();
 
   function getStepContent(step) {
@@ -235,8 +220,8 @@ export default function RideShareSteps(props) {
       <QrReader
         delay={100}
         style={previewStyle}
-        onError={handleError}
-        onScan={handleScan}
+        onError={handleQRError}
+        onScan={handleQRScan}
       />
     </div>
   ); // TODO add indication that wallet will ask to do a pair of transactions (1 for fee, 1 for driver) upon QR scan
@@ -252,6 +237,17 @@ export default function RideShareSteps(props) {
       </CardBody>
     </div>
   );
+
+  function handleQRScan(data) {
+    setQrCodeResult(data);
+    if (true || data === rideContractAddress) { // TODO remove bypass
+      riderConfirmRide();
+    }
+  }
+  function handleQRError(err) {
+    console.error(err)
+  }
+
 
 
   // TODO naming
