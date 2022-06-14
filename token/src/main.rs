@@ -909,7 +909,6 @@ pub fn request_ride(
     dropoff: String,
     timestamp: String,
 ) -> () {
-    //!set arguments for request ride
     //find an available driver
     let mut drivers = get_drivers();
     let mut driver = None;
@@ -942,4 +941,43 @@ pub fn request_ride(
     register_ride(ride.clone());
 }
 
-
+///test request ride
+#[test]
+fn test_request_ride() {
+    //create driver
+    let driver = Driver {
+        name: "Kelsey".to_string(),
+        contact: "1234567890".to_string(),
+        email: "test@email.com".to_string(),
+        role: "driver".to_string(),
+        vehicleplatenumber: "ABC123".to_string(),
+        vehicleseatnumber: "1".to_string(),
+        vehiclemake: "Toyota".to_string(),
+        vehiclemodel: "Corolla".to_string(),
+        vehiclecolor: "Black".to_string(),
+        vehicletype: "SUV".to_string(),
+        vehicleyear: "2020".to_string(),
+        rating: 0.0,
+        currentstatus: CurrentStatus::Active,
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_driver(driver.clone());
+    //create rider
+    let rider = Rider {
+        name: "Kelsey".to_string(),
+        contact: "1234567890".to_string(),
+        email: "test@email.com".to_string(),
+        role: "rider".to_string(),
+        address: Principal::from_text("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae").unwrap(),
+    };
+    register_rider(rider.clone());
+    //request a ride
+    request_ride(rider.clone(), "new york".to_string(), "san francisco".to_string(), "2020-01-01T00:00:00.000Z".to_string());
+    //get rides
+    let rides = get_rides();
+    //get first ride
+    let ride = rides.first().unwrap();
+    //assert ride exists
+    assert_eq!(ride.rider.name, rider.name);
+    assert_eq!(ride.driver.name, driver.name);
+}
