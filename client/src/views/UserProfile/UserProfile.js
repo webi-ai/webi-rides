@@ -12,23 +12,12 @@ import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import Snackbar from '@material-ui/core/Snackbar';
-import Portis from '@portis/web3';
 import MuiAlert from '@material-ui/lab/Alert';
-import Web3 from 'web3';
 import avatar from "assets/img/faces/marc.jpg";
-import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
+import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
 import Loader from '../../components/Loader/Loader';
-import RideManager from '../../contracts/RideManager.json';
 import axios from 'axios';
-
-// const myPrivateEthereumNode = {
-//   nodeUrl: 'HTTP://127.0.0.1:8545',
-//   chainId: 1337,
-// };
-
-// const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
-// const web3 = new Web3(portis.provider);
 
 const BACKEND_URL = 'http://localhost:8000/api';
 
@@ -106,26 +95,26 @@ export default function UserProfile(props) {
   async function handleSubmit(event) {
     event.preventDefault();
     setHide(true);
-    let accounts = await web3.eth.getAccounts();
-    localStorage.setItem('account', accounts[ 0 ]);
+    
+    // TODO replace placeholder IC principal with address from auth & wallet connect
+    // TODO should these be set globally?
+    localStorage.setItem('account', 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae');
     localStorage.setItem('name', formData.name);
     localStorage.setItem('contact', formData.contact);
     localStorage.setItem('email', formData.email);
-    localStorage.setItem('type', "0");
+    localStorage.setItem('type', '0');
 
+    const name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
+    const contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
+    const email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
 
-    var name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
-    var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
-    var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
-
-    
     axios.post(BACKEND_URL + '/rider/register', {
       rider: {
         name: name,
         contact: contact,
         email: email,
-        role: 0,
-        account: accounts[0]
+        role: Number(localStorage.getItem('type')),
+        account: localStorage.getItem('account')
       }
     }).then((response) => {
       isLoading(false);
@@ -138,7 +127,6 @@ export default function UserProfile(props) {
   if (loading) {
     return <Loader />;
   } else {
-    // TODO are snackbars necessary?
     return (
       <div>
         <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>

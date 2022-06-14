@@ -18,13 +18,6 @@ import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
 
-// const myPrivateEthereumNode = {
-//   nodeUrl: 'HTTP://127.0.0.1:8545',
-//   chainId: 1337,
-// };
-
-// const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
-
 // TODO config one place
 const BACKEND_URL = 'http://localhost:8000/api';
 
@@ -102,38 +95,37 @@ export default function DriverProfile(props) {
   }
 
   function handleSubmit(event) {
-    setHide(true)
-    web3.eth.getAccounts((error, accounts) => {
-      console.log(accounts);
-      localStorage.setItem('account', accounts[ 0 ])
-      localStorage.setItem('name', formData.name)
-      localStorage.setItem('contact', formData.contact)
-      localStorage.setItem('email', formData.email)
-      localStorage.setItem('carNo', formData.carNo)
-      localStorage.setItem('noOfSeats', formData.noOfSeats)
-      localStorage.setItem('rating', formData.rating)
-      localStorage.setItem('type', "1")
+    setHide(true);
 
-      var name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
-      var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
-      var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
-      var carNo = web3.utils.padRight(web3.utils.fromAscii(formData.carNo), 64);
+    // TODO replace placeholder IC principal with address from auth & wallet connect
+    localStorage.setItem('account', 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae');
+    localStorage.setItem('name', formData.name);
+    localStorage.setItem('contact', formData.contact);
+    localStorage.setItem('email', formData.email);
+    localStorage.setItem('carNo', formData.carNo);
+    localStorage.setItem('noOfSeats', formData.noOfSeats);
+    localStorage.setItem('rating', formData.rating);
+    localStorage.setItem('type', '1');
 
-      axios.post(BACKEND_URL + '/driver/register', {
-        driver: {
-          name: name,
-          contact: contact,
-          email: email,
-          carNo: carNo,
-          noOfSeats: Number(formData.noOfSeats),
-          role: 1,
-          account: accounts[0]
-        }
-      }).then((response) => {
-        isLoading(false);
-      }).catch((err) => {
-        console.log(err);
-      });
+    var name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
+    var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
+    var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
+    var carNo = web3.utils.padRight(web3.utils.fromAscii(formData.carNo), 64);
+
+    axios.post(BACKEND_URL + '/driver/register', {
+      driver: {
+        name: name,
+        contact: contact,
+        email: email,
+        carNo: carNo,
+        noOfSeats: Number(formData.noOfSeats),
+        role: Number(localStorage.getItem('type')),
+        account: localStorage.getItem('account')
+      }
+    }).then((response) => {
+      isLoading(false);
+    }).catch((err) => {
+      console.log(err);
     });
     handleSuccess()
     event.preventDefault();
