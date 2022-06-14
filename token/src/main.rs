@@ -901,3 +901,46 @@ async fn get_block_from_ledger(block_height: BlockHeight, ledger_canister_id: Pr
     None
 }
 
+///request a ride
+#[allow(dead_code)]
+async fn request_ride(
+    rider: &Rider,
+    pickup: &String,
+    dropoff: &String,
+    timestamp: &String,
+    fare: f64,
+) -> () {
+    //!set arguments for request ride
+    //find an available driver
+    let mut drivers = get_drivers();
+    let mut driver = None;
+    for d in drivers.iter_mut() {
+        if d.currentstatus == CurrentStatus::Active {
+            driver = Some(d.clone());
+            break;
+        }
+    }
+    //assert
+    assert!(driver.is_some());
+    //create a ride with the driver and rider
+    let ride = Ride {
+        rideid: "".to_string(),
+        driver: driver.unwrap().clone(),
+        rider: rider.clone(),
+        pickup: pickup.clone(),
+        dropoff: dropoff.clone(),
+        status: RideStatus::Active,
+        timestamp: timestamp.clone(),
+        rating: 0.0,
+        driverrating: 0.0,
+        riderrating: 0.0,
+        driverfeedback: "".to_string(),
+        riderfeedback: "".to_string(),
+        riderconfirmation: "".to_string(),
+        driverconfirmation: "".to_string(),
+    };
+    //register ride
+    register_ride(ride.clone());
+}
+
+
