@@ -38,6 +38,7 @@ import RandomBigInt from 'random-bigint';
 import { Principal } from '@dfinity/principal';
 import { getAccountId } from './ICPUtils.js';
 import ledgerIDL from './nns_ledger.did.js';
+import { agent } from '../../scripts/agent.js';
 
 //remove the backend after port to new api
 const BACKEND_URL = 'http://localhost:8000/api';

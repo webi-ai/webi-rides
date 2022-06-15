@@ -141,6 +141,9 @@ const actor = Actor.createActor(idlFactory, {
   canisterId: 'rrkah-fqaaa-aaaaa-aaaaq-cai' //'uqklt-lyaaa-aaaai-aajqa-cai'//for prod //rrkah-fqaaa-aaaaa-aaaaq-cai for local dev
 });
 
+//export the actor
+export default actor;
+
 
 //create a test registerRider data object
 const record_insert = {
