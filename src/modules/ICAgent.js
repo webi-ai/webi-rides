@@ -6,18 +6,16 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { agent } from '../scripts/agent.js';
+import actor from '../scripts/agent.js';
 
 
 const registerRider = async (rider) => {
-  console.log(agent);
-  agent.register_rider(rider)
-  .then((success) => {
-    console.log(success);
-  }, (error) => {
-    console.log(error);
-  });
-  console.log('response', response);
+  actor.register_rider(rider)
+    .then((success) => {
+      console.log('register_rider success, rider address', rider.address);
+    }, (error) => {
+      console.error('register_rider error', error);
+    });
 }
 
 // rider wallet address primary id?
@@ -49,15 +47,20 @@ const registerRide = async (riderAddress, pickup, dropoff) => {
     'riderrating': null,
     'riderfeedback': null
   };
-  const response = await agent.register_ride(ride);
+  actor.register_ride(ride)
+    .then((success) => {
+      console.log('register_ride success, ride id ', rideId);
+    }, (error) => {
+      console.error('register_ride error', error);
+    });
   // check status
   return rideId;
 }
 
 const searchRiderByAddress = async (walletAddress) => {
-  const rider = await agent.search_rider_by_address(walletAddress);
+  const rider = await actor.search_rider_by_address(walletAddress);
   console.log(rider);
-  return 
+  return rider;
 }
 
 export {
