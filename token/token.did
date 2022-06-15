@@ -1,91 +1,63 @@
-type Profile_2 = record {
-    "name": text;
-    "description": text;
-    "keywords": vec text;
+type CurrentStatus = variant { Inactive; Active };
+type Driver = record {
+  contact : text;
+  vehiclemake : text;
+  vehiclecolor : text;
+  vehicletype : text;
+  vehicleyear : text;
+  vehicleplatenumber : text;
+  name : text;
+  role : text;
+  email : text;
+  address : text;
+  vehicleseatnumber : text;
+  currentstatus : CurrentStatus;
+  rating : float64;
+  vehiclemodel : text;
 };
-type Profile = Profile_2;
-
-type Driver_2 = record {
-    "name": text;
-    "contact": text;
-    "email": text;
-    "role": text;
-    "vehicleplatenumber": text;
-    "vehicleseatnumber": text;
-    "vehiclemake": text;
-    "vehiclemodel": text;
-    "vehiclecolor": text;
-    "vehicletype": text;
-    "vehicleyear": text;
-    "rating": float64;
-    "currentstatus": variant {Active; Inactive;};
-    "address": principal;
+type Profile = record { name : text; description : text; keywords : vec text };
+type Ride = record {
+  status : RideStatus;
+  dropoff : text;
+  rideid : text;
+  driverconfirmation : text;
+  riderrating : float64;
+  pickup : text;
+  riderfeedback : text;
+  timestamp : text;
+  driverfeedback : text;
+  rating : float64;
+  riderconfirmation : text;
+  driver : Driver;
+  rider : Rider;
+  driverrating : float64;
 };
-
-type Driver = Driver_2;
-
-type Rider_2 = record {
-    "name": text;
-    "contact": text;
-    "email": text;
-    "role": text;
-    "address": principal;
+type RideStatus = variant { Active; Cancelled; Completed };
+type Rider = record {
+  contact : text;
+  name : text;
+  role : text;
+  email : text;
+  address : text;
 };
-
-type Rider = Rider_2;
-
-
-type Ride_2 = record {
-    "rideid": text;
-    "driver": Driver;
-    "rider": Rider;
-    "status": variant {Active; Completed; Cancelled;};
-    "pickup": text;
-    "dropoff": text;
-    "timestamp": text;
-    "rating": float64;
-    "driverrating": float64;
-    "riderrating": float64;
-    "driverfeedback": text;
-    "riderfeedback": text;
-    "driverconfirmation": text;
-    "riderconfirmation": text;
-
-};
-
-type Ride = Ride_2;
-
-
-type Tokens = record {
-    e8s: nat64
-};
-
-type TransferArgs = record {
-    amount: Tokens;
-    to_principal: principal;
-    to_subaccount: opt blob
-};
-
-type Memo = nat64;
-
-type TransferResult = variant {
-    Ok: Memo;
-    Err: text;
-};
-
-service : () -> {
-    "transfer": (TransferArgs) -> (TransferResult);
-    "getSelf": () -> (Profile_2) query;
-    "get": (text) -> (Profile_2) query;
-    "update": (Profile_2) -> ();
-    "search": (text) -> (opt Profile_2) query;
-    "get_driver": (text) -> (Driver_2) query;
-    "get_rider": (text) -> (Rider_2) query;
-    "get_ride": (text) -> (Ride_2) query;
-    "getRides": () -> (vec Ride_2) query;
-    "get_drivers": () -> (vec Driver_2) query;
-    "get_riders": () -> (vec Rider_2) query;
-    "registerRider": (Rider_2) -> ();
-    "registerDriver": (Driver_2) -> ();
-    "registerRide": (Ride_2) -> ();
+service : {
+  get : (text) -> (Profile) query;
+  get_drivers : () -> (vec Driver) query;
+  get_riders : () -> (vec Rider) query;
+  get_rides : () -> (vec Ride) query;
+  get_self : () -> (Profile) query;
+  register_driver : (Driver) -> ();
+  register_ride : (Ride) -> () query;
+  register_rider : (Rider) -> ();
+  search_driver_by_address : (text) -> (opt Driver) query;
+  search_driver_by_contact : (text) -> (opt Driver) query;
+  search_driver_by_field : (text, text) -> (opt Driver) query;
+  search_driver_by_name : (text) -> (opt Driver) query;
+  search_ride_by_field : (text, text) -> (opt Ride) query;
+  search_ride_by_id : (text) -> (opt Ride) query;
+  search_rider_by_address : (text) -> (opt Rider) query;
+  search_rider_by_field : (text, text) -> (opt Rider) query;
+  update : (Profile) -> ();
+  update_driver_rating : (text, float64) -> ();
+  update_driver_status : (text, CurrentStatus) -> () query;
 }
