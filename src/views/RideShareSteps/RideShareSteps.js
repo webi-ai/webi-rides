@@ -38,7 +38,7 @@ import { Principal } from '@dfinity/principal';
 
 import { getAccountId } from './ICPUtils.js';
 import ledgerIDL from './nns_ledger.did.js';
-import { requestRide } from '../../modules/ICAgent.js'; // TODO naming
+import { registerRide } from '../../modules/ICAgent.js'; // TODO naming
 
 //remove the backend after port to new api
 const BACKEND_URL = 'http://localhost:8000/api';
@@ -377,28 +377,11 @@ export default function RideShareSteps(props) {
       "lng": String(localStorage.getItem('destinationLng')),
       "address_text":  String(localStorage.getItem('destinationName'))
     }
-
-    await requestRide(account, pickup, dropoff);
-
-    // TODO distance shouldn't be frontend accessible
-    axios.post(BACKEND_URL + '/rider/ride/request', {
-      "account": account,
-      "pickup": {
-        "lat": String(localStorage.getItem('sourceLat')),
-        "lng": String(localStorage.getItem('sourceLng')),
-        "address_text": String(localStorage.getItem('sourceName'))
-      },
-      "dropoff": {
-        "lat": String(localStorage.getItem('destinationLat')),
-        "lng": String(localStorage.getItem('destinationLng')),
-        "address_text":  String(localStorage.getItem('destinationName'))
-      },
-      "distance": distance
-    }).then((response) => {
-      setRideContractAddress(response.rideContractAddress);
-      isLoading(false);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    });
+    const account = localStorage.getItem('account');
+    await registerRide(account, pickup, dropoff);
+    isLoading(false);
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // TODO replace rideContractAddress interactions with retrieving ride by driver/rider ids
   };
 
   //riderRetrieveDrivers function - called when the rider requests a ride
