@@ -9,6 +9,7 @@ export const ACCOUNT_DOMAIN_SEPERATOR = '\x0Aaccount-id';
 // Subaccounts are arbitrary 32-byte values.
 export const SUB_ACCOUNT_ZERO = Buffer.alloc(32);
 
+// word to byte array
 export const wordToByteArray = (word, length) => {
   const byteArray = [];
   const xFF = 0xff;
@@ -20,6 +21,7 @@ export const wordToByteArray = (word, length) => {
   return byteArray;
 };
 
+//word array to byte array
 export const wordArrayToByteArray = (wordArray, length) => {
   if (
     wordArray.hasOwnProperty('sigBytes') &&
@@ -41,17 +43,18 @@ export const wordArrayToByteArray = (wordArray, length) => {
   return [].concat.apply([], result);
 };
 
+//convert an int into hex
 export const intToHex = (val) =>
   val < 0 ? (Number(val) >>> 0).toString(16) : Number(val).toString(16);
 
-// We generate a CRC32 checksum, and trnasform it into a hexString
+// We generate a CRC32 checksum, and transform it into a hexString
 export const generateChecksum = (hash) => {
   const crc = crc32.unsigned(Buffer.from(hash));
   const hex = intToHex(crc);
   return hex.padStart(8, '0');
 };
 
-
+//convert a byte array into a word array
 export const byteArrayToWordArray = (byteArray) => {
   const wordArray = [];
   let i;
@@ -66,12 +69,14 @@ export const byteArrayToWordArray = (byteArray) => {
   return result;
 };
 
+//to32bits converts a byte array into a 32-bit integer
 export const to32bits = (num) => {
   const b = new ArrayBuffer(4);
   new DataView(b).setUint32(0, num);
   return Array.from(new Uint8Array(b));
 };
 
+//get the account id from a principal
 export const getAccountId = (
   principal,
   subAccount
@@ -98,6 +103,7 @@ export const getAccountId = (
   return val;
 };
 
+//get the token identifier from a canister
 export const getTokenIdentifier = (canister, index) => {
   const padding = Buffer.from('\x0Atid');
   const array = new Uint8Array([
