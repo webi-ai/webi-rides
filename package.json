@@ -3,11 +3,12 @@
   "version": "1.9.0",
   "description": "",
   "private": false,
-  "main": "dist/index.js",
   "dependencies": {
+    "@babel/core": "^7.18.5",
     "@deck.gl/geo-layers": "^8.7.9",
     "@deck.gl/mapbox": "^8.5.0",
     "@dfinity/agent": "^0.11.3",
+    "@dfinity/candid": "^0.11.3",
     "@dfinity/identity": "^0.11.3",
     "@dfinity/principal": "0.11.3",
     "@mapbox/mapbox-gl-directions": "^4.1.0",
@@ -19,6 +20,13 @@
     "@portis/web3": "^3.0.8",
     "@react-google-maps/api": "^2.1.1",
     "axios": "^0.21.1",
+    "babel-plugin-import-rename": "^1.0.1",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2020": "^1.0.2",
+    "babel-preset-modern-browsers": "^15.0.2",
     "bootstrap": "^4.6.0",
     "buffer-crc32": "^0.2.13",
     "chartist": "0.10.1",
@@ -50,8 +58,8 @@
     "worker-loader": "^3.0.8"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
+    "start": "parcel start",
+    "build": "parcel build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
@@ -71,14 +79,9 @@
     "ajv": "6.12.2",
     "typescript": "3.9.3"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all"
-  ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@babel/preset-env": "^7.18.2",
+    "parcel": "^2.6.0"
+  },
+  "source": "./src/index.html"
 }

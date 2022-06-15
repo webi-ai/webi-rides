@@ -29,3 +29,4 @@ package-lock.json
 .dfx/
 .vscode/
 .idea/
+.parcel-cache/
