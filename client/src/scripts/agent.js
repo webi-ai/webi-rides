@@ -2,17 +2,20 @@
 // Description: rust contract integration test in javascript
 // Maintainer: Kelsey
 // Copyright: Webi.ai (c) 2022
+import { Actor, HttpAgent } from '@dfinity/agent';
+import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { Principal } from '@dfinity/principal';
 
 
 //import dfinity actor and agent
-const Actor = require("@dfinity/agent");
-const HttpAgent = Actor.HttpAgent;
+// const Actor = require("@dfinity/agent");
+// const HttpAgent = Actor.HttpAgent;
 
 
 //import to generate an identit
-const Identity = require("@dfinity/identity");
-const Ed25519KeyIdentity = Identity.Ed25519KeyIdentity;
-const Principal = require("@dfinity/principal");
+// const Identity = require("@dfinity/identity");
+// const Ed25519KeyIdentity = Identity.Ed25519KeyIdentity;
+// const Principal = require("@dfinity/principal");
 
 //generate the identity using ed25519
 const identity = Ed25519KeyIdentity.generate(require('crypto').randomBytes(32));
@@ -21,7 +24,7 @@ const identity = Ed25519KeyIdentity.generate(require('crypto').randomBytes(32));
 //create the agent and give it the local replica addresss
 const agent = new HttpAgent({
   //identity,
-  fetch,
+  // fetch: self.fetch.bind(self),
   host: "http://127.0.0.1:8000" //"https://boundary.ic0.app" //local replica url if local dev
 });
 
@@ -89,9 +92,9 @@ export const idlFactory = ({ IDL }) => {
     'get_riders': IDL.Func([], [IDL.Vec(Rider)], ['query']),
     'get_rides': IDL.Func([], [IDL.Vec(Ride)], ['query']),
     'get_self': IDL.Func([], [Profile], ['query']),
-    'register_driver': IDL.Func([Driver], [], []),
-    'register_ride': IDL.Func([Ride], [], ['query']),
-    'register_rider': IDL.Func([Rider], [], []),
+    'register_driver': IDL.Func([Driver], [], ['update']),
+    'register_ride': IDL.Func([Ride], [], ['update']),
+    'register_rider': IDL.Func([Rider], [], ['update']),
     'search_driver_by_address': IDL.Func(
       [IDL.Text],
       [IDL.Opt(Driver)],
@@ -141,23 +144,23 @@ if (true) {
 }
 
 //need to set this canister id properly, currently set to sudograph as placeholder
-const actor = Actor.Actor.createActor(idlFactory, {
+const actor = Actor.createActor(idlFactory, {
   agent,
   canisterId: 'rrkah-fqaaa-aaaaa-aaaaq-cai' //'uqklt-lyaaa-aaaai-aajqa-cai'//for prod //rrkah-fqaaa-aaaaa-aaaaq-cai for local dev
 });
 
 
 //create a test registerRider data object
-record_insert = {
+const record_insert = {
   contact: "1234567890",
   name: "Kelsey",
   email: "test@email.com",
   role: "rider",
-  address: Principal.Principal.fromText("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae"),
+  address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae",
 }
 
 //call actor.registerRider with the data object
-actor.registerRider(record_insert).then(res => {
+actor.register_rider(record_insert).then(res => {
   console.log(res);
   actor.get_riders().then(res => {
     console.log(res);
@@ -175,7 +178,7 @@ actor.registerRider(record_insert).then(res => {
 
 
 //create a test registerDriver data object
-record_driver_insert = {
+const record_driver_insert = {
   contact: "1234567890",
   name: "Kelsey",
   email: "test@email.com",
@@ -190,12 +193,12 @@ record_driver_insert = {
   //Float64 becomes a js float
   rating: 4.5,
   //enum becomes variant like this
-  currentstatus: { Active: null },
-  address: Principal.Principal.fromText("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae"),
+  currentstatus: {Active: null},
+  address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae",
 }
 
 //call actor.registerDriver with the data object
-actor.registerDriver(record_driver_insert).then(res => {
+actor.register_driver(record_driver_insert).then(res => {
   console.log(res);
   actor.get_drivers().then(res => {
     console.log(res);
@@ -207,7 +210,7 @@ actor.registerDriver(record_driver_insert).then(res => {
 });
 
 //create ride data object
-record_ride_insert = {
+const record_ride_insert = {
   rideid: "1234567890",
   timestamp: "2020-01-01T00:00:00.000Z",
   pickup: "san francisco",
@@ -225,7 +228,7 @@ record_ride_insert = {
     name: "Kelsey",
     email: "test@email.com",
     role: "rider",
-    address: Principal.Principal.fromText("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae"),
+    address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae",
   },
   driver: {
     contact: "1234567890",
@@ -242,15 +245,15 @@ record_ride_insert = {
     //Float64 becomes a js float
     rating: 4.5,
     //enum becomes variant like this
-    currentstatus: { Active: null },
-    address: Principal.Principal.fromText("cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae"),
+    currentstatus: {Active: null},
+    address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae",
   },
 }
 
 //call actor.registerRide with the data object
-actor.registerRide(record_ride_insert).then(res => {
+actor.register_ride(record_ride_insert).then(res => {
   console.log(res);
-  actor.getRides().then(res => {
+  actor.get_rides().then(res => {
     console.log(res);
   }
   ).catch(err => {
