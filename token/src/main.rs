@@ -127,7 +127,7 @@ thread_local! {
     static RIDES_STORE: RefCell<RidesStore> = RefCell::default();
 }
 
-#[query(name = "getSelf")]
+#[query]
 #[candid_method(query)]
 fn get_self() -> Profile {
     let id = ic_cdk::api::caller();
@@ -163,7 +163,7 @@ fn update(profile: Profile) {
 }
 
 ///get rides store   
-#[query(name = "getRides")]
+#[query]
 #[candid_method(query)]
 fn get_rides() -> RidesStore {
     RIDES_STORE.with(|rides_store| rides_store.borrow().clone())
@@ -184,7 +184,7 @@ fn get_drivers() -> DriverStore {
 }
 
 ///register rider
-#[update(name = "registerRider")]
+#[update]
 #[candid_method(update)]
 fn register_rider(rider: Rider) {
     RIDER_STORE.with(|rider_store| {
@@ -193,7 +193,7 @@ fn register_rider(rider: Rider) {
 }
 
 ///register driver
-#[update(name = "registerDriver")]
+#[update]
 #[candid_method(update)]
 fn register_driver(driver: Driver) {
     DRIVER_STORE.with(|driver_store| {
@@ -202,7 +202,7 @@ fn register_driver(driver: Driver) {
 }
 
 /// update driver rating value
-#[update(name = "updateDriverRating")]
+#[update]
 #[candid_method(update)]
 fn update_driver_rating(driver_name: String, rating: f64) {
     DRIVER_STORE.with(|driver_store| {
@@ -630,7 +630,7 @@ impl Ride {
 }
 
 ///register ride to RIDES_STORE
-#[update(name = "registerRide")]
+#[update]
 #[candid_method(query)]
 fn register_ride(ride: Ride) {
     RIDES_STORE.with(|rides_store| {
@@ -653,7 +653,7 @@ fn search_ride_by_id(rideid: String) -> Option<Ride> {
 
 export_service!();
 
-#[query(name = "getCandid")]
+#[query]
 fn export_candid() -> String {
     __export_service()
 }
