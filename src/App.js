@@ -8,7 +8,6 @@ import Admin from "layouts/Admin.js";
 import "assets/css/material-dashboard-react.css?v=1.9.0";
 import "./styles.css";
 
-import RideManager from "./contracts/RideManager.json";
 import Web3 from 'web3';
 
 
@@ -19,7 +18,6 @@ class App extends Component {
         super();
         this.state = {
             'account': null,
-            'rideManager': null,
             'loading': true,
             'web3': null,
         };
@@ -51,17 +49,7 @@ class App extends Component {
     }
 
     async loadBlockChain() {
-        const web3 = window.web3;
-        const accounts = await web3.eth.getAccounts();
-        this.setState({ 'account': accounts[ 0 ] });
-        const networkId = await web3.eth.net.getId();
-        const networkData = RideManager.networks[ networkId ];
-        if (networkData) {
-            const rideManager = new web3.eth.Contract(RideManager.abi, networkData.address);
-            this.setState({ 'rideManager': rideManager, 'loading': false, 'web3': web3 });
-        } else {
-            window.alert('Ride Manager contract not deployed to detected network.');
-        }
+        //dead code
     }
 
     async connectPlug() {
@@ -80,7 +68,7 @@ class App extends Component {
                     <Route
                         path="/admin"
                         render={(props) => (
-                            <Admin rideManager={this.state.rideManager} web3={this.state.web3} account={this.state.account}/>
+                            <Admin web3={this.state.web3} account={this.state.account}/>
                         )}
                     />
                     <Redirect from="/" to="/admin/map" />
