@@ -1,3 +1,10 @@
+// Module : RideShareSteps.js
+// Description : RideShareSteps.js is the view for the RideShareSteps component.
+// Maintainer : Kelsey and Dixie
+// License : Not currently licensed for public use
+// Copyright : Webi.ai (c) 2022
+
+
 import React from "react";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
