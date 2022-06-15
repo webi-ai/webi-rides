@@ -133,6 +133,7 @@ export default function RideShareSteps(props) {
         case 1:
           // TODO wait for ride confirmation before showing QR?
           return <div>
+            {/* QR Card */}
             <Card>
               <CardActionArea>
                 <CardContent style={{ padding: '10px 20px 5px 15px' }}>
@@ -161,8 +162,10 @@ export default function RideShareSteps(props) {
   //RiderRideDetailsCard component - displays the card for the rider to enter the pickup and dropoff locations
   const riderRideDetailsCard = (
     <div>
+      {/* Ride details card */}
       <Card>
         <CardActionArea>
+          {/* Maps media */}
           <CardMedia
             title="Google Maps"
             className={classes.media}
@@ -186,6 +189,7 @@ export default function RideShareSteps(props) {
           </CardContent>
         </CardActionArea>
         <CardActions>
+          {/* Go To Maps button */}
           <Button
             variant="outlined"
             color="secondary"
@@ -203,6 +207,7 @@ export default function RideShareSteps(props) {
   //RiderSeatCountPickerCard component - displays the card for the rider to enter the number of seats
   const riderSeatCountPickerCard = (
     <div>
+      {/* Seat count picker card */}
       <TextField
         type='number'
         label="No. of Seats"
@@ -220,6 +225,7 @@ export default function RideShareSteps(props) {
   //RiderPickDriverCard component - displays the card for the rider to select the driver
   const riderPickDriverCard = (
     <div>
+      {/* Pick driver card */}
       <CardBody>
         <Table
           tableHeaderColor="primary"
@@ -233,6 +239,7 @@ export default function RideShareSteps(props) {
   //RiderQrReaderCard component - displays the card for the rider to scan the QR code
   const riderQrReaderCard = (
     <div>
+      {/* QR reader card */}
       <Card>
         <CardActionArea>
           <CardContent>
@@ -266,6 +273,7 @@ export default function RideShareSteps(props) {
   //DriverRidePickerCard component - displays the card for the driver to select the ride
   const driverRidePickerCard = (
     <div>
+      {/* Ride picker card */}
       <CardBody>
         <Table
           tableHeaderColor="primary"
@@ -378,6 +386,7 @@ export default function RideShareSteps(props) {
 
   // riderAcceptDriverButton() is a function that returns a button that accepts the driver
   const riderAcceptDriverButton = (data) => (
+    //accept driver button
     <Button
       variant="contained"
       color="primary"
@@ -577,6 +586,7 @@ export default function RideShareSteps(props) {
       Accept
     </Button>
   );
+  //handleDriverAcceptRide function - called when the driver accepts a ride
   const handleDriverAcceptRide = async (rideContractAddress) => {
     axios.post(BACKEND_URL + '/driver/ride/accept', {
       'rideContractAddress': rideContractAddress,
@@ -602,62 +612,72 @@ export default function RideShareSteps(props) {
 
   // TODO ui quirk - 'Finish' displays when last step started to move to but still in transition
   //cardContainerElement - the container for the card
-  const cardContainerElement = (
-    <div>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={10}>
-          <Card>
-            <CardHeader color="webi">
-              <h4 className={classes.cardTitleWhite}>webI Rides</h4>
-              <p className={classes.cardCategoryWhite}>
-                Rideshare made easy
-              </p>
-            </CardHeader>
-            <CardBody>
-              <Stepper activeStep={activeStep} orientation="vertical">
-                {steps.map((label, index) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                    <StepContent>
-                      <div>
-                        {getStepContent(index)}
-                      </div>
-                      <div className={classes.actionsContainer}>
+  const cardContainerElement =
+    //set up grid of cards for the rides to be displayed
+    (
+      <div>
+        {/* <Grid container spacing={3}> */}
+        <GridContainer>
+          {/* <Grid item xs={12}> */}
+          <GridItem xs={12} sm={12} md={10}>
+            {/* <Card> */}
+            <Card>
+              {/* <CardHeader color="primary"> */}
+              <CardHeader color="webi">
+                <h4 className={classes.cardTitleWhite}>webI Rides</h4>
+                <p className={classes.cardCategoryWhite}>
+                  Rideshare made easy
+                </p>
+              </CardHeader>
+              <CardBody>
+                <Stepper activeStep={activeStep} orientation="vertical"> 
+                  {steps.map((label, index) => (
+                    <Step key={label}>
+                      <StepLabel>{label}</StepLabel>
+                      <StepContent>
                         <div>
-                          <Button
-                            disabled={activeStep === 0}
-                            onClick={handleBack}
-                            className={classes.button}
-                          >
-                            Back
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleNext}
-                            className={classes.button}
-                          >
-                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                          </Button>
+                          {getStepContent(index)}
                         </div>
-                      </div>
-                    </StepContent>
-                  </Step>
-                ))}
-              </Stepper>
-              {activeStep === steps.length && (
-                <Paper square elevation={0} className={classes.resetContainer}>
-                  <Button onClick={handleReset} className={classes.button}>
-                    Reset
-                  </Button>
-                </Paper>
-              )}
-            </CardBody>
-          </Card>
-        </GridItem>
-      </GridContainer>
-    </div>
-  );
+                        <div className={classes.actionsContainer}>
+                          <div>
+                            {/* Back button */}
+                            <Button
+                              disabled={activeStep === 0}
+                              onClick={handleBack}
+                              className={classes.button}
+                            >
+                              Back
+                            </Button>
+                            {/* Next button */}
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={handleNext}
+                              className={classes.button}
+                            >
+                              {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                            </Button>
+                          </div>
+                        </div>
+                      </StepContent>
+                    </Step>
+                  ))}
+                </Stepper>
+                {activeStep === steps.length && (
+                  <Paper square elevation={0} className={classes.resetContainer}>
+                    {/* Reset button */}
+                    <Button onClick={handleReset} className={classes.button}>
+                      Reset
+                    </Button>
+                  </Paper>
+                )}
+              </CardBody>
+            </Card>
+          </GridItem>
+        </GridContainer>
+      </div>
+    );
 
+    // return the cardContainerElement - the container for the card
   return cardContainerElement;
 }
