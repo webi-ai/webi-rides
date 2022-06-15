@@ -12,11 +12,7 @@ import Poppers from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
-import Notifications from "@material-ui/icons/Notifications";
-import Dashboard from "@material-ui/icons/Dashboard";
-import Search from "@material-ui/icons/Search";
 // core components
-import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
 
 import styles from "assets/jss/material-dashboard-react/components/headerLinksStyle.js";
@@ -38,10 +34,10 @@ export default function AdminNavbarLinks() {
     setOpenNotification(null);
   };
   const handleClickProfile = event => {
-    if('0' === localStorage.getItem('type')) {
-      localStorage.setItem('type', '1');
+    if('rider' === localStorage.getItem('userType')) {
+      localStorage.setItem('userType', 'driver');
     } else {
-      localStorage.setItem('type', '0');
+      localStorage.setItem('userType', 'rider');
     }
 
     if (openProfile && openProfile.contains(event.target)) {
