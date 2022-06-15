@@ -34,14 +34,18 @@ import { getAccountId } from './ICPUtils.js';
 
 import ledgerIDL from './nns_ledger.did.js';
 
-
+//remove the backend
 const BACKEND_URL = 'http://localhost:8000/api';
 
+//ledger canister address
 const NNS_LEDGER_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 
+//webi wallet address
 const WEBI_ICP_WALLET_PRINCIPAL_ID = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
 
+//webi fees
 const WEBI_FEE_PERCENTAGE = 0.15;
+//the cost of a ride - hardcoded for now
 // const RIDE_COST_ICP_E8S = 300_000_000;
 const RIDE_COST_ICP_E8S = 3_000;
 
@@ -66,6 +70,7 @@ const useStyles = makeStyles((theme) => {
 
 //get steps from localstorage
 function getSteps() {
+  //get the steps depending on if the user is a rider or a driver
   if (isRider()) {
     return ['Confirm Pickup / Dropoff Location', 'Enter Number of Seats', 'Select Driver', 'Confirm Pickup', 'Confirm Dropoff'];
   } else {
@@ -75,6 +80,7 @@ function getSteps() {
 
 //is the user a rider or a driver
 const isRider = () => {
+  //get the user from localstorage and check if they are a rider
   return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
 }
 
@@ -104,32 +110,43 @@ export default function RideShareSteps(props) {
 
   //get the current step
   function getStepContent(step) {
+    //check if the user is a rider or a driver
     if (isRider()) {
+      //for each step return the content
       switch (step) {
+        //confirm pickup / dropoff location
         case 0:
           return riderRideDetailsCard;
+        //enter number of seats
         case 1:
           // TODO constrain to 1-2 seats (or max seat limit)
           return riderSeatCountPickerCard;
+        //select driver
         case 2:
           // TODO fix loading doesn't work
           return loading ? `` : riderPickDriverCard;
+        //confirm pickup
         case 3:
           // TODO wait for ride confirmation before showing QR reader?
           return riderQrReaderCard;
+        //confirm dropoff
         case 4:
           return '';
+        //ride is complete
         case 5:
           return `Ride Completed!`;
+        //default - return error
         default:
           return 'Unknown step';
       }
     } else {
       //switch statement for driver steps - check if the ride is confirmed
       switch (step) {
+        //accept ride
         case 0:
           // TODO fix loading doesn't work
           return loading ? `` : driverRidePickerCard;
+        //confirm pickup
         case 1:
           // TODO wait for ride confirmation before showing QR?
           return <div>
@@ -261,12 +278,18 @@ export default function RideShareSteps(props) {
   ); // TODO add fee explainer fine text - webI takes just a 15% fee to keep our services running
   //handleQRScan function - called when the QR code is scanned
   function handleQRScan(data) {
+    //set the QR code result
     setQrCodeResult(data);
+    //check if the QR code is a valid address
     if (true || (data === rideContractAddress)) {
+      //confirm the ride
       riderConfirmRide();
     }
   }
+  //handleQRError function - called when the QR code is scanned with an error
+  //todo - retry scan?
   function handleQRError(err) {
+    //log the error
     console.error(err)
   }
 
@@ -275,6 +298,7 @@ export default function RideShareSteps(props) {
     <div>
       {/* Ride picker card */}
       <CardBody>
+        {/* Ride picker table */}
         <Table
           tableHeaderColor="primary"
           tableHead={["Driver ID", "Rider ID", "From", "To", ""]}
@@ -307,9 +331,12 @@ export default function RideShareSteps(props) {
       else if (activeStep === 2) {
         riderRetrieveDrivers();
       }
+      //if the current step is 3, confirm the ride
       else if (activeStep === 3) {
         riderConfirmRide();
-      } else if (activeStep === 4) {
+      }
+      //if the current step is 4, complete the ride 
+      else if (activeStep === 4) {
         riderCompleteRide();
       }
     } else {
