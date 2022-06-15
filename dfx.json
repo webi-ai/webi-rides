@@ -5,8 +5,7 @@
         "entrypoint": "public/index.html"
       },
       "source": [
-        "build",
-        "build/static"
+        "dist"
       ],
       "type": "assets"
     }
