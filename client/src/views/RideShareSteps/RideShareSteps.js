@@ -45,7 +45,7 @@ const WEBI_FEE_PERCENTAGE = 0.15;
 // const RIDE_COST_ICP_E8S = 300_000_000;
 const RIDE_COST_ICP_E8S = 3_000;
 
-
+//set up the styles
 const useStyles = makeStyles((theme) => {
   return {
     ...styles,
@@ -64,19 +64,22 @@ const useStyles = makeStyles((theme) => {
   }
 });
 
+//get steps from localstorage
 function getSteps() {
   if (isRider()) {
-    return [ 'Confirm Pickup / Dropoff Location', 'Enter Number of Seats', 'Select Driver', 'Confirm Pickup', 'Confirm Dropoff' ];
+    return ['Confirm Pickup / Dropoff Location', 'Enter Number of Seats', 'Select Driver', 'Confirm Pickup', 'Confirm Dropoff'];
   } else {
-    return [ 'Accept Ride', 'Confirm Pickup', 'Confirm Dropoff' ];
+    return ['Accept Ride', 'Confirm Pickup', 'Confirm Dropoff'];
   }
 }
 
+//is the user a rider or a driver
 const isRider = () => {
   return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
 }
 
 // TODO fix widgets not showing on step load
+//RideShareSteps component - displays the steps for the ride share
 export default function RideShareSteps(props) {
   const classes = useStyles();
   const [account, setAccount] = React.useState(props.account);
@@ -94,9 +97,12 @@ export default function RideShareSteps(props) {
     width: 300,
   });
   const [qrCodeResult, setQrCodeResult] = React.useState('');
-  
+
+  //get the steps from localstorage
   const steps = getSteps();
 
+
+  //get the current step
   function getStepContent(step) {
     if (isRider()) {
       switch (step) {
@@ -119,6 +125,7 @@ export default function RideShareSteps(props) {
           return 'Unknown step';
       }
     } else {
+      //switch statement for driver steps - check if the ride is confirmed
       switch (step) {
         case 0:
           // TODO fix loading doesn't work
@@ -128,20 +135,22 @@ export default function RideShareSteps(props) {
           return <div>
             <Card>
               <CardActionArea>
-                <CardContent style={{padding:'10px 20px 5px 15px'}}>
+                <CardContent style={{ padding: '10px 20px 5px 15px' }}>
                   <QRCode value={rideContractAddress} />
                 </CardContent>
               </CardActionArea>
-              <CardActions style={{padding:'5px 20px 10px 20px'}}>
+              <CardActions style={{ padding: '5px 20px 10px 20px' }}>
                 <Typography variant="body2" color="textSecondary" component="p">
                   Show this QR code to your rider to scan to begin the ride
                 </Typography>
               </CardActions>
-            </Card> 
+            </Card>
           </div>
-          ; 
+            ;
+        // case 2 do nothing
         case 2:
           return ``;
+        //default case - do nothing
         default:
           return 'Unknown step';
       }
@@ -149,6 +158,7 @@ export default function RideShareSteps(props) {
   }
 
   // TODO improve ui text
+  //RiderRideDetailsCard component - displays the card for the rider to enter the pickup and dropoff locations
   const riderRideDetailsCard = (
     <div>
       <Card>
@@ -190,6 +200,7 @@ export default function RideShareSteps(props) {
     </div>
   );
 
+  //RiderSeatCountPickerCard component - displays the card for the rider to enter the number of seats
   const riderSeatCountPickerCard = (
     <div>
       <TextField
@@ -205,6 +216,8 @@ export default function RideShareSteps(props) {
     </div>
   );
 
+
+  //RiderPickDriverCard component - displays the card for the rider to select the driver
   const riderPickDriverCard = (
     <div>
       <CardBody>
@@ -217,6 +230,7 @@ export default function RideShareSteps(props) {
     </div>
   );
 
+  //RiderQrReaderCard component - displays the card for the rider to scan the QR code
   const riderQrReaderCard = (
     <div>
       <Card>
@@ -228,16 +242,17 @@ export default function RideShareSteps(props) {
               onError={handleQRError}
               onScan={handleQRScan}
             />
-            
+
           </CardContent>
         </CardActionArea>
         <CardActions>
-          After scanning your driver's QR code, your wallet will request a pair of transactions: these are your driver's fee and webI's processing fee.<br/>
+          After scanning your driver's QR code, your wallet will request a pair of transactions: these are your driver's fee and webI's processing fee.<br />
           As soon as you approve these transfers, you're ready to ride!
         </CardActions>
       </Card>
     </div>
   ); // TODO add fee explainer fine text - webI takes just a 15% fee to keep our services running
+  //handleQRScan function - called when the QR code is scanned
   function handleQRScan(data) {
     setQrCodeResult(data);
     if (true || (data === rideContractAddress)) {
@@ -248,6 +263,7 @@ export default function RideShareSteps(props) {
     console.error(err)
   }
 
+  //DriverRidePickerCard component - displays the card for the driver to select the ride
   const driverRidePickerCard = (
     <div>
       <CardBody>
@@ -266,8 +282,11 @@ export default function RideShareSteps(props) {
   // TODO magic step number -> enum sequence
   // TODO 'type' should be driver/rider enum
   // TODO handle first step without having to press next button
+  //handleNext function - called when the next button is pressed
   const handleNext = async (e) => {
+    //if the current step is 0, then we need to get the ride details
     const { value, id } = e.target;
+    //if the current step is 1, then we need to get the number of seats
     if (isRider()) {
       if (activeStep === 0) {
         initRide();
@@ -275,16 +294,19 @@ export default function RideShareSteps(props) {
       } else if (activeStep === 1) {
         updateSeats(value);
         riderRequestRide();
-      } else if (activeStep === 2) {
+      }
+      //if the current step is 2, then we need to get the driver 
+      else if (activeStep === 2) {
         riderRetrieveDrivers();
-      } else if (activeStep === 3) {
+      }
+      else if (activeStep === 3) {
         riderConfirmRide();
       } else if (activeStep === 4) {
         riderCompleteRide();
       }
     } else {
       //For Driver
-      if (activeStep === 0) { 
+      if (activeStep === 0) {
         driverGetRides();
       } else if (activeStep === 1) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -294,12 +316,15 @@ export default function RideShareSteps(props) {
     }
   };
 
+  //initRide function - called when the rider requests a ride
   const initRide = () => {
     localStorage.removeItem('isMakingPayments');
   }
 
   // TODO fix distance
+  //riderRequestRide function - called when the rider requests a ride
   const riderRequestRide = () => {
+    //distance is the distance between the pickup and dropoff locations
     const distance = web3.utils.utf8ToHex(localStorage.getItem('distance').split(" ")[0]);
     // TODO distance shouldn't be frontend accessible
     axios.post(BACKEND_URL + '/rider/ride/request', {
@@ -320,6 +345,7 @@ export default function RideShareSteps(props) {
     });
   };
 
+  //riderRetrieveDrivers function - called when the rider requests a ride
   const riderRetrieveDrivers = () => {
     // TODO retrieve nearby drivers for rider geolocation
     axios.post(BACKEND_URL + '/rider/driver/retrieveLocal', {
@@ -338,7 +364,7 @@ export default function RideShareSteps(props) {
             web3.utils.hexToUtf8(data.contact).trim(),
             web3.utils.hexToUtf8(data.carNo).trim(),
             data.rating.toString(),
-            RIDE_COST_ICP_E8S * 10**-8 + ' ICP', 
+            RIDE_COST_ICP_E8S * 10 ** -8 + ' ICP',
             riderAcceptDriverButton(data)
           ]
         );
@@ -361,6 +387,8 @@ export default function RideShareSteps(props) {
       Accept
     </Button>
   );
+
+  // handleRiderAcceptDriver is a function that accepts the driver
   const handleRiderAcceptDriver = (data) => {
     setUserSelectedDriver(data.ethAddress);
     axios.post(BACKEND_URL + '/rider/driver/request', {
@@ -375,6 +403,7 @@ export default function RideShareSteps(props) {
   };
 
 
+  // riderConfirmRide function - called when the rider confirms a ride
   const riderConfirmRide = async () => {
     axios.get(BACKEND_URL + '/ride/driver/isConfirmed', {
       'rideContractAddress': rideContractAddress
@@ -383,7 +412,7 @@ export default function RideShareSteps(props) {
       const isMakingPayments = localStorage.getItem('isMakingPayments');
 
       if (driverConfirmed && !isMakingPayments) {
-        localStorage.setItem('isMakingPayments', true);      
+        localStorage.setItem('isMakingPayments', true);
         await riderMakePayments();
       }
     }).catch((err) => {
@@ -391,14 +420,16 @@ export default function RideShareSteps(props) {
     });
   }
 
+
+  // riderMakePayments function - called when the rider makes payments
   const riderMakePayments = async () => {
     localStorage.removeItem('driverTxHeight');
     localStorage.removeItem('webITxHeight');
-    // plug wallet
+    // plug wallet address here to make payments
     if (window.ic?.plug) {
       const webIFee = RIDE_COST_ICP_E8S * WEBI_FEE_PERCENTAGE;
       const driverFee = RIDE_COST_ICP_E8S * (1 - WEBI_FEE_PERCENTAGE);
-
+      //TRANSFER TO WEBI WALLET
       const TRANSFER_TO_WEBI_TX = {
         idl: ledgerIDL,
         canisterId: NNS_LEDGER_CANISTER_ID,
@@ -419,7 +450,7 @@ export default function RideShareSteps(props) {
           console.log('error transferring ICP to webI', res);
         },
       };
-
+      //TRANSFER TO DRIVER
       const TRANSFER_TO_DRIVER_TX = {
         idl: ledgerIDL,
         canisterId: NNS_LEDGER_CANISTER_ID,
@@ -441,27 +472,32 @@ export default function RideShareSteps(props) {
           console.log('error transferring ICP to driver', res);
         },
       };
-      
+      //get the icp balance of the wallet
       const icpBalanceE8s = await getIcpBalanceE8s();
       // TODO fees included in cost?
+      //if the icp balance is greater than the cost of the ride, make the transfer
       if (icpBalanceE8s >= RIDE_COST_ICP_E8S) {
+        //make the batch transfer
         const result = await window.ic.plug.batchTransactions([TRANSFER_TO_WEBI_TX, TRANSFER_TO_DRIVER_TX]);
       } else {
-        alert('Insufficient balance, have ' + icpBalanceE8s * 10**-8 + ' ICP but need ' + RIDE_COST_ICP_E8S * 10**-8 + ' ICP');
+        //if the icp balance is less than the cost of the ride, show an error
+        alert('Insufficient balance, have ' + icpBalanceE8s * 10 ** -8 + ' ICP but need ' + RIDE_COST_ICP_E8S * 10 ** -8 + ' ICP');
       }
     }
   }
 
+  // processWebITx function - called when the rider makes payments
   const getIcpBalanceE8s = async () => {
     const balances = await window.ic?.plug?.requestBalance();
     for (const i in balances) {
       if (balances[i].name === 'ICP') {
-        return balances[i].amount * 10**8;
+        return balances[i].amount * 10 ** 8;
       }
     }
     return 0;
   }
 
+  // processWebITx function - called when the rider makes payments
   const processWebITx = async (height) => {
     localStorage.setItem('webITxHeight', height);
     // confirm ride if both transactions complete
@@ -469,6 +505,7 @@ export default function RideShareSteps(props) {
       await finishConfirmRide();
     }
   }
+  // processDriverTx function - called when the rider makes payments
   const processDriverTx = async (height) => {
     localStorage.setItem('driverTxHeight', height);
     // confirm ride if both transactions complete
@@ -477,6 +514,7 @@ export default function RideShareSteps(props) {
     }
   }
 
+  // finishConfirmRide function - called when the rider makes payments
   const finishConfirmRide = async () => {
     axios.post(BACKEND_URL + '/rider/ride/confirm', {
       'rideContractAddress': rideContractAddress,
@@ -490,6 +528,7 @@ export default function RideShareSteps(props) {
     });
   }
 
+  // riderCancelRide function - called when the rider completes a ride
   const riderCompleteRide = () => {
     axios.post(BACKEND_URL + '/rider/ride/complete', {
       'rideContractAddress': rideContractAddress,
@@ -502,6 +541,7 @@ export default function RideShareSteps(props) {
     });
   }
 
+  //driverGetRides function - called when the driver gets rides
   const driverGetRides = async () => {
     // TODO should display multiple and not just the latest
     axios.get(BACKEND_URL + '/driver/requests/latest', {
@@ -526,6 +566,7 @@ export default function RideShareSteps(props) {
     });
   }
 
+  // driverAcceptRide function - called when the driver accepts a ride
   const driverAcceptRideButton = (rideContractAddress) => (
     <Button
       variant="contained"
@@ -549,15 +590,18 @@ export default function RideShareSteps(props) {
   };
 
 
+  //handleBack function - move back to the previous step
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  //handleReset function - reset the form
   const handleReset = () => {
     setActiveStep(0);
   };
 
   // TODO ui quirk - 'Finish' displays when last step started to move to but still in transition
+  //cardContainerElement - the container for the card
   const cardContainerElement = (
     <div>
       <GridContainer>
