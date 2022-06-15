@@ -2,20 +2,12 @@
 // Description: rust contract integration test in javascript
 // Maintainer: Kelsey
 // Copyright: Webi.ai (c) 2022
-import { Actor, HttpAgent } from '@dfinity/agent';
-import { Ed25519KeyIdentity } from '@dfinity/identity';
-import { Principal } from '@dfinity/principal';
-
 
 //import dfinity actor and agent
-// const Actor = require("@dfinity/agent");
-// const HttpAgent = Actor.HttpAgent;
+import { Actor, HttpAgent } from '@dfinity/agent';
+//import to generate an identity
+import { Ed25519KeyIdentity } from '@dfinity/identity';
 
-
-//import to generate an identit
-// const Identity = require("@dfinity/identity");
-// const Ed25519KeyIdentity = Identity.Ed25519KeyIdentity;
-// const Principal = require("@dfinity/principal");
 
 //generate the identity using ed25519
 const identity = Ed25519KeyIdentity.generate(require('crypto').randomBytes(32));
