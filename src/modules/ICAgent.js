@@ -10,7 +10,13 @@ import { agent } from '../scripts/agent.js';
 
 
 const registerRider = async (rider) => {
-  const response = await agent.register_rider(rider);
+  console.log(agent);
+  agent.register_rider(rider)
+  .then((success) => {
+    console.log(success);
+  }, (error) => {
+    console.log(error);
+  });
   console.log('response', response);
 }
 
