@@ -128,12 +128,14 @@ thread_local! {
 }
 
 #[query(name = "getSelf")]
+#[candid_method(query)]
 fn get_self() -> Profile {
     let id = ic_cdk::api::caller();
     PROFILE_STORE.with(|profile_store| profile_store.borrow().get(&id).cloned().unwrap_or_default())
 }
 
 #[query]
+#[candid_method(query)]
 fn get(name: String) -> Profile {
     ID_STORE.with(|id_store| {
         PROFILE_STORE.with(|profile_store| {
@@ -147,6 +149,7 @@ fn get(name: String) -> Profile {
 }
 
 #[update]
+#[candid_method(update)]
 fn update(profile: Profile) {
     let principal_id = ic_cdk::api::caller();
     ID_STORE.with(|id_store| {
@@ -161,24 +164,28 @@ fn update(profile: Profile) {
 
 ///get rides store   
 #[query(name = "getRides")]
+#[candid_method(query)]
 fn get_rides() -> RidesStore {
     RIDES_STORE.with(|rides_store| rides_store.borrow().clone())
 }
 
 ///get riders
 #[query]
+#[candid_method(query)]
 fn get_riders() -> RiderStore {
     RIDER_STORE.with(|rider_store| rider_store.borrow().clone())
 }
 
 ///get drivers
 #[query]
+#[candid_method(query)]
 fn get_drivers() -> DriverStore {
     DRIVER_STORE.with(|driver_store| driver_store.borrow().clone())
 }
 
 ///register rider
 #[update(name = "registerRider")]
+#[candid_method(update)]
 fn register_rider(rider: Rider) {
     RIDER_STORE.with(|rider_store| {
         rider_store.borrow_mut().push(rider);
@@ -187,6 +194,7 @@ fn register_rider(rider: Rider) {
 
 ///register driver
 #[update(name = "registerDriver")]
+#[candid_method(update)]
 fn register_driver(driver: Driver) {
     DRIVER_STORE.with(|driver_store| {
         driver_store.borrow_mut().push(driver);
@@ -195,6 +203,7 @@ fn register_driver(driver: Driver) {
 
 /// update driver rating value
 #[update(name = "updateDriverRating")]
+#[candid_method(update)]
 fn update_driver_rating(driver_name: String, rating: f64) {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow_mut().iter_mut() {
@@ -207,6 +216,7 @@ fn update_driver_rating(driver_name: String, rating: f64) {
 
 /// update driver status value
 #[query]
+#[candid_method(query)]
 fn update_driver_status(driver_name: String, status: CurrentStatus) {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow_mut().iter_mut() {
@@ -219,6 +229,7 @@ fn update_driver_status(driver_name: String, status: CurrentStatus) {
 
 /// search for driver by name and return the driver
 #[query]
+#[candid_method(query)]
 fn search_driver_by_name(driver_name: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow().iter() {
@@ -232,6 +243,7 @@ fn search_driver_by_name(driver_name: String) -> Option<Driver> {
 
 /// search for driver by contect and return the driver
 #[query]
+#[candid_method(query)]
 fn search_driver_by_contact(contact: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow().iter() {
@@ -245,6 +257,7 @@ fn search_driver_by_contact(contact: String) -> Option<Driver> {
 
 ///search for driver by address and return the driver
 #[query]
+#[candid_method(query)]
 fn search_driver_by_address(principal_id: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow().iter() {
@@ -258,6 +271,7 @@ fn search_driver_by_address(principal_id: String) -> Option<Driver> {
 
 ///search for rider by address and return the rider
 #[query]
+#[candid_method(query)]
 fn search_rider_by_address(principal_id: String) -> Option<Rider> {
     RIDER_STORE.with(|rider_store| {
         for rider in rider_store.borrow().iter() {
@@ -419,7 +433,7 @@ impl Driver {
 
 ///search for rider by field and return the rider
 #[query]
-#[export_name = "search_rider_by_field"]
+#[candid_method(query)]
 fn search_rider_by_field(field: String, value: String) -> Option<Rider> {
     RIDER_STORE.with(|rider_store| {
         for rider in rider_store.borrow().iter() {
@@ -433,6 +447,7 @@ fn search_rider_by_field(field: String, value: String) -> Option<Rider> {
 
 ///search for driver by field and return the driver  
 #[query]
+#[candid_method(query)]
 fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
     DRIVER_STORE.with(|driver_store| {
         for driver in driver_store.borrow().iter() {
@@ -446,6 +461,7 @@ fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
 
 //search for ride by field and return the ride
 #[query]
+#[candid_method(query)]
 fn search_ride_by_field(field: String, value: String) -> Option<Ride> {
     RIDES_STORE.with(|ride_store| {
         for ride in ride_store.borrow().iter() {
@@ -615,6 +631,7 @@ impl Ride {
 
 ///register ride to RIDES_STORE
 #[update(name = "registerRide")]
+#[candid_method(query)]
 fn register_ride(ride: Ride) {
     RIDES_STORE.with(|rides_store| {
         rides_store.borrow_mut().push(ride);
@@ -623,6 +640,7 @@ fn register_ride(ride: Ride) {
 
 ///search ride by
 #[allow(dead_code)]
+#[candid_method(query)]
 fn search_ride_by_id(rideid: String) -> Option<Ride> {
     let mut rides = get_rides();
     for ride in rides.iter_mut() {
@@ -661,6 +679,7 @@ pub type BlockHeight = u64;
 
 ///get block from ledger with height
 #[allow(dead_code)]
+#[candid_method(query)]
 async fn get_block_from_ledger(
     block_height: BlockHeight,
     ledger_canister_id: Principal,
@@ -692,6 +711,7 @@ async fn get_block_from_ledger(
 
 ///request a ride
 #[update]
+#[candid_method(query)]
 pub fn request_ride(rider: Rider, pickup: String, dropoff: String, timestamp: String) -> () {
     //find an available driver
     let mut drivers = get_drivers();
