@@ -4,12 +4,11 @@
 // License : Not currently licensed for public use
 // Copyright : Webi.ai (c) 2022
 
-
+//begin imports
 import React from "react";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 import mapImage from "assets/img/map-image.png";
-
 // core components
 import Table from "components/Table/Table.js";
 import Stepper from '@material-ui/core/Stepper';
@@ -31,17 +30,16 @@ import CardMedia from '@material-ui/core/CardMedia';
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { LocationOn } from "@material-ui/icons";
 import { CardActionArea, TextField } from "@material-ui/core";
-
+//axios will be removed when the old backend is removed
 import axios from 'axios';
 import QRCode from 'qrcode.react';
 import QrReader from 'react-qr-scanner';
 import RandomBigInt from 'random-bigint';
 import { Principal } from '@dfinity/principal';
 import { getAccountId } from './ICPUtils.js';
-
 import ledgerIDL from './nns_ledger.did.js';
 
-//remove the backend
+//remove the backend after port to new api
 const BACKEND_URL = 'http://localhost:8000/api';
 
 //ledger canister address
@@ -50,7 +48,7 @@ const NNS_LEDGER_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 //webi wallet address
 const WEBI_ICP_WALLET_PRINCIPAL_ID = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
 
-//webi fees
+//webi fee is 0.15% of the total price
 const WEBI_FEE_PERCENTAGE = 0.15;
 //the cost of a ride - hardcoded for now
 // const RIDE_COST_ICP_E8S = 300_000_000;
