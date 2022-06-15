@@ -17,11 +17,9 @@ import avatar from "assets/img/faces/marc.jpg";
 import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
 import Loader from '../../components/Loader/Loader';
-import axios from 'axios';
 
 import { registerRider } from '../../modules/ICAgent.js';
 
-const BACKEND_URL = 'http://localhost:8000/api';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -42,7 +40,6 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const styles = {
-
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
     margin: "0",
@@ -116,33 +113,16 @@ export default function RiderProfile(props) {
       address: address,
     };
     
-    // TODO do these need to be in localStorage?
     localStorage.setItem('account', rider.address);
     localStorage.setItem('name', rider.name);
     localStorage.setItem('contact', rider.contact);
     localStorage.setItem('email', rider.email);
-    localStorage.setItem('type', rider.role);
+    localStorage.setItem('userType', rider.role);
 
-    registerRider(rider);
-
-
-    const name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
-    const contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
-    const email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
-
-    axios.post(BACKEND_URL + '/rider/register', {
-      rider: {
-        name: name,
-        contact: contact,
-        email: email,
-        role: Number(localStorage.getItem('type')),
-        account: localStorage.getItem('account')
-      }
-    }).then((response) => {
-      isLoading(false);
-    }).catch((err) => {
-      console.log(err);
-    });
+    registerRider(rider)
+      .then(() => {
+        isLoading(false);
+      });
     handleSuccess();
   }
 
