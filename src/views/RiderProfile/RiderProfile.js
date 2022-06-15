@@ -19,6 +19,8 @@ import Paper from '@material-ui/core/Paper';
 import Loader from '../../components/Loader/Loader';
 import axios from 'axios';
 
+import { registerRider } from '../../modules/ICAgent.js';
+
 const BACKEND_URL = 'http://localhost:8000/api';
 
 const StyledTableCell = withStyles((theme) => ({
@@ -65,7 +67,7 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function UserProfile(props) {
+export default function RiderProfile(props) {
   const classes = useStyles();
   const [ show, setHide ] = useState(false)
   const [ open, setOpen ] = React.useState(false);
@@ -95,14 +97,34 @@ export default function UserProfile(props) {
   async function handleSubmit(event) {
     event.preventDefault();
     setHide(true);
+
+    // TODO replace with primary user address after auth/multi-wallet
+    let address;
+    if (window.ic?.plug) {
+      address = window.ic.plug.principalId;
+    } else {
+      // TODO error handling
+      console.err('No wallet address found, using placeholder');
+      address = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
+    }
+
+    const rider = {
+      contact: formData.contact,
+      name: formData.name,
+      email: formData.email,
+      role: 'rider',
+      address: address,
+    };
     
-    // TODO replace placeholder IC principal with address from auth & wallet connect
     // TODO do these need to be in localStorage?
-    localStorage.setItem('account', 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae');
-    localStorage.setItem('name', formData.name);
-    localStorage.setItem('contact', formData.contact);
-    localStorage.setItem('email', formData.email);
-    localStorage.setItem('type', '0');
+    localStorage.setItem('account', rider.address);
+    localStorage.setItem('name', rider.name);
+    localStorage.setItem('contact', rider.contact);
+    localStorage.setItem('email', rider.email);
+    localStorage.setItem('type', rider.role);
+
+    registerRider(rider);
+
 
     const name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
     const contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);

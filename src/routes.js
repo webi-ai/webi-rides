@@ -3,7 +3,7 @@ import Person from "@material-ui/icons/Person";
 import LocationOn from "@material-ui/icons/LocationOn";
 
 // core components/views for Admin layout
-import UserProfile from "views/UserProfile/UserProfile.js";
+import RiderProfile from "views/RiderProfile/RiderProfile.js";
 import DriverProfile from "views/DriverProfile/DriverProfile.js";
 import Map from "views/Map/Map.js";
 import { DriveEta } from "@material-ui/icons";
@@ -29,11 +29,11 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/user",
+    path: "/rider",
     name: "Rider Profile",
     rtlName: "ملف تعريفي للمستخدم",
     icon: Person,
-    component: UserProfile,
+    component: RiderProfile,
     layout: "/admin"
   },
   {
