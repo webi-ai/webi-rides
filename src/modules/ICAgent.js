@@ -6,9 +6,10 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
+//import the actor from agent script to interact with smart contracts
 import actor from '../scripts/agent.js';
 
-
+//create a placeholder driver for the ride
 const PLACEHOLDER_DRIVER = { 
   contact: '',
   name: '',
@@ -26,7 +27,18 @@ const PLACEHOLDER_DRIVER = {
   address: '',
 };
 
+//create a placeholder rider for the ride
+const PLACEHOLDER_RIDER = {
+  contact: '',
+  name: '',
+  email: '',
+  role: 'rider',
+  address: '',
+};
 
+
+
+//registerRider is used to register a new rider
 const registerRider = async (rider) => {
   actor.register_rider(rider)
     .then((success) => {
@@ -37,6 +49,7 @@ const registerRider = async (rider) => {
 }
 
 // rider wallet address primary id?
+//registerRide is used to register a new ride
 const registerRide = async (riderAddress, pickup, dropoff) => {
   console.log('register_ride for rider address', riderAddress);
   // retrieve logged in rider
@@ -71,12 +84,14 @@ const registerRide = async (riderAddress, pickup, dropoff) => {
   return rideId;
 }
 
+//searchRiderByAddress is used to search for a rider by address
 const searchRiderByAddress = async (walletAddress) => {
   const rider = await actor.search_rider_by_address(walletAddress);
   console.log('search_rider_by_address success for address', walletAddress);
   return rider[0];
 }
 
+//exports
 export {
   registerRider,
   registerRide
