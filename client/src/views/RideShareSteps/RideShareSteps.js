@@ -630,7 +630,7 @@ export default function RideShareSteps(props) {
                 </p>
               </CardHeader>
               <CardBody>
-                <Stepper activeStep={activeStep} orientation="vertical"> 
+                <Stepper activeStep={activeStep} orientation="vertical">
                   {steps.map((label, index) => (
                     <Step key={label}>
                       <StepLabel>{label}</StepLabel>
@@ -678,6 +678,6 @@ export default function RideShareSteps(props) {
       </div>
     );
 
-    // return the cardContainerElement - the container for the card
+  // return the cardContainerElement - the container for the card
   return cardContainerElement;
 }
