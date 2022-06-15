@@ -22,7 +22,6 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
-import Muted from "components/Typography/Muted.js";
 import Paper from '@material-ui/core/Paper';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -36,9 +35,10 @@ import QRCode from 'qrcode.react';
 import QrReader from 'react-qr-scanner';
 import RandomBigInt from 'random-bigint';
 import { Principal } from '@dfinity/principal';
+
 import { getAccountId } from './ICPUtils.js';
 import ledgerIDL from './nns_ledger.did.js';
-import { agent } from '../../scripts/agent.js';
+import { requestRide } from '../../modules/ICAgent.js'; // TODO naming
 
 //remove the backend after port to new api
 const BACKEND_URL = 'http://localhost:8000/api';
@@ -87,7 +87,7 @@ function getSteps() {
 //is the user a rider or a driver
 const isRider = () => {
   //get the user from localstorage and check if they are a rider
-  return localStorage.getItem('type') !== null && localStorage.getItem('type') === "0";
+  return localStorage.getItem('userType') !== null && localStorage.getItem('userType') === 'rider';
 }
 
 // TODO fix widgets not showing on step load
@@ -318,7 +318,6 @@ export default function RideShareSteps(props) {
 
   // TODO naming
   // TODO magic step number -> enum sequence
-  // TODO 'type' should be driver/rider enum
   // TODO handle first step without having to press next button
   //handleNext function - called when the next button is pressed
   const handleNext = async (e) => {
@@ -364,19 +363,35 @@ export default function RideShareSteps(props) {
 
   // TODO fix distance
   //riderRequestRide function - called when the rider requests a ride
-  const riderRequestRide = () => {
+  const riderRequestRide = async () => {
     //distance is the distance between the pickup and dropoff locations
     const distance = web3.utils.utf8ToHex(localStorage.getItem('distance').split(" ")[0]);
+    
+    const pickup = {
+      "lat": String(localStorage.getItem('sourceLat')),
+      "lng": String(localStorage.getItem('sourceLng')),
+      "address_text": String(localStorage.getItem('sourceName'))
+    }
+    const dropoff = {
+      "lat": String(localStorage.getItem('destinationLat')),
+      "lng": String(localStorage.getItem('destinationLng')),
+      "address_text":  String(localStorage.getItem('destinationName'))
+    }
+
+    await requestRide(account, pickup, dropoff);
+
     // TODO distance shouldn't be frontend accessible
     axios.post(BACKEND_URL + '/rider/ride/request', {
       "account": account,
-      "sourceCoords": {
+      "pickup": {
         "lat": String(localStorage.getItem('sourceLat')),
-        "lng": String(localStorage.getItem('sourceLng'))
+        "lng": String(localStorage.getItem('sourceLng')),
+        "address_text": String(localStorage.getItem('sourceName'))
       },
-      "destinationCoords": {
+      "dropoff": {
         "lat": String(localStorage.getItem('destinationLat')),
-        "lng": String(localStorage.getItem('destinationLng'))
+        "lng": String(localStorage.getItem('destinationLng')),
+        "address_text":  String(localStorage.getItem('destinationName'))
       },
       "distance": distance
     }).then((response) => {
