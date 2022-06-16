@@ -176,6 +176,30 @@ const updateRiderRating = async (rideId, rating) => {
 }
 
 
+//update a ride status by rideid using ride.update_status
+const updateRideStatus = async (rideId, status) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_status(status);
+  console.log('update_status success for ride id', rideId);
+}
+
+//change dropoff location of a ride by rideid using ride.update_dropoff
+const updateDropoff = async (rideId, dropoff) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_dropoff(dropoff);
+  console.log('update_dropoff success for ride id', rideId);
+}
+
+//change pickup location of a ride by rideid using ride.update_pickup
+const updatePickup = async (rideId, pickup) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_pickup(pickup);
+  console.log('update_pickup success for ride id', rideId);
+}
+
 
 
 //exports
