@@ -105,6 +105,35 @@ const getRidesForDriver = async (driverAddress) => {
   return rides;
 }
 
+//get most recent ride for a driver using actor.search_rides_by_field
+const getMostRecentRideForDriver = async (driverAddress) => {
+  const rides = await actor.search_ride_by_field("driveraddress", driverAddress);
+  console.log('search_ride_by_field success for driver address', driverAddress);
+  return rides[0];
+}
+
+//get most recent ride for a rider using actor.search_rides_by_field
+const getMostRecentRideForRider = async (riderAddress) => {
+  const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
+  console.log('search_ride_by_field success for rider address', riderAddress);
+  return rides[0];
+}
+
+//get last n rides by a rider offset by a number using actor.search_rides_by_field
+const getLastNRidesByRider = async (riderAddress, n) => {
+  const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
+  console.log('search_ride_by_field success for rider address', riderAddress);
+  return rides.slice(0, n);
+}
+
+//get last n rides by a driver offset by a number using actor.search_rides_by_field
+const getLastNRidesByDriver = async (driverAddress, n) => {
+  const rides = await actor.search_ride_by_field("driveraddress", driverAddress);
+  console.log('search_ride_by_field success for driver address', driverAddress);
+  return rides.slice(0, n);
+}
+
+
 
 
 //exports
