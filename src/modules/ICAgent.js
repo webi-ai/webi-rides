@@ -234,6 +234,23 @@ const updatePickup = async (rideId, pickup) => {
   console.log("update_pickup success for ride id", rideId);
 };
 
+//update rider confirmations of a ride by rideid using ride.update_rider_confirmation
+const updateRiderConfirmation = async (rideId, confirmation) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log("search_ride_by_field success for ride id", rideId);
+  ride.update_rider_confirmation(confirmation);
+  console.log("update_rider_confirmation success for ride id", rideId);
+}
+
+//update driver confirmations of a ride by rideid using ride.update_driver_confirmation
+const updateDriverConfirmation = async (rideId, confirmation) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log("search_ride_by_field success for ride id", rideId);
+  ride.update_driver_confirmation(confirmation);
+  console.log("update_driver_confirmation success for ride id", rideId);
+}
+
+
 //get_rider_confirmation returns the rider confirmation for a ride by rideid using ride.get_rider_confirmation
 const getRiderConfirmation = async (rideId) => {
   const ride = await actor.search_ride_by_field("rideid", rideId);
