@@ -38,7 +38,7 @@ const PLACEHOLDER_RIDER = {
 
 
 
-//registerRider is used to register a new rider
+//registerRider registers a new rider using actor.register_rider
 const registerRider = async (rider) => {
   actor.register_rider(rider)
     .then((success) => {
@@ -49,7 +49,7 @@ const registerRider = async (rider) => {
 }
 
 // rider wallet address primary id?
-//registerRide is used to register a new ride
+//registerRide registers a new ride using actor.register_ride
 const registerRide = async (riderAddress, pickup, dropoff) => {
   console.log('register_ride for rider address', riderAddress);
   // retrieve logged in rider
@@ -84,12 +84,28 @@ const registerRide = async (riderAddress, pickup, dropoff) => {
   return rideId;
 }
 
-//searchRiderByAddress is used to search for a rider by address
+//searchRiderByAddress searches for a rider by their wallet address using actor.search_rider
 const searchRiderByAddress = async (walletAddress) => {
   const rider = await actor.search_rider_by_address(walletAddress);
   console.log('search_rider_by_address success for address', walletAddress);
   return rider[0];
 }
+
+//get rides for a rider using actor.search_rides_by_field
+const getRides = async (riderAddress) => {
+  const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
+  console.log('search_ride_by_field success for rider address', riderAddress);
+  return rides;
+}
+
+//get rides for a driver using actor.search_rides_by_field
+const getRidesForDriver = async (driverAddress) => {
+  const rides = await actor.search_ride_by_field("driveraddress", driverAddress);
+  console.log('search_ride_by_field success for driver address', driverAddress);
+  return rides;
+}
+
+
 
 //exports
 export {
