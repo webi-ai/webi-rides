@@ -133,6 +133,30 @@ const getLastNRidesByDriver = async (driverAddress, n) => {
   return rides.slice(0, n);
 }
 
+//get the rideid for the most recent ride for a driver using actor.search_rides_by_field
+const getMostRecentRideIdForDriver = async (driverAddress) => {
+  const rides = await actor.search_ride_by_field("driveraddress", driverAddress);
+  console.log('search_ride_by_field success for driver address', driverAddress);
+  return rides[0].rideid;
+}
+
+//get the rideid for the most recent ride for a rider using actor.search_rides_by_field
+const getMostRecentRideIdForRider = async (riderAddress) => {
+  const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
+  console.log('search_ride_by_field success for rider address', riderAddress);
+  return rides[0].rideid;
+}
+
+
+//check a ride object is valid by calling get_type expectig value of 'Ride'
+const isValidRide = async (ride) => {
+  const type = await actor.get_type(ride);
+  console.log('get_type success for ride', ride);
+  return type === 'Ride';
+}
+
+
+
 //register driver
 const registerDriver = async (driver) => {
   actor.register_driver(driver)
@@ -200,6 +224,96 @@ const updatePickup = async (rideId, pickup) => {
   console.log('update_pickup success for ride id', rideId);
 }
 
+//get_rider_confirmation returns the rider confirmation for a ride by rideid using ride.get_rider_confirmation
+const getRiderConfirmation = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_rider_confirmation();
+}
+
+//get_driver_confirmation returns the driver confirmation for a ride by rideid using ride.get_driver_confirmation
+const getDriverConfirmation = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_driver_confirmation();
+}
+
+//get_driver_rating returns the driver rating for a ride by rideid using ride.get_driver_rating
+const getDriverRating = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_driver_rating();
+}
+
+//get_rider_rating returns the rider rating for a ride by rideid using ride.get_rider_rating
+const getRiderRating = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_rider_rating();
+}
+
+//get_driver_feedback returns the driver feedback for a ride by rideid using ride.get_driver_feedback
+const getDriverFeedback = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_driver_feedback();
+}
+
+//get_rider_feedback returns the rider feedback for a ride by rideid using ride.get_rider_feedback
+const getRiderFeedback = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_rider_feedback();
+}
+
+//get_rating returns the rating for a ride by rideid using ride.get_rating
+const getRating = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_rating();
+}
+
+//get_status returns the status for a ride by rideid using ride.get_status
+const getStatus = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_status();
+}
+
+//get_timestamp returns the timestamp for a ride by rideid using ride.get_timestamp
+const getTimestamp = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_timestamp();
+}
+
+//get_dropoff returns the dropoff location for a ride by rideid using ride.get_dropoff
+const getDropoff = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_dropoff();
+}
+
+//get_pickup returns the pickup location for a ride by rideid using ride.get_pickup
+const getPickup = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_pickup();
+}
+
+//get_rider_id returns the rider id for a ride by rideid using ride.get_rider_id
+const getRiderId = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_rider_id();
+}
+
+//get_driver_id returns the driver id for a ride by rideid using ride.get_driver_id
+const getDriverId = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  return ride.get_driver_id();
+}
 
 
 //exports
