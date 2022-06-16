@@ -133,6 +133,48 @@ const getLastNRidesByDriver = async (driverAddress, n) => {
   return rides.slice(0, n);
 }
 
+//register driver
+const registerDriver = async (driver) => {
+  actor.register_driver(driver)
+    .then((success) => {
+      console.log('register_driver success, driver address', driver.address);
+    }, (error) => {
+      console.error('register_driver error', error);
+    });
+}
+
+//update driver feedback after a ride by rideid using ride.update_driver_feedback
+const updateDriverFeedback = async (rideId, feedback) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_driver_feedback(feedback);
+  console.log('update_driver_feedback success for ride id', rideId);
+}
+
+//update rider feedback after a ride by rideid using ride.update_rider_feedback
+const updateRiderFeedback = async (rideId, feedback) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_rider_feedback(feedback);
+  console.log('update_rider_feedback success for ride id', rideId);
+}
+
+//update ride driver rating after a ride by rideid using ride.update_rating
+const updateDriverRating = async (rideId, rating) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_rating(rating);
+  console.log('update_rating success for ride id', rideId);
+}
+
+//update ride rider rating after a ride by rideid using ride.update_rating
+const updateRiderRating = async (rideId, rating) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log('search_ride_by_field success for ride id', rideId);
+  ride.update_rating(rating);
+  console.log('update_rating success for ride id', rideId);
+}
+
 
 
 
