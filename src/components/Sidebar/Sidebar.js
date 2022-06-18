@@ -23,8 +23,6 @@ export default function Sidebar(props) {
   const classes = useStyles();
   // verifies if routeName is the one active (in browser input)
   function activeRoute(routeName) {
-    console.log('activeRoute', routeName, window.location.href.indexOf(routeName) > -1);
-    // console.log('activeRoute', routeName);
     return window.location.href.indexOf(routeName) > -1 ? true : false;
   }
   const { color, logo, image, logoText, routes } = props;
