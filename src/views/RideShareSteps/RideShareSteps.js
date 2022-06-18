@@ -100,6 +100,8 @@ const isRider = () => {
   return localStorage.getItem('userType') !== null && localStorage.getItem('userType') === 'rider';
 }
 
+
+
 // TODO fix widgets not showing on step load
 //RideShareSteps component - displays the steps for the ride share
 export default function RideShareSteps(props) {
@@ -332,6 +334,8 @@ export default function RideShareSteps(props) {
   // TODO handle first step without having to press next button
   //handleNext function - called when the next button is pressed
   const handleNext = async (e) => {
+    await connectPlug();
+
     //if the current step is 0, then we need to get the ride details
     const { value, id } = e.target;
     //if the current step is 1, then we need to get the number of seats
@@ -366,6 +370,15 @@ export default function RideShareSteps(props) {
       }
     }
   };
+
+  // make sure plug wallet connected
+  const connectPlug = async () => {
+    console.log('connectPlug', await window.ic?.plug?.isConnected(), window.ic?.plug?.principalId);
+    if (window.ic?.plug && !(await window.ic.plug.isConnected() && window.ic?.plug?.principalId)) {
+      console.log('plug not connected, connecting...');
+      await window.ic.plug.requestConnect();
+    }
+  }
 
   //initRide function - called when the rider requests a ride
   const initRide = () => {
@@ -635,9 +648,12 @@ export default function RideShareSteps(props) {
     console.log(rides);
 
     // TODO should display multiple and not just the latest
-    const pickup = JSON.parse(rides[0].pickup);
-    const dropoff = JSON.parse(rides[0].dropoff);
-    setRideRequests([[getUserAddress(), rides[0].rider?.address, pickup.address_text, dropoff.address_text, driverAcceptRideButton(rides[0].rideid)]]);
+    // TODO use rides[0] if this becomes list of rides instead of list of 1-length arrays of rides
+    const pickup = JSON.parse(rides[0][0].pickup);
+    const dropoff = JSON.parse(rides[0][0].dropoff);
+    console.log(pickup);
+    console.log(dropoff);
+    setRideRequests([[getUserAddress(), rides[0][0].rider?.address, pickup.address_text, dropoff.address_text, driverAcceptRideButton(rides[0][0].rideid)]]);
     isLoading(false);
     
     // axios.get(BACKEND_URL + '/driver/requests/latest', {
