@@ -88,7 +88,7 @@ const registerRide = async (riderAddress, pickup, dropoff) => {
 
   const newRide = await getMostRecentRideForRider(riderAddress);
   // console.log(newRide);
-  if(!newRide) {
+  if (!newRide) {
     console.log('can\'t find ride', rideId);
   } else if (newRide.rideId !== rideId) {
     console.log('ride id mismatch, rideid ', rideId, ' doesn\'t match found id ', newRide.rideId);
@@ -145,10 +145,14 @@ const getMostRecentRide = (rides) => {
 
 //get most recent ride for a rider using actor.search_rides_by_field
 const getMostRecentRideForRider = async (riderAddress) => {
-  const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
+  const rides_result = await actor.search_ride_by_field("rideraddress", riderAddress);
   console.log("search_ride_by_field success for rider address", riderAddress);
-  return getMostRecentRide(rides);
-};
+  const ride = rides_result.map((ride) => {
+    return getMostRecentRide(ride);
+  }
+  );
+  return ride[0];
+}
 
 //get last n rides by a rider offset by a number using actor.search_rides_by_field
 const getLastNRidesByRider = async (riderAddress, n) => {
@@ -514,7 +518,7 @@ const getRiderFieldByAddress = async (address, field) => {
 
 // get all drivers
 // TODO only nearby geolocation
-const getDrivers = async() => {
+const getDrivers = async () => {
   const drivers = await actor.get_drivers();
   console.log("get_drivers success, found ", drivers.length);
   return drivers;
@@ -586,7 +590,7 @@ const riderSelectDriver = async (riderAddress, driverAddress) => {
 const isDriverConfirmedForRide = async (riderAddress) => {
   console.log('isDriverConfirmedForRide', riderAddress);
   // TODO pass around rideid in state instead of retrieving most recent, can cause errors if rider manages to create a newer ride during ride flow
-  const ride = await getMostRecentRideForRider(riderAddress); 
+  const ride = await getMostRecentRideForRider(riderAddress);
   console.log('getMostRecentRideForRider', ride);
   // check ride is valid
   if (!(await isValidRide(ride))) {
@@ -600,7 +604,7 @@ const isDriverConfirmedForRide = async (riderAddress) => {
 
 const completeRideForRider = async (riderAddress) => {
   console.log('completeRideForRider', riderAddress);
-  await updateRideStatusByAddress(riderAddress, { Completed: null} );
+  await updateRideStatusByAddress(riderAddress, { Completed: null });
 }
 
 const getOpenRidesForDriver = async (driverAddress) => {
