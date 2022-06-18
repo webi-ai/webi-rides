@@ -55,18 +55,20 @@ const registerRide = async (riderAddress, pickup, dropoff) => {
   // retrieve logged in rider
   const rider = await searchRiderByAddress(riderAddress);
   const rideId = uuidv4(); // generate unique ride id
+  const pickupJson = JSON.stringify({
+    lat: pickup.lat,
+    lng: pickup.lng,
+    address_text: pickup.address_text,
+  });
+  const dropoffJson = JSON.stringify({
+    lat: dropoff.lat,
+    lng: dropoff.lng,
+    address_text: dropoff.address_text,
+  });
   const ride = {
     rideid: rideId,
-    pickup: {
-      lat: pickup.lat,
-      lng: pickup.lng,
-      address_text: pickup.address_text,
-    }.toString(),
-    dropoff: {
-      lat: dropoff.lat,
-      lng: dropoff.lng,
-      address_text: dropoff.address_text,
-    }.toString(),
+    pickup: pickupJson,
+    dropoff: dropoffJson,
     status: { Active: null },
     timestamp: Date.now().toString(),
     rating: 0,
@@ -601,6 +603,14 @@ const completeRideForRider = async (riderAddress) => {
   await updateRideStatusByAddress(riderAddress, { Completed: null} );
 }
 
+const getOpenRidesForDriver = async (driverAddress) => {
+  console.log('getOpenRidesForDriver', driverAddress);
+  // search for rides with no driver assigned
+  const rides = await getRidesForDriver("");
+  console.log('found ', rides.length, ' open rides');
+  return rides;
+}
+
 //exports
 export {
   getDrivers,
@@ -609,5 +619,8 @@ export {
   riderSelectDriver,
   isDriverConfirmedForRide,
   updateRiderConfirmationForRider,
-  completeRideForRider
+  completeRideForRider,
+  getOpenRidesForDriver,
+  updateDriverConfirmation,
+  getMostRecentRideForRider
 };

@@ -44,7 +44,10 @@ import {
   riderSelectDriver,
   isDriverConfirmedForRide,
   updateRiderConfirmationForRider,
-  completeRideForRider
+  completeRideForRider,
+  getOpenRidesForDriver,
+  updateDriverConfirmation,
+  getMostRecentRideForRider
 } from '../../modules/ICAgent.js'; // TODO naming
 
 //remove the backend after port to new api
@@ -110,6 +113,7 @@ export default function RideShareSteps(props) {
   const [userSelectedDriver, setUserSelectedDriver] = React.useState('');
   const [rideRequests, setRideRequests] = React.useState([]);
   const [rideContractAddress, setRideContractAddress] = React.useState('');
+  const [currentRideId, setCurrentRideId] = React.useState('');
   const [rideConfirmed, setRideConfirmed] = React.useState(false);
   const [previewStyle, setPreviewStyle] = React.useState({
     height: 220,
@@ -167,7 +171,7 @@ export default function RideShareSteps(props) {
             <Card>
               <CardActionArea>
                 <CardContent style={{ padding: '10px 20px 5px 15px' }}>
-                  <QRCode value={rideContractAddress} />
+                  <QRCode value={currentRideId} />
                 </CardContent>
               </CardActionArea>
               <CardActions style={{ padding: '5px 20px 10px 20px' }}>
@@ -294,7 +298,7 @@ export default function RideShareSteps(props) {
     //set the QR code result
     setQrCodeResult(data);
     //check if the QR code is a valid address
-    if (true || (data === rideContractAddress)) {
+    if (true || (data === currentRideId)) {
       //confirm the ride
       riderConfirmRide();
     }
@@ -457,6 +461,7 @@ export default function RideShareSteps(props) {
     setUserSelectedDriver(data.address);
     const updateSucceeded = await riderSelectDriver(getUserAddress(), data.address);
     if(updateSucceeded) {
+      setCurrentRideId(await getMostRecentRideForRider(getUserAddress())?.rideid);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
       console.log('handleRiderAcceptDriver failed to select driver [', data.address, '] for rider [', account, ']'); 
@@ -629,51 +634,63 @@ export default function RideShareSteps(props) {
 
   //driverGetRides function - called when the driver gets rides
   const driverGetRides = async () => {
+    const rides = await getOpenRidesForDriver(getUserAddress());
+    console.log(rides);
+
     // TODO should display multiple and not just the latest
-    axios.get(BACKEND_URL + '/driver/requests/latest', {
-    }).then((response) => {
-      let rideContractAddress = response.data.rideContractAddress;
-      setRideContractAddress(rideContractAddress);
+    const pickup = JSON.parse(rides[0].pickup);
+    const dropoff = JSON.parse(rides[0].dropoff);
+    setRideRequests([[getUserAddress(), rides[0].rider?.address, pickup.address_text, dropoff.address_text, driverAcceptRideButton(rides[0].rideid)]]);
+    isLoading(false);
+    
+    // axios.get(BACKEND_URL + '/driver/requests/latest', {
+    // }).then((response) => {
+    //   let rideContractAddress = response.data.rideContractAddress;
+    //   setRideContractAddress(rideContractAddress);
 
-      axios.get(BACKEND_URL + '/ride/info', {
-        'rideContractAddress': rideContractAddress
-      }).then((response) => {
-        let info = response.data.rideInfo;
-        let sourceDisplayName = localStorage.getItem('sourceName');
-        let destDisplayName = localStorage.getItem('destinationName');
+    //   axios.get(BACKEND_URL + '/ride/info', {
+    //     'rideContractAddress': rideContractAddress
+    //   }).then((response) => {
+    //     let info = response.data.rideInfo;
+    //     let sourceDisplayName = localStorage.getItem('sourceName');
+    //     let destDisplayName = localStorage.getItem('destinationName');
 
-        setRideRequests([[rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]]);
-        isLoading(false);
-      }).catch((err) => {
-        console.log(err);
-      });
-    }).catch((err) => {
-      console.log(err);
-    });
+    //     setRideRequests([[rideContractAddress, info[0], sourceDisplayName, destDisplayName, driverAcceptRideButton(rideContractAddress)]]);
+    //     isLoading(false);
+    //   }).catch((err) => {
+    //     console.log(err);
+    //   });
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
   }
 
   // driverAcceptRide function - called when the driver accepts a ride
-  const driverAcceptRideButton = (rideContractAddress) => (
+  const driverAcceptRideButton = (rideid) => (
     <Button
       variant="contained"
       color="primary"
       className={classes.button}
-      onClick={() => handleDriverAcceptRide(rideContractAddress)}
+      onClick={() => handleDriverAcceptRide(rideid)}
     >
       Accept
     </Button>
   );
   //handleDriverAcceptRide function - called when the driver accepts a ride
-  const handleDriverAcceptRide = async (rideContractAddress) => {
-    axios.post(BACKEND_URL + '/driver/ride/accept', {
-      'rideContractAddress': rideContractAddress,
-      'driverAddress': getUserAddress()
-    }).then((response) => {
-      setRideConfirmed(true);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }).catch((err) => {
-      console.log(err);
-    });
+  const handleDriverAcceptRide = async (rideid) => {
+    await updateDriverConfirmation(rideid, 'confirmed');
+    setCurrentRideId(rideid);
+    setRideConfirmed(true);
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // axios.post(BACKEND_URL + '/driver/ride/accept', {
+    //   'rideContractAddress': rideContractAddress,
+    //   'driverAddress': getUserAddress()
+    // }).then((response) => {
+    //   setRideConfirmed(true);
+    //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
   };
 
 
