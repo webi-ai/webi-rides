@@ -459,17 +459,18 @@ fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
     })
 }
 
-//search for ride by field and return the ride
+//search for rides by field and return all results
 #[query]
 #[candid_method(query)]
-fn search_ride_by_field(field: String, value: String) -> Option<Ride> {
+fn search_ride_by_field(field: String, value: String) -> Vec<Option<Ride>> {
     RIDES_STORE.with(|ride_store| {
+        let mut result = Vec::new();
         for ride in ride_store.borrow().iter() {
             if ride.get_field(field.clone()) == value {
-                return Some(ride.clone());
+                result.push(Some(ride.clone()));
             }
         }
-        None
+        result
     })
 }
 
