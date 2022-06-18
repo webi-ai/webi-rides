@@ -187,7 +187,7 @@ const updateDriver = async (rideId, driver) => {
     return;
   }
   //call ride.update_driver
-  await actor.update_driver(driver);
+  await ride.update_driver(driver);
   console.log("update_driver success, driver address", driver.address);
 }
 
