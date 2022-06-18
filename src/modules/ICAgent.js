@@ -263,11 +263,11 @@ const updateRideStatus = async (rideId, status) => {
 
 //update a ride for a user found by most recent address using ride.update_status 
 const updateRideStatusByAddress = async (address, status) => {
-  const ride = await actor.search_ride_by_field("rideraddress", address);
+  const ride_results = await actor.search_ride_by_field("rideraddress", address);
   console.log("search_ride_by_field success for rider address", address);
-  // TODO fix, remove bypass
-  // ride.update_status(status);
-  // console.log("update_status success for ride id", rideId);
+  const ride = ride_results[0];
+  ride.update_status(status);
+  console.log("update_status success for ride id", rideId);
 }
 
 
@@ -310,22 +310,22 @@ const updateDriverConfirmation = async (rideId, confirmation) => {
 const updateDriverConfirmationForDriver = async (driverAddress, confirmation) => {
   const rideId = await getMostRecentRideIdForDriver(driverAddress);
   console.log("getMostRecentRideIdForDriver success for driver address", driverAddress);
-  const ride = await actor.search_ride_by_field("rideid", rideId);
+  const rides_result = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
-  // TODO fix, remove bypass
-  // ride.update_driver_confirmation(confirmation);
-  // console.log("update_driver_confirmation success for ride id", rideId);
+  const ride = rides_result[0];
+  ride.update_driver_confirmation(confirmation);
+  console.log("update_driver_confirmation success for ride id", rideId);
 }
 
 //update rider confirmations of the most recent ride by address using ride.update_rider_confirmation
 const updateRiderConfirmationForRider = async (riderAddress, confirmation) => {
   const rideId = await getMostRecentRideIdForRider(riderAddress);
   console.log("getMostRecentRideIdForRider success for rider address", riderAddress);
-  const ride = await actor.search_ride_by_field("rideid", rideId);
+  const rides_result = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
-  // TODO fix, remove bypass
-  // ride.update_rider_confirmation(confirmation);
-  // console.log("update_rider_confirmation success for ride id", rideId);
+  const ride = rides_result[0];
+  ride.update_rider_confirmation(confirmation);
+  console.log("update_rider_confirmation success for ride id", rideId);
 }
 
 
