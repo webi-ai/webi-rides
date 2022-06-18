@@ -148,7 +148,7 @@ const getMostRecentRideForDriver = async (driverAddress) => {
 
 
 const getMostRecentRide = (rides) => {
-  return rides.reduce(function(prev,curr) { return (prev.timestamp > curr.timestamp) ? prev : curr; })[0];
+  return rides.reduce(function (prev, curr) { return (prev.timestamp > curr.timestamp) ? prev : curr; })[0];
 }
 
 //get most recent ride for a rider using actor.search_rides_by_field
@@ -156,7 +156,7 @@ const getMostRecentRideForRider = async (riderAddress) => {
   const rides_result = await actor.search_ride_by_field("rideraddress", riderAddress);
   console.log("search_ride_by_field success for rider address", riderAddress);
   const ride = rides_result.map((ride) => {
-    return ride;  
+    return ride;
   }
   ).sort((a, b) => {
     return b.timestamp - a.timestamp;
@@ -626,7 +626,7 @@ const getOpenRidesForDriver = async (driverAddress) => {
   return rides;
 }
 
-  
+
 // returns true if there exists a driver with the given wallet address, false otherwise
 const isDriver = async (walletAddress) => {
   const drivers = await actor.search_driver_by_address(walletAddress);
