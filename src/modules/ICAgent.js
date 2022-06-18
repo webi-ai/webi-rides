@@ -68,19 +68,31 @@ const registerRide = async (riderAddress, pickup, dropoff) => {
       address_text: dropoff.address_text,
     }.toString(),
     status: { Active: null },
-    driverconfirmation: "",
-    riderconfirmation: "",
     timestamp: Date.now().toString(),
     rating: 0,
     driver: PLACEHOLDER_DRIVER, // placeholder values, driver should be opt so it can be null until one accepts ride
     driverrating: 0,
     driverfeedback: "",
+    driverconfirmation: "",
     rider: rider, // currently logged in rider
     riderrating: 0,
     riderfeedback: "",
+    riderconfirmation: "",
   };
+  // console.log(ride);
+  // console.log("register_ride", rideId);
   await actor.register_ride(ride);
-  console.log("register_ride success, ride id ", rideId);
+  // console.log("register_ride success, ride id ", rideId);
+
+  const newRide = await getMostRecentRideForRider(riderAddress);
+  // console.log(newRide);
+  if(!newRide) {
+    console.log('can\'t find ride', rideId);
+  } else if (newRide.rideId !== rideId) {
+    console.log('ride id mismatch, rideid ', rideId, ' doesn\'t match found id ', newRide.rideId);
+  } else {
+    console.log('ride registered', rideId);
+  }
   return rideId;
 };
 
@@ -91,8 +103,15 @@ const searchRiderByAddress = async (walletAddress) => {
   return rider[0];
 };
 
+//searchDriverByAddress searches for a driver by their wallet address using actor.search_driver
+const searchDriverByAddress = async (walletAddress) => {
+  const driver = await actor.search_driver_by_address(walletAddress);
+  console.log("search_driver_by_address success for address", walletAddress);
+  return driver[0];
+}
+
 //get rides for a rider using actor.search_rides_by_field
-const getRides = async (riderAddress) => {
+const getRidesForRider = async (riderAddress) => {
   const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
   console.log("search_ride_by_field success for rider address", riderAddress);
   return rides;
@@ -115,14 +134,18 @@ const getMostRecentRideForDriver = async (driverAddress) => {
     driverAddress
   );
   console.log("search_ride_by_field success for driver address", driverAddress);
-  return rides[0];
+  return getMostRecentRide(rides);
 };
+
+const getMostRecentRide = (rides) => {
+  return rides.reduce(function(prev,curr) { return (prev.timestamp > curr.timestamp) ? prev : curr; });
+}
 
 //get most recent ride for a rider using actor.search_rides_by_field
 const getMostRecentRideForRider = async (riderAddress) => {
   const rides = await actor.search_ride_by_field("rideraddress", riderAddress);
   console.log("search_ride_by_field success for rider address", riderAddress);
-  return rides[0];
+  return getMostRecentRide(rides);
 };
 
 //get last n rides by a rider offset by a number using actor.search_rides_by_field
@@ -159,9 +182,14 @@ const getMostRecentRideIdForRider = async (riderAddress) => {
   return rides[0].rideid;
 };
 
-//check a ride object is valid by calling get_type expectig value of 'Ride'
+//check a ride object is valid by calling get_type expecting value of 'Ride'
 const isValidRide = async (ride) => {
-  const type = await actor.get_type(ride);
+  if (!ride) {
+    return false;
+  }
+  return true;
+  // TODO fix Unhandled Rejection (TypeError): ride.get_type is not a function
+  const type = await ride.get_type();
   console.log("get_type success for ride", ride);
   return type === "Ride";
 };
@@ -182,7 +210,7 @@ const registerDriver = async (driver) => {
 const updateDriver = async (rideId, driver) => {
   const ride = await getRideById(rideId);
   // check ride is valid
-  if (!isValidRide(ride)) {
+  if (!(await isValidRide(ride))) {
     console.error("update_driver error, ride is not valid");
     return;
   }
@@ -190,9 +218,6 @@ const updateDriver = async (rideId, driver) => {
   await ride.update_driver(driver);
   console.log("update_driver success, driver address", driver.address);
 }
-
-
-
 
 //update driver feedback after a ride by rideid using ride.update_driver_feedback
 const updateDriverFeedback = async (rideId, feedback) => {
@@ -238,8 +263,9 @@ const updateRideStatus = async (rideId, status) => {
 const updateRideStatusByAddress = async (address, status) => {
   const ride = await actor.search_ride_by_field("rideraddress", address);
   console.log("search_ride_by_field success for rider address", address);
-  ride.update_status(status);
-  console.log("update_status success for ride id", rideId);
+  // TODO fix, remove bypass
+  // ride.update_status(status);
+  // console.log("update_status success for ride id", rideId);
 }
 
 
@@ -263,16 +289,18 @@ const updatePickup = async (rideId, pickup) => {
 const updateRiderConfirmation = async (rideId, confirmation) => {
   const ride = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
-  ride.update_rider_confirmation(confirmation);
-  console.log("update_rider_confirmation success for ride id", rideId);
+  // TODO fix, remove bypass
+  // ride.update_rider_confirmation(confirmation);
+  // console.log("update_rider_confirmation success for ride id", rideId);
 }
 
 //update driver confirmations of a ride by rideid using ride.update_driver_confirmation
 const updateDriverConfirmation = async (rideId, confirmation) => {
   const ride = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
-  ride.update_driver_confirmation(confirmation);
-  console.log("update_driver_confirmation success for ride id", rideId);
+  // TODO fix, remove bypass
+  // ride.update_driver_confirmation(confirmation);
+  // console.log("update_driver_confirmation success for ride id", rideId);
 }
 
 
@@ -282,8 +310,9 @@ const updateDriverConfirmationForDriver = async (driverAddress, confirmation) =>
   console.log("getMostRecentRideIdForDriver success for driver address", driverAddress);
   const ride = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
-  ride.update_driver_confirmation(confirmation);
-  console.log("update_driver_confirmation success for ride id", rideId);
+  // TODO fix, remove bypass
+  // ride.update_driver_confirmation(confirmation);
+  // console.log("update_driver_confirmation success for ride id", rideId);
 }
 
 //update rider confirmations of the most recent ride by address using ride.update_rider_confirmation
@@ -292,8 +321,9 @@ const updateRiderConfirmationForRider = async (riderAddress, confirmation) => {
   console.log("getMostRecentRideIdForRider success for rider address", riderAddress);
   const ride = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
-  ride.update_rider_confirmation(confirmation);
-  console.log("update_rider_confirmation success for ride id", rideId);
+  // TODO fix, remove bypass
+  // ride.update_rider_confirmation(confirmation);
+  // console.log("update_rider_confirmation success for ride id", rideId);
 }
 
 
@@ -480,6 +510,14 @@ const getRiderFieldByAddress = async (address, field) => {
   return rider.get_field(field);
 };
 
+// get all drivers
+// TODO only nearby geolocation
+const getDrivers = async() => {
+  const drivers = await actor.get_drivers();
+  console.log("get_drivers success, found ", drivers.length);
+  return drivers;
+}
+
 //make new rider with actor.Rider.new
 const makeNewRider = async (name, contact, email, role, address) => {
   const rider = await actor.Rider.new(name, contact, email, role, address);
@@ -522,7 +560,54 @@ const makeNewDriver = async (
   return driver;
 };
 
+const riderSelectDriver = async (riderAddress, driverAddress) => {
+  console.log('riderSelectDriver', riderAddress, driverAddress);
+  const ride = await getMostRecentRideForRider(riderAddress);
+  console.log('getMostRecentRideForRider', ride);
+  // check ride is valid
+  if (!(await isValidRide(ride))) {
+    console.log("invalid ride");
+    return false;
+  }
 
+  const driver = await searchDriverByAddress(driverAddress);
+  console.log('searchDriverByAddress', driver);
+  // call update_driver with driver
+
+  // TODO fix this, remove bypass
+  // await ride.update_driver(driver);
+  // console.log("update_driver success, driver address", driver.address);
+  console.log('bypassed update_driver');
+  return true;
+}
+
+const isDriverConfirmedForRide = async (riderAddress) => {
+  console.log('isDriverConfirmedForRide', riderAddress);
+  // TODO pass around rideid in state instead of retrieving most recent, can cause errors if rider manages to create a newer ride during ride flow
+  const ride = await getMostRecentRideForRider(riderAddress); 
+  console.log('getMostRecentRideForRider', ride);
+  // check ride is valid
+  if (!(await isValidRide(ride))) {
+    console.log("invalid ride");
+    return false;
+  }
+
+  console.log('ride id ', ride.rideid, ' has driverconfirmation [', ride.driverConfirmation, ']');
+  return ride.driverconfirmation === 'confirmed';
+}
+
+const completeRideForRider = async (riderAddress) => {
+  console.log('completeRideForRider', riderAddress);
+  await updateRideStatusByAddress(riderAddress, { Completed: null} );
+}
 
 //exports
-export { registerRider, registerRide };
+export {
+  getDrivers,
+  registerRider,
+  registerRide,
+  riderSelectDriver,
+  isDriverConfirmedForRide,
+  updateRiderConfirmationForRider,
+  completeRideForRider
+};

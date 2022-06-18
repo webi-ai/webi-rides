@@ -38,7 +38,14 @@ import { Principal } from '@dfinity/principal';
 
 import { getAccountId } from './ICPUtils.js';
 import ledgerIDL from './nns_ledger.did.js';
-import { registerRide } from '../../modules/ICAgent.js'; // TODO naming
+import {
+  registerRide,
+  getDrivers,
+  riderSelectDriver,
+  isDriverConfirmedForRide,
+  updateRiderConfirmationForRider,
+  completeRideForRider
+} from '../../modules/ICAgent.js'; // TODO naming
 
 //remove the backend after port to new api
 const BACKEND_URL = 'http://localhost:8000/api';
@@ -330,19 +337,19 @@ export default function RideShareSteps(props) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else if (activeStep === 1) {
         updateSeats(value);
-        riderRequestRide();
+        await riderRequestRide();
       }
       //if the current step is 2, then we need to get the driver 
       else if (activeStep === 2) {
-        riderRetrieveDrivers();
+        await riderRetrieveDrivers();
       }
       //if the current step is 3, confirm the ride
       else if (activeStep === 3) {
-        riderConfirmRide();
+        // riderConfirmRide(); // TODO shouldn't be able to hit next button, only QR scan
       }
       //if the current step is 4, complete the ride 
       else if (activeStep === 4) {
-        riderCompleteRide();
+        await riderCompleteRide();
       }
     } else {
       //For Driver
@@ -377,42 +384,59 @@ export default function RideShareSteps(props) {
       "lng": String(localStorage.getItem('destinationLng')),
       "address_text":  String(localStorage.getItem('destinationName'))
     }
-    const account = localStorage.getItem('account');
-    await registerRide(account, pickup, dropoff);
+    await registerRide(getUserAddress(), pickup, dropoff);
     isLoading(false);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     // TODO replace rideContractAddress interactions with retrieving ride by driver/rider ids
   };
 
   //riderRetrieveDrivers function - called when the rider requests a ride
-  const riderRetrieveDrivers = () => {
+  const riderRetrieveDrivers = async () => {
     // TODO retrieve nearby drivers for rider geolocation
-    axios.post(BACKEND_URL + '/rider/driver/retrieveLocal', {
-      user: {
-        "account": account,
-        "latitude": 25,
-        "longitude": 25
-      }
-    }).then((response) => {
-      let temp = response.data.selectedDrivers;
-      // TODO fix all drivers the same
-      const tempList = temp.map(data => {
-        return (
-          [
-            web3.utils.hexToUtf8(data.name).trim(),
-            web3.utils.hexToUtf8(data.contact).trim(),
-            web3.utils.hexToUtf8(data.carNo).trim(),
-            data.rating.toString(),
-            RIDE_COST_ICP_E8S * 10 ** -8 + ' ICP',
-            riderAcceptDriverButton(data)
-          ]
-        );
-      });
-      setSelectedDrivers(tempList);
-      isLoading(false);
-    }).catch((err) => {
-      console.log(err);
-    })
+    // TODO 
+    const drivers = await getDrivers();
+
+    // trim to 5 drivers for demo
+    const driverTableData = drivers.slice(0, 5)
+      .map((driver) => {
+        return ([
+          driver.name.trim(),
+          driver.contact.trim(),
+          driver.vehicleplatenumber.trim(),
+          driver.rating.toString(),
+          RIDE_COST_ICP_E8S * 10 ** -8 + ' ICP',
+          riderAcceptDriverButton(driver)
+        ])});
+    
+    setSelectedDrivers(driverTableData);
+    isLoading(false);
+    
+    // axios.post(BACKEND_URL + '/rider/driver/retrieveLocal', {
+    //   user: {
+    //     "account": account,
+    //     "latitude": 25,
+    //     "longitude": 25
+    //   }
+    // }).then((response) => {
+    //   let temp = response.data.selectedDrivers;
+    //   // TODO fix all drivers the same
+    //   const tempList = temp.map(data => {
+    //     return (
+    //       [
+    //         web3.utils.hexToUtf8(data.name).trim(),
+    //         web3.utils.hexToUtf8(data.contact).trim(),
+    //         web3.utils.hexToUtf8(data.carNo).trim(),
+    //         data.rating.toString(),
+    //         RIDE_COST_ICP_E8S * 10 ** -8 + ' ICP',
+    //         riderAcceptDriverButton(data)
+    //       ]
+    //     );
+    //   });
+    //   setSelectedDrivers(tempList);
+    //   isLoading(false);
+    // }).catch((err) => {
+    //   console.log(err);
+    // })
   };
 
   // riderAcceptDriverButton() is a function that returns a button that accepts the driver
@@ -429,35 +453,51 @@ export default function RideShareSteps(props) {
   );
 
   // handleRiderAcceptDriver is a function that accepts the driver
-  const handleRiderAcceptDriver = (data) => {
-    setUserSelectedDriver(data.ethAddress);
-    axios.post(BACKEND_URL + '/rider/driver/request', {
-      'riderAddress': account,
-      'driverAddress': data.ethAddress,
-      'rideContractAddress': rideContractAddress
-    }).then((response) => {
+  const handleRiderAcceptDriver = async (data) => {
+    setUserSelectedDriver(data.address);
+    const updateSucceeded = await riderSelectDriver(getUserAddress(), data.address);
+    if(updateSucceeded) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }).catch((err) => {
-      console.log(err);
-    });
+    } else {
+      console.log('handleRiderAcceptDriver failed to select driver [', data.address, '] for rider [', account, ']'); 
+    }
+
+    // axios.post(BACKEND_URL + '/rider/driver/request', {
+    //   'riderAddress': account,
+    //   'driverAddress': data.ethAddress,
+    //   'rideContractAddress': rideContractAddress
+    // }).then((response) => {
+    //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
   };
+
+  const getUserAddress = () => {
+    // TODO retrieve principalId from whatever wallet
+    if (window.ic?.plug) {
+      return window.ic.plug.principalId;
+    }
+    return account; // may be null
+  }
 
 
   // riderConfirmRide function - called when the rider confirms a ride
   const riderConfirmRide = async () => {
-    axios.get(BACKEND_URL + '/ride/driver/isConfirmed', {
-      'rideContractAddress': rideContractAddress
-    }).then(async (response) => {
-      const driverConfirmed = response.data.isDriverConfirmed;
-      const isMakingPayments = localStorage.getItem('isMakingPayments');
+    let isDriverConfirmed = await isDriverConfirmedForRide(getUserAddress());
+    if (!isDriverConfirmed) {
+      // TODO handling for when driver is not confirmed
+      console.log('driver not yet confirmed');
+      
+      // TODO remove this bypass after demo
+      isDriverConfirmed = true;
+    }
+    const isMakingPayments = localStorage.getItem('isMakingPayments');
 
-      if (driverConfirmed && !isMakingPayments) {
-        localStorage.setItem('isMakingPayments', true);
-        await riderMakePayments();
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
+    if (isDriverConfirmed && !isMakingPayments) {
+      localStorage.setItem('isMakingPayments', true);
+      await riderMakePayments();
+    }
   }
 
 
@@ -516,7 +556,7 @@ export default function RideShareSteps(props) {
       const icpBalanceE8s = await getIcpBalanceE8s();
       // TODO fees included in cost?
       //if the icp balance is greater than the cost of the ride, make the transfer
-      if (icpBalanceE8s >= RIDE_COST_ICP_E8S) {
+      if (icpBalanceE8s >= RIDE_COST_ICP_E8S) {;
         //make the batch transfer
         const result = await window.ic.plug.batchTransactions([TRANSFER_TO_WEBI_TX, TRANSFER_TO_DRIVER_TX]);
       } else {
@@ -556,29 +596,35 @@ export default function RideShareSteps(props) {
 
   // finishConfirmRide function - called when the rider makes payments
   const finishConfirmRide = async () => {
-    axios.post(BACKEND_URL + '/rider/ride/confirm', {
-      'rideContractAddress': rideContractAddress,
-      'rideStatus': true
-    }).then(async (response) => {
-      setRideConfirmed(true);
-      localStorage.setItem('isMakingPayments', false);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }).catch((err) => {
-      console.log(err);
-    });
+    await updateRiderConfirmationForRider(getUserAddress(), 'confirmed');
+    setRideConfirmed(true);
+    localStorage.setItem('isMakingPayments', false);
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+    // axios.post(BACKEND_URL + '/rider/ride/confirm', {
+    //   'rideContractAddress': rideContractAddress,
+    //   'rideStatus': true
+    // }).then(async (response) => {
+    //   setRideConfirmed(true);
+    //   localStorage.setItem('isMakingPayments', false);
+    //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
   }
 
   // riderCancelRide function - called when the rider completes a ride
-  const riderCompleteRide = () => {
-    axios.post(BACKEND_URL + '/rider/ride/complete', {
-      'rideContractAddress': rideContractAddress,
-      'rideComplete': true
-    }).then((response) => {
-      // TODO remove alert
-      alert('Ride Completed!');
-    }).catch((err) => {
-      console.log(err);
-    });
+  const riderCompleteRide = async () => {
+    await completeRideForRider(getUserAddress());
+    // axios.post(BACKEND_URL + '/rider/ride/complete', {
+    //   'rideContractAddress': rideContractAddress,
+    //   'rideComplete': true
+    // }).then((response) => {
+    //   // TODO remove alert
+    //   alert('Ride Completed!');
+    // }).catch((err) => {
+    //   console.log(err);
+    // });
   }
 
   //driverGetRides function - called when the driver gets rides
@@ -621,7 +667,7 @@ export default function RideShareSteps(props) {
   const handleDriverAcceptRide = async (rideContractAddress) => {
     axios.post(BACKEND_URL + '/driver/ride/accept', {
       'rideContractAddress': rideContractAddress,
-      'driverAddress': account
+      'driverAddress': getUserAddress()
     }).then((response) => {
       setRideConfirmed(true);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
