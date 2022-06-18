@@ -431,31 +431,35 @@ impl Driver {
     } // get the value in the field
 } // end of impl Driver
 
-///search for rider by field and return the rider
+///search for riders by field and return the results
 #[query]
 #[candid_method(query)]
-fn search_rider_by_field(field: String, value: String) -> Option<Rider> {
+fn search_rider_by_field(field: String, value: String) -> Vec<Option<Rider>> {
     RIDER_STORE.with(|rider_store| {
+        let mut result = Vec::new();
         for rider in rider_store.borrow().iter() {
-            if rider.get_field(field.clone()) == value {
-                return Some(rider.clone());
+            if rider.get_field(field) == value {
+                result.push(Some(rider.clone()));
             }
         }
-        None
+        result
     })
 }
 
-///search for driver by field and return the driver  
+///search for drivers by field and return the results  
 #[query]
 #[candid_method(query)]
-fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
+fn search_driver_by_field(field: String, value: String) -> Vec<Option<Driver>> {
     DRIVER_STORE.with(|driver_store| {
+        let mut results = Vec::new();
         for driver in driver_store.borrow().iter() {
             if driver.get_field(field.clone()) == value {
-                return Some(driver.clone());
+                results.push(Some(driver.clone()));
+            } else {
+                results.push(None);
             }
         }
-        None
+        results
     })
 }
 
