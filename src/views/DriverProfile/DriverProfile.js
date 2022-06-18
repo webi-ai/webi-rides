@@ -16,10 +16,11 @@ import MuiAlert from '@material-ui/lab/Alert';
 import avatar from "assets/img/faces/driver.png";
 import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
-import axios from 'axios';
 
-// TODO config one place
-const BACKEND_URL = 'http://localhost:8000/api';
+import { useHistory } from 'react-router-dom';
+
+import { registerDriver } from '../../modules/ICAgent.js';
+
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -44,9 +45,7 @@ const styles = {
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
     margin: "0",
-    fontSize: "14px",
-    marginTop: "0",
-    marginBottom: "0"
+    fontSize: "14px"
   },
   cardTitleWhite: {
     color: "#FFFFFF",
@@ -56,6 +55,15 @@ const styles = {
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
     marginBottom: "3px",
     textDecoration: "none"
+  },
+  profileCard: {
+    margin: "50px auto auto",
+    width: "auto",
+    maxWidth: "700px"
+  },
+  cardFooter: {
+    display: "block",
+    marginBottom: "30px"
   }
 };
 
@@ -67,10 +75,10 @@ function Alert(props) {
 
 export default function DriverProfile(props) {
   const classes = useStyles();
+  const history = useHistory();
+
   const [ show, setHide ] = useState(false)
   const [ open, setOpen ] = React.useState(false);
-  const [ web3, setWeb3 ] = useState(props.web3);
-  const [ loading, isLoading ] = useState(false);
   const [ formData, setFormData ] = useState({
     name: "",
     contact: "",
@@ -94,42 +102,51 @@ export default function DriverProfile(props) {
     setFormData({ ...formData, [ id ]: value })
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     setHide(true);
 
-    // TODO replace placeholder IC principal with address from auth & wallet connect
-    // TODO do these need to be in localStorage?
-    localStorage.setItem('account', 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae');
-    localStorage.setItem('name', formData.name);
-    localStorage.setItem('contact', formData.contact);
-    localStorage.setItem('email', formData.email);
-    localStorage.setItem('carNo', formData.carNo);
-    localStorage.setItem('noOfSeats', formData.noOfSeats);
-    localStorage.setItem('rating', formData.rating);
-    localStorage.setItem('type', '1');
+    // TODO replace with primary user address after auth/multi-wallet
+    let address;
+    if (window.ic?.plug) {
+      address = window.ic.plug.principalId;
+    } else {
+      // TODO error handling
+      console.err('No wallet address found, using placeholder');
+      address = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
+    }
 
-    var name = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
-    var contact = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
-    var email = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
-    var carNo = web3.utils.padRight(web3.utils.fromAscii(formData.carNo), 64);
+    const driver = PLACEHOLDER_DRIVER = {
+      contact: formData.contact,
+      name: formData.name,
+      email:formData.email,
+      role: 'driver',
+      vehicleplatenumber: formData.carNo,
+      vehicleseatnumber: formData.noOfSeats,
+      vehiclemake: '',
+      vehiclemodel: '',
+      vehiclecolor: '',
+      vehicletype: '',
+      vehicleyear: '',
+      rating: 5.,
+      currentstatus: { Active: null },
+      address: address,
+    };
 
-    axios.post(BACKEND_URL + '/driver/register', {
-      driver: {
-        name: name,
-        contact: contact,
-        email: email,
-        carNo: carNo,
-        noOfSeats: Number(formData.noOfSeats),
-        role: Number(localStorage.getItem('type')),
-        account: localStorage.getItem('account')
-      }
-    }).then((response) => {
-      isLoading(false);
-    }).catch((err) => {
-      console.log(err);
-    });
-    handleSuccess()
-    event.preventDefault();
+    localStorage.setItem('account', driver.address);
+    localStorage.setItem('name', driver.name);
+    localStorage.setItem('contact', driver.contact);
+    localStorage.setItem('email', driver.email);
+    localStorage.setItem('carNo', driver.vehicleplatenumber);
+    localStorage.setItem('noOfSeats', driver.vehicleseatnumber);
+    localStorage.setItem('rating', driver.rating);
+    localStorage.setItem('userType', driver.role);
+
+
+    await registerDriver(driver);
+    handleSuccess();
+
+    // navigate to driver dash
+    history.push('/dash/driver/steps');
   }
 
   return (
@@ -139,13 +156,13 @@ export default function DriverProfile(props) {
           Added Driver Profile
         </Alert>
       </Snackbar>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={7}>
-          <form onSubmit={handleSubmit}>
+      {/* <GridContainer>
+        <GridItem xs={12} sm={12} md={7}> */}
+          <form className={classes.profileCard}  onSubmit={handleSubmit}>
             <Card>
-              <CardHeader color="primary">
-                <h4 className={classes.cardTitleWhite}>Driver Profile</h4>
-                <p className={classes.cardCategoryWhite}>Add your profile</p>
+              <CardHeader color="webi">
+                <h4 className={classes.cardTitleWhite}>Create webI Driver Account</h4>
+                <p className={classes.cardCategoryWhite}>Fill out your profile to register as a webI driver</p>
               </CardHeader>
               <CardBody>
                 <GridContainer>
@@ -218,12 +235,14 @@ export default function DriverProfile(props) {
                   </GridItem>
                 </GridContainer>
               </CardBody>
-              <CardFooter>
-                <Button color="primary" type="submit">Submit</Button>
+              <CardFooter className={classes.cardFooter}>
+                <center>
+                  <Button className={classes.submitButton} color="rose" type="submit">Create Account</Button>
+                </center>
               </CardFooter>
             </Card>
           </form>
-        </GridItem>
+        {/* </GridItem> */}
         {
           show && <GridItem xs={12} sm={12} md={5}>
             <Card profile>
@@ -277,7 +296,7 @@ export default function DriverProfile(props) {
             </Card>
           </GridItem>
         }
-      </GridContainer>
+      {/* </GridContainer> */}
     </div >
   );
 }

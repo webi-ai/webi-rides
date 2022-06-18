@@ -11,7 +11,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
-import routes from "routes.js";
+import routes from "riderRoutes.js";
 
 import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
 
@@ -22,12 +22,13 @@ let ps;
 
 const useStyles = makeStyles(styles);
 
-export default function Admin({ ...rest }) {
+export default function RiderDash({ ...rest }) {
   const switchRoutes = (
     
     <Switch>
       {routes.map((prop, key) => {
-        if (prop.layout === "/admin" && prop.path !== '/steps') {
+        // TODO this is probably a bad way to add a notification listener to one route
+        if (prop.layout === "/dash/rider" && prop.path !== '/steps') {
           return (
             <Route
               path={prop.layout + prop.path}
@@ -50,7 +51,7 @@ export default function Admin({ ...rest }) {
         }
         return null;
       })}
-      <Redirect from="/admin" to="/admin/steps" />
+      <Redirect from="/dash/rider" to="/dash/rider/steps" />
     </Switch>
   );
 
@@ -85,7 +86,7 @@ export default function Admin({ ...rest }) {
     setMobileOpen(!mobileOpen);
   };
   const getRoute = () => {
-    return window.location.pathname !== "/admin/maps";
+    return window.location.pathname !== "/dash/rider/map";
   };
   const resizeFunction = () => {
     if (window.innerWidth >= 960) {
@@ -154,7 +155,9 @@ export default function Admin({ ...rest }) {
             </div>
           </div>
         ) : (
-          <div className={classes.map}>{switchRoutes}</div>
+          <div className={classes.map}>
+            {switchRoutes}
+          </div>
         )}
 
       </div>

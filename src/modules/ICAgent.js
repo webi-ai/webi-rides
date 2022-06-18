@@ -611,16 +611,40 @@ const getOpenRidesForDriver = async (driverAddress) => {
   return rides;
 }
 
+  
+// returns true if there exists a driver with the given wallet address, false otherwise
+const isDriver = async (walletAddress) => {
+  const drivers = await actor.search_driver_by_address(walletAddress);
+  if (drivers.length > 0) {
+    return true;
+  }
+  return false;
+};
+
+// returns true if there exists a rider with the given wallet address, false otherwise
+const isRider = async (walletAddress) => {
+  const riders = await actor.search_rider_by_address(walletAddress);
+  if (riders.length > 0) {
+    return true;
+  }
+  return false;
+};
+
+
+
 //exports
 export {
-  getDrivers,
-  registerRider,
-  registerRide,
-  riderSelectDriver,
-  isDriverConfirmedForRide,
-  updateRiderConfirmationForRider,
   completeRideForRider,
+  getDrivers,
+  getMostRecentRideForRider,
   getOpenRidesForDriver,
+  isDriver,
+  isDriverConfirmedForRide,
+  isRider,
+  registerDriver,
+  registerRide,
+  registerRider,
+  riderSelectDriver,
   updateDriverConfirmation,
-  getMostRecentRideForRider
+  updateRiderConfirmationForRider,
 };

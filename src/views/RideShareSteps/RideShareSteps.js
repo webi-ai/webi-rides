@@ -227,7 +227,7 @@ export default function RideShareSteps(props) {
           <Button
             variant="outlined"
             color="secondary"
-            href="/admin/maps"
+            href="/admin/map"
             className={classes.button}
             startIcon={<LocationOn />}
           >
