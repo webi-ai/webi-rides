@@ -438,7 +438,7 @@ fn search_rider_by_field(field: String, value: String) -> Vec<Option<Rider>> {
     RIDER_STORE.with(|rider_store| {
         let mut result = Vec::new();
         for rider in rider_store.borrow().iter() {
-            if rider.get_field(field) == value {
+            if rider.get_field(field.clone()) == value {
                 result.push(Some(rider.clone()));
             }
         }
@@ -1005,13 +1005,23 @@ mod test {
         RIDER_STORE.with(|rider_store| {
             rider_store.borrow_mut().push(rider.clone());
         });
+        assert_eq!(get_riders().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_riders()[0].name, "Kelsey");
         assert_eq!(
-            search_rider_by_field("name".to_string(), "Kelsey".to_string())
-                .unwrap()
-                .name,
+            //get the first rider
+            search_rider_by_field("name".to_string(), "Kelsey".to_string())[0].as_ref()
+                .unwrap().name,
+            "Kelsey"
+        );
+        assert_eq!(
+            //get the first rider
+            search_rider_by_field("contact".to_string(), "1234567890".to_string())[0].as_ref()
+                .unwrap().name,
             "Kelsey"
         );
     }
+
     ///test search for driver by field and return the driver
     #[test]
     fn test_search_driver_by_field() {
@@ -1033,12 +1043,13 @@ mod test {
         };
         register_driver(driver);
         assert_eq!(
-            search_driver_by_field("name".to_string(), "Kelsey".to_string())
-                .unwrap()
-                .name,
+            //get the first driver
+            search_driver_by_field("name".to_string(), "Kelsey".to_string())[0].as_ref()
+                .unwrap().name,
             "Kelsey"
         );
-    }
+        
+            }
 
     ///test search for driver by name and return the driver
     #[test]
