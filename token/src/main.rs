@@ -624,6 +624,8 @@ impl Ride {
             "riderfeedback" => self.riderfeedback.clone(),
             "riderconfirmation" => self.riderconfirmation.clone(),
             "driverconfirmation" => self.driverconfirmation.clone(),
+            "driveraddress" => self.driver.address.clone(),
+            "rideraddress" => self.rider.address.clone(),
             _ => "".to_string(),
         }
     }
