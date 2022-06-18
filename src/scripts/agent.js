@@ -84,9 +84,9 @@ export const idlFactory = ({ IDL }) => {
     'get_riders' : IDL.Func([], [IDL.Vec(Rider)], ['query']),
     'get_rides' : IDL.Func([], [IDL.Vec(Ride)], ['query']),
     'get_self' : IDL.Func([], [Profile], ['query']),
-    'register_driver' : IDL.Func([Driver], [], []),
-    'register_ride' : IDL.Func([Ride], [], ['query']),
-    'register_rider' : IDL.Func([Rider], [], []),
+    'register_driver' : IDL.Func([Driver], [], ['update']),
+    'register_ride' : IDL.Func([Ride], [], ['update']),
+    'register_rider' : IDL.Func([Rider], [], ['update']),
     'search_driver_by_address' : IDL.Func(
         [IDL.Text],
         [IDL.Opt(Driver)],
