@@ -140,7 +140,7 @@ const getMostRecentRideForDriver = async (driverAddress) => {
 };
 
 const getMostRecentRide = (rides) => {
-  return rides.reduce(function(prev,curr) { return (prev.timestamp > curr.timestamp) ? prev : curr; });
+  return rides.reduce(function(prev,curr) { return (prev.timestamp > curr.timestamp) ? prev : curr; })[0];
 }
 
 //get most recent ride for a rider using actor.search_rides_by_field
@@ -320,7 +320,7 @@ const updateDriverConfirmationForDriver = async (driverAddress, confirmation) =>
 //update rider confirmations of the most recent ride by address using ride.update_rider_confirmation
 const updateRiderConfirmationForRider = async (riderAddress, confirmation) => {
   const rideId = await getMostRecentRideIdForRider(riderAddress);
-  console.log("getMostRecentRideIdForRider success for rider address", riderAddress);
+  console.log("getMostRecentRideIdForRider success for rider address", riderAddress, rideId);
   const rides_result = await actor.search_ride_by_field("rideid", rideId);
   console.log("search_ride_by_field success for ride id", rideId);
   const ride = rides_result[0];
