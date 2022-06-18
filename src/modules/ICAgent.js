@@ -178,6 +178,22 @@ const registerDriver = async (driver) => {
   );
 };
 
+////update driver of a ride by rideid using ride.update_driver
+const updateDriver = async (rideId, driver) => {
+  const ride = await getRideById(rideId);
+  // check ride is valid
+  if (!isValidRide(ride)) {
+    console.error("update_driver error, ride is not valid");
+    return;
+  }
+  //call ride.update_driver
+  await actor.update_driver(driver);
+  console.log("update_driver success, driver address", driver.address);
+}
+
+
+
+
 //update driver feedback after a ride by rideid using ride.update_driver_feedback
 const updateDriverFeedback = async (rideId, feedback) => {
   const ride = await actor.search_ride_by_field("rideid", rideId);
