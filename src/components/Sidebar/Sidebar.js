@@ -31,7 +31,7 @@ export default function Sidebar(props) {
       {routes.map((prop, key) => {
         var activePro = " ";
         var listItemClasses = classNames({
-          [" " + classes[color]]: activeRoute(prop.layout + prop.path)
+          // [" " + classes[color]]: activeRoute(prop.layout + prop.path)
         });
         const whiteFontClasses = classNames({
           [" " + classes.whiteFont]: activeRoute(prop.layout + prop.path)
