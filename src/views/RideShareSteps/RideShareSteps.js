@@ -375,9 +375,6 @@ export default function RideShareSteps(props) {
   // TODO fix distance
   //riderRequestRide function - called when the rider requests a ride
   const riderRequestRide = async () => {
-    //distance is the distance between the pickup and dropoff locations
-    const distance = web3.utils.utf8ToHex(localStorage.getItem('distance').split(" ")[0]);
-    
     const pickup = {
       "lat": String(localStorage.getItem('sourceLat')),
       "lng": String(localStorage.getItem('sourceLng')),
