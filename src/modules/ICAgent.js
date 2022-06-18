@@ -131,13 +131,21 @@ const getRidesForDriver = async (driverAddress) => {
 
 //get most recent ride for a driver using actor.search_rides_by_field
 const getMostRecentRideForDriver = async (driverAddress) => {
-  const rides = await actor.search_ride_by_field(
+  const rides_result = await actor.search_ride_by_field(
     "driveraddress",
     driverAddress
   );
   console.log("search_ride_by_field success for driver address", driverAddress);
-  return getMostRecentRide(rides);
-};
+  const ride = rides_result.map((ride) => {
+    return ride;
+  }
+  ).sort((a, b) => {
+    return b.timestamp - a.timestamp;
+  }
+  );
+  return ride[0];
+}
+
 
 const getMostRecentRide = (rides) => {
   return rides.reduce(function (prev, curr) { return (prev.timestamp > curr.timestamp) ? prev : curr; });
@@ -148,7 +156,10 @@ const getMostRecentRideForRider = async (riderAddress) => {
   const rides_result = await actor.search_ride_by_field("rideraddress", riderAddress);
   console.log("search_ride_by_field success for rider address", riderAddress);
   const ride = rides_result.map((ride) => {
-    return getMostRecentRide(ride);
+    return ride;  
+  }
+  ).sort((a, b) => {
+    return b.timestamp - a.timestamp;
   }
   );
   return ride[0];
