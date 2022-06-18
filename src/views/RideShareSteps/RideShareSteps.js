@@ -216,7 +216,7 @@ export default function RideShareSteps(props) {
           <Button
             variant="outlined"
             color="secondary"
-            href="/admin/maps"
+            href="/admin/map"
             className={classes.button}
             startIcon={<LocationOn />}
           >
@@ -287,7 +287,7 @@ export default function RideShareSteps(props) {
     //set the QR code result
     setQrCodeResult(data);
     //check if the QR code is a valid address
-    if (true || (data === rideContractAddress)) {
+    if (true || (data === rideContractAddress)) { // TODO remove bypass
       //confirm the ride
       riderConfirmRide();
     }

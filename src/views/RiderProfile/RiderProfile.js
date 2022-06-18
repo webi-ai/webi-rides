@@ -17,6 +17,7 @@ import avatar from "assets/img/faces/marc.jpg";
 import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
 import Loader from '../../components/Loader/Loader';
+import { useHistory } from 'react-router-dom';
 
 import { registerRider } from '../../modules/ICAgent.js';
 
@@ -55,6 +56,15 @@ const styles = {
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
     marginBottom: "3px",
     textDecoration: "none"
+  },
+  profileCard: {
+    margin: "50px auto auto",
+    width: "auto",
+    maxWidth: "700px"
+  },
+  cardFooter: {
+    display: "block",
+    marginBottom: "30px"
   }
 };
 
@@ -66,16 +76,18 @@ function Alert(props) {
 
 export default function RiderProfile(props) {
   const classes = useStyles();
+  const history = useHistory();
+
   const [ show, setHide ] = useState(false)
   const [ open, setOpen ] = React.useState(false);
   const [ loading, isLoading ] = useState(false);
   const [ web3, setWeb3 ] = useState(props.web3);
-
   const [ formData, setFormData ] = useState({
     name: "",
     contact: "", // TODO update var name
     email: "",
   })
+
   const handleSuccess = () => {
     setOpen(true);
   };
@@ -119,30 +131,34 @@ export default function RiderProfile(props) {
     localStorage.setItem('email', rider.email);
     localStorage.setItem('userType', rider.role);
 
-    registerRider(rider)
-      .then(() => {
+    await registerRider(rider);
+      // .then(() => {
         isLoading(false);
-      });
+      // });
     handleSuccess();
+    
+    // TODO time delay before redirect
+    // navigate to rider dash
+    history.push('/dash/rider/steps');
   }
 
   if (loading) {
     return <Loader />;
   } else {
     return (
-      <div>
+      <div >
         <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
           <Alert onClose={handleClose} severity="success">
             Added Rider Profile
           </Alert>
         </Snackbar>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={7}>
-            <form onSubmit={handleSubmit}>
+        {/* <GridContainer>
+          <GridItem className={classes.profileCard} xs={12} sm={12} md={7}> */}
+            <form className={classes.profileCard} onSubmit={handleSubmit}>
               <Card>
-                <CardHeader color="primary">
-                  <h4 className={classes.cardTitleWhite}>Rider Profile</h4>
-                  <p className={classes.cardCategoryWhite}>Add your profile</p>
+                <CardHeader color="webi">
+                  <h4 className={classes.cardTitleWhite}>Create webI Rider Account</h4>
+                  <p className={classes.cardCategoryWhite}>Fill out your profile to register as a webI rider</p>
                 </CardHeader>
                 <CardBody>
                   <GridContainer>
@@ -187,12 +203,14 @@ export default function RiderProfile(props) {
                     </GridItem>
                   </GridContainer>
                 </CardBody>
-                <CardFooter>
-                  <Button color="primary" type="submit">Submit</Button>
+                <CardFooter className={classes.cardFooter}>
+                  <center>
+                    <Button color="rose" type="submit">Create Account</Button>
+                  </center>
                 </CardFooter>
               </Card>
             </form>
-          </GridItem>
+          {/* </GridItem> */}
           {
             show && <GridItem xs={12} sm={12} md={5} >
               <Card profile>
@@ -202,7 +220,7 @@ export default function RiderProfile(props) {
                   </a>
                 </CardAvatar>
                 <CardBody profile>
-                  <p className={classes.cardCategory}>USER</p>
+                  <p className={classes.cardCategory}>RIDER</p>
                   <h4 className={classes.cardTitle}>{formData.name}</h4>
                   <p className={classes.description}>
                     <TableContainer component={Paper}>
@@ -231,7 +249,7 @@ export default function RiderProfile(props) {
               </Card>
             </GridItem>
           }
-        </GridContainer>
+        {/* </GridContainer> */}
       </div >
     );
   }

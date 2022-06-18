@@ -1,24 +1,26 @@
 import React from 'react';
-import './Map.css';
+
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css';
 import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import MapboxTraffic from '@mapbox/mapbox-gl-traffic';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+
+import maplibregl from 'maplibre-gl';
+
 import { ArcLayer, ContourLayer } from 'deck.gl';
 import { COORDINATE_SYSTEM } from '@deck.gl/core';
 import { Deck } from "@deck.gl/core";
 import GL from '@luma.gl/constants';
-import maplibregl from 'maplibre-gl';
-
 import { ScatterplotLayer } from "@deck.gl/layers";
 import { MapboxLayer } from "@deck.gl/mapbox";
 import { TerrainLayer } from '@deck.gl/geo-layers';
 import { PointCloudLayer } from '@deck.gl/layers';
-
 import { GeoJsonLayer, PolygonLayer } from '@deck.gl/layers';
 import { LightingEffect, AmbientLight, _SunLight as SunLight } from '@deck.gl/core';
+
 import { scaleThreshold } from 'd3-scale';
 import MapState from 'react-map-gl/src/utils/map-state';
 
@@ -93,14 +95,14 @@ class Map extends React.Component {
       localStorage.setItem('destinationLng', destination[0]);
       localStorage.setItem('destinationLat', destination[1]);
 
-      axios.get('https://nominatim.openstreetmap.org/reverse?format=geojson&lat=' + localStorage.getItem('sourceLat') + '&lon=' + localStorage.getItem('sourceLng'))
+      axios.get('https://api.geoapify.com/v1/geocode/reverse?format=json&apiKey=df9f30a3e5bb4a80839133682e3489e5&lat=' + localStorage.getItem('sourceLat') + '&lon=' + localStorage.getItem('sourceLng'))
         .then((response) => {
-          localStorage.setItem('sourceName', response.data.features[0].properties.display_name);
+          localStorage.setItem('sourceName', response.data.results[0].formatted);
         }).catch ((e) => {
           console.log(e);
         });
       
-      axios.get('https://nominatim.openstreetmap.org/reverse?format=geojson&lat=' + localStorage.getItem('destinationLat') + '&lon=' + localStorage.getItem('destinationLng'))
+      axios.get('https://api.geoapify.com/v1/geocode/reverse?format=json&apiKey=df9f30a3e5bb4a80839133682e3489e5&lat=' + localStorage.getItem('destinationLat') + '&lon=' + localStorage.getItem('destinationLng'))
         .then((response) => {
           localStorage.setItem('destinationName', response.data.features[0].properties.display_name);
         }).catch ((e) => {
@@ -108,8 +110,8 @@ class Map extends React.Component {
         });
 
       const routeUrl = 'https://api.geoapify.com/v1/routing?waypoints='+ localStorage.getItem('sourceLat') +'%2C' + localStorage.getItem('sourceLng') + '%7C'
-        + localStorage.getItem('destinationLat') + '%2C' + localStorage.getItem('destinationLng') + '&mode=drive&units=imperial'+
-        '&apiKey=df9f30a3e5bb4a80839133682e3489e5';
+        + localStorage.getItem('destinationLat') + '%2C' + localStorage.getItem('destinationLng') + '&mode=drive&units=imperial'
+        + '&apiKey=df9f30a3e5bb4a80839133682e3489e5';
       axios.get(routeUrl)
         .then((response) => {
           localStorage.setItem('distance', response.data.features[0].properties.distance.toFixed(1) + ' miles');
@@ -279,7 +281,7 @@ class Map extends React.Component {
         <img src={logo} style={{position:"absolute", left:"10px", bottom:"15px", zIndex:"999"}} width="90" height="75" alt="webI logo"></img>
         <Fab variant="extended"
           color="secondary"
-          href="/admin/steps"
+          href="/dash/rider/steps"
           style={{
             position: "absolute",
             right: "55px",
