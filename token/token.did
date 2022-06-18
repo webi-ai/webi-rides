@@ -51,12 +51,12 @@ service : {
   register_rider : (Rider) -> ();
   search_driver_by_address : (text) -> (opt Driver) query;
   search_driver_by_contact : (text) -> (opt Driver) query;
-  search_driver_by_field : (text, text) -> (opt Driver) query;
+  search_driver_by_field : (text, text) -> (vec opt Driver) query;
   search_driver_by_name : (text) -> (opt Driver) query;
-  search_ride_by_field : (text, text) -> (opt Ride) query;
+  search_ride_by_field : (text, text) -> (vec opt Ride) query;
   search_ride_by_id : (text) -> (opt Ride) query;
   search_rider_by_address : (text) -> (opt Rider) query;
-  search_rider_by_field : (text, text) -> (opt Rider) query;
+  search_rider_by_field : (text, text) -> (vec opt Rider) query;
   update : (Profile) -> ();
   update_driver_rating : (text, float64) -> ();
   update_driver_status : (text, CurrentStatus) -> () query;
