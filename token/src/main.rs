@@ -429,47 +429,207 @@ impl Driver {
             _ => "".to_string(),
         }
     } // get the value in the field
+    //updates
+    pub fn update_name(&mut self, name: String) {
+        self.name = name;
+    } // update the name of the driver
+    pub fn update_contact(&mut self, contact: String) {
+        self.contact = contact;
+    } // update the contact of the driver
+    pub fn update_email(&mut self, email: String) {
+        self.email = email;
+    } // update the email of the driver
+    pub fn update_role(&mut self, role: String) {
+        self.role = role;
+    } // update the role of the driver
+    pub fn update_vehicleplatenumber(&mut self, vehicleplatenumber: String) {
+        self.vehicleplatenumber = vehicleplatenumber;
+    } // update the vehicleplatenumber of the driver
+    pub fn update_vehicleseatnumber(&mut self, vehicleseatnumber: String) {
+        self.vehicleseatnumber = vehicleseatnumber;
+    } // update the vehicleseatnumber of the driver
+    pub fn update_vehiclemake(&mut self, vehiclemake: String) {
+        self.vehiclemake = vehiclemake;
+    } // update the vehiclemake of the driver
+    pub fn update_vehiclemodel(&mut self, vehiclemodel: String) {
+        self.vehiclemodel = vehiclemodel;
+    } // update the vehiclemodel of the driver
+    pub fn update_vehiclecolor(&mut self, vehiclecolor: String) {
+        self.vehiclecolor = vehiclecolor;
+    } // update the vehiclecolor of the driver
+    pub fn update_vehicletype(&mut self, vehicletype: String) {
+        self.vehicletype = vehicletype;
+    } // update the vehicletype of the driver
+    pub fn update_vehicleyear(&mut self, vehicleyear: String) {
+        self.vehicleyear = vehicleyear;
+    } // update the vehicleyear of the driver
+    pub fn update_rating(&mut self, rating: f64) {
+        self.rating = rating;
+    } // update the rating of the driver
+    pub fn update_currentstatus(&mut self, currentstatus: CurrentStatus) {
+        self.currentstatus = currentstatus;
+    } // update the currentstatus of the driver
+    pub fn update_address(&mut self, address: String) {
+        self.address = address;
+    } // update the address of the driver
+    pub fn update_field(&mut self, field: String, value: String) {
+        match field.as_str() {
+            "name" => self.name = value,
+            "contact" => self.contact = value,
+            "email" => self.email = value,
+            "role" => self.role = value,
+            "vehicleplatenumber" => self.vehicleplatenumber = value,
+            "vehicleseatnumber" => self.vehicleseatnumber = value,
+            "vehiclemake" => self.vehiclemake = value,
+            "vehiclemodel" => self.vehiclemodel = value,
+            "vehiclecolor" => self.vehiclecolor = value,
+            "vehicletype" => self.vehicletype = value,
+            "vehicleyear" => self.vehicleyear = value,
+            "rating" => self.rating = value.parse().unwrap(),
+            "address" => self.address = value,
+            _ => (),
+        }
+    } // update the field of the driver
+    //update whole driver
+    pub fn update_driver(&mut self, driver: Driver) {
+        self.name = driver.name;
+        self.contact = driver.contact;
+        self.email = driver.email;
+        self.role = driver.role;
+        self.vehicleplatenumber = driver.vehicleplatenumber;
+        self.vehicleseatnumber = driver.vehicleseatnumber;
+        self.vehiclemake = driver.vehiclemake;
+        self.vehiclemodel = driver.vehiclemodel;
+        self.vehiclecolor = driver.vehiclecolor;
+        self.vehicletype = driver.vehicletype;
+        self.vehicleyear = driver.vehicleyear;
+        self.rating = driver.rating;
+        self.currentstatus = driver.currentstatus;
+        self.address = driver.address;
+    } // update the whole driver
+    //delete
+    pub fn delete_name(&mut self) {
+        self.name = "".to_string();
+    } // delete the name of the driver
+    pub fn delete_contact(&mut self) {
+        self.contact = "".to_string();
+    } // delete the contact of the driver
+    pub fn delete_email(&mut self) {
+        self.email = "".to_string();
+    } // delete the email of the driver
+    pub fn delete_role(&mut self) {
+        self.role = "".to_string();
+    } // delete the role of the driver
+    pub fn delete_vehicleplatenumber(&mut self) {
+        self.vehicleplatenumber = "".to_string();
+    } // delete the vehicleplatenumber of the driver
+    pub fn delete_vehicleseatnumber(&mut self) {
+        self.vehicleseatnumber = "".to_string();
+    } // delete the vehicleseatnumber of the driver
+    pub fn delete_vehiclemake(&mut self) {
+        self.vehiclemake = "".to_string();
+    } // delete the vehiclemake of the driver
+    pub fn delete_vehiclemodel(&mut self) {
+        self.vehiclemodel = "".to_string();
+    } // delete the vehiclemodel of the driver
+    pub fn delete_vehiclecolor(&mut self) {
+        self.vehiclecolor = "".to_string();
+    } // delete the vehiclecolor of the driver
+    pub fn delete_vehicletype(&mut self) {
+        self.vehicletype = "".to_string();
+    } // delete the vehicletype of the driver
+    pub fn delete_vehicleyear(&mut self) {
+        self.vehicleyear = "".to_string();
+    } // delete the vehicleyear of the driver
+    pub fn delete_rating(&mut self) {
+        self.rating = 0.0;
+    } // delete the rating of the driver
+    pub fn delete_address(&mut self) {
+        self.address = "".to_string();
+    } // delete the address of the driver
+    pub fn delete_field(&mut self, field: String) {
+        match field.as_str() {
+            "name" => self.name = "".to_string(),
+            "contact" => self.contact = "".to_string(),
+            "email" => self.email = "".to_string(),
+            "role" => self.role = "".to_string(),
+            "vehicleplatenumber" => self.vehicleplatenumber = "".to_string(),
+            "vehicleseatnumber" => self.vehicleseatnumber = "".to_string(),
+            "vehiclemake" => self.vehiclemake = "".to_string(),
+            "vehiclemodel" => self.vehiclemodel = "".to_string(),
+            "vehiclecolor" => self.vehiclecolor = "".to_string(),
+            "vehicletype" => self.vehicletype = "".to_string(),
+            "vehicleyear" => self.vehicleyear = "".to_string(),
+            "rating" => self.rating = 0.0,
+            "currentstatus" => self.currentstatus = CurrentStatus::Inactive,
+            "address" => self.address = "".to_string(),
+            _ => (),
+        }
+    } // delete the field of the driver
+    //delete whole driver
+    pub fn delete_driver(&mut self) {
+        self.name = "".to_string();
+        self.contact = "".to_string();
+        self.email = "".to_string();
+        self.role = "".to_string();
+        self.vehicleplatenumber = "".to_string();
+        self.vehicleseatnumber = "".to_string();
+        self.vehiclemake = "".to_string();
+        self.vehiclemodel = "".to_string();
+        self.vehiclecolor = "".to_string();
+        self.vehicletype = "".to_string();
+        self.vehicleyear = "".to_string();
+        self.rating = 0.0;
+        self.currentstatus = CurrentStatus::Inactive;
+        self.address = "".to_string();
+    } // delete the whole driver
+    
 } // end of impl Driver
 
-///search for rider by field and return the rider
+///search for riders by field and return the results
 #[query]
 #[candid_method(query)]
-fn search_rider_by_field(field: String, value: String) -> Option<Rider> {
+fn search_rider_by_field(field: String, value: String) -> Vec<Option<Rider>> {
     RIDER_STORE.with(|rider_store| {
+        let mut result = Vec::new();
         for rider in rider_store.borrow().iter() {
             if rider.get_field(field.clone()) == value {
-                return Some(rider.clone());
+                result.push(Some(rider.clone()));
             }
         }
-        None
+        result
     })
 }
 
-///search for driver by field and return the driver  
+///search for drivers by field and return the results  
 #[query]
 #[candid_method(query)]
-fn search_driver_by_field(field: String, value: String) -> Option<Driver> {
+fn search_driver_by_field(field: String, value: String) -> Vec<Option<Driver>> {
     DRIVER_STORE.with(|driver_store| {
+        let mut results = Vec::new();
         for driver in driver_store.borrow().iter() {
             if driver.get_field(field.clone()) == value {
-                return Some(driver.clone());
+                results.push(Some(driver.clone()));
+            } else {
+                results.push(None);
             }
         }
-        None
+        results
     })
 }
 
-//search for ride by field and return the ride
+//search for rides by field and return all results
 #[query]
 #[candid_method(query)]
-fn search_ride_by_field(field: String, value: String) -> Option<Ride> {
+fn search_ride_by_field(field: String, value: String) -> Vec<Option<Ride>> {
     RIDES_STORE.with(|ride_store| {
+        let mut result = Vec::new();
         for ride in ride_store.borrow().iter() {
             if ride.get_field(field.clone()) == value {
-                return Some(ride.clone());
+                result.push(Some(ride.clone()));
             }
         }
-        None
+        result
     })
 }
 
@@ -624,6 +784,8 @@ impl Ride {
             "riderfeedback" => self.riderfeedback.clone(),
             "riderconfirmation" => self.riderconfirmation.clone(),
             "driverconfirmation" => self.driverconfirmation.clone(),
+            "driveraddress" => self.driver.address.clone(),
+            "rideraddress" => self.rider.address.clone(),
             _ => "".to_string(),
         }
     }
@@ -998,13 +1160,23 @@ mod test {
         RIDER_STORE.with(|rider_store| {
             rider_store.borrow_mut().push(rider.clone());
         });
+        assert_eq!(get_riders().len(), 1);
+        //check the data was written to the store
+        assert_eq!(get_riders()[0].name, "Kelsey");
         assert_eq!(
-            search_rider_by_field("name".to_string(), "Kelsey".to_string())
-                .unwrap()
-                .name,
+            //get the first rider
+            search_rider_by_field("name".to_string(), "Kelsey".to_string())[0].as_ref()
+                .unwrap().name,
+            "Kelsey"
+        );
+        assert_eq!(
+            //get the first rider
+            search_rider_by_field("contact".to_string(), "1234567890".to_string())[0].as_ref()
+                .unwrap().name,
             "Kelsey"
         );
     }
+
     ///test search for driver by field and return the driver
     #[test]
     fn test_search_driver_by_field() {
@@ -1026,12 +1198,13 @@ mod test {
         };
         register_driver(driver);
         assert_eq!(
-            search_driver_by_field("name".to_string(), "Kelsey".to_string())
-                .unwrap()
-                .name,
+            //get the first driver
+            search_driver_by_field("name".to_string(), "Kelsey".to_string())[0].as_ref()
+                .unwrap().name,
             "Kelsey"
         );
-    }
+        
+            }
 
     ///test search for driver by name and return the driver
     #[test]
