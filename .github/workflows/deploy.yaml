@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: cargo install ic-cdk-optimizer --root target
+        run: rustup upgrade && cargo install ic-cdk-optimizer --root target
         
       - name: Deploy canisters
         id: deploy
