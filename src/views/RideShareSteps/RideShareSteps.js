@@ -57,7 +57,7 @@ const BACKEND_URL = 'http://localhost:8000/api';
 const NNS_LEDGER_CANISTER_ID = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
 
 //webi wallet address
-const WEBI_ICP_WALLET_PRINCIPAL_ID = 'ghekb-nhvbl-y3cnr-lwqbc-xpwyo-akn6f-gbgz6-lpsuj-adq4f-k4dff-zae';
+const WEBI_ICP_WALLET_PRINCIPAL_ID = 'lj35m-ts2b6-4hwzr-oefvh-f6phh-3jxmd-brsse-6stci-hnbyz-xfsbp-4ae';
 
 //webi fee is 0.15% of the total price
 const WEBI_FEE_PERCENTAGE = 0.15;

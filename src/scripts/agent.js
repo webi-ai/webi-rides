@@ -17,7 +17,7 @@ const identity = Ed25519KeyIdentity.generate(require('crypto').randomBytes(32));
 const agent = new HttpAgent({
   //identity,
   // fetch: self.fetch.bind(self),
-  host: "http://127.0.0.1:8000" //"https://boundary.ic0.app" //local replica url if local dev
+  host: "https://boundary.ic0.app" //"http://127.0.0.1:8000" //"https://boundary.ic0.app" //local replica url if local dev
 });
 
 
@@ -138,13 +138,13 @@ if (true) {
 //need to set this canister id properly, currently set to sudograph as placeholder
 const actor = Actor.createActor(idlFactory, {
   agent,
-  canisterId: 'rrkah-fqaaa-aaaaa-aaaaq-cai' //'uqklt-lyaaa-aaaai-aajqa-cai'//for prod //rrkah-fqaaa-aaaaa-aaaaq-cai for local dev
+  canisterId: 'ihde4-fiaaa-aaaap-aahcq-cai' //'ihde4-fiaaa-aaaap-aahcq-cai'//for prod //rrkah-fqaaa-aaaaa-aaaaq-cai for local dev
 });
 
 //export the actor
 export default actor;
 
-
+/*
 //create a test registerRider data object
 const record_insert = {
   contact: "1234567890",
@@ -260,3 +260,4 @@ actor.register_ride(record_ride_insert).then(res => {
   console.log(err);
 }
 );
+*/
