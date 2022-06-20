@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: yarn && cargo install ic-cdk-optimizer --root target
+        run: cargo install ic-cdk-optimizer --root target
         
       - name: Deploy canisters
         id: deploy
@@ -17,5 +17,6 @@ jobs:
         with:
           identity: ${{ secrets.DFX_IDENTITY }}
           dfx_params: --no-wallet
+
       - name: Show success message
         run: echo success!
