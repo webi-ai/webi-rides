@@ -8,9 +8,12 @@ jobs:
     name: A job to deploy canisters to the IC
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: rustup upgrade && cargo install ic-cdk-optimizer --root target
+        
       - name: Deploy canisters
         id: deploy
-        uses:  webi-ai/IC-Deploy-Action-rust@main
+        uses: webi-ai/IC-Deploy-Action-rust@main
         with:
           identity: ${{ secrets.DFX_IDENTITY }}
           dfx_params: --no-wallet
