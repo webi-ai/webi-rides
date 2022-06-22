@@ -58,6 +58,8 @@ service : {
   search_rider_by_address : (text) -> (opt Rider) query;
   search_rider_by_field : (text, text) -> (vec opt Rider) query;
   update : (Profile) -> ();
+  update_driver_for_ride : (text, Driver) -> ();
   update_driver_rating : (text, float64) -> ();
   update_driver_status : (text, CurrentStatus) -> () query;
+  update_rider_for_ride : (text, Rider) -> ();
 }
