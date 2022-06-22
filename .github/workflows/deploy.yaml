@@ -8,9 +8,6 @@ jobs:
     name: A job to deploy canisters to the IC
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - name: Deploy canisters
         id: deploy
         uses:  webi-ai/IC-Deploy-Action-rust@master
