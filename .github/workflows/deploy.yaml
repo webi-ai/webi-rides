@@ -3,27 +3,23 @@ name: deploy to Internet Computer
 on:
   workflow_dispatch:
 jobs:
-  Explore-GitHub-Actions:
+  test-deploy:
     runs-on: ubuntu-latest
+    name: A job to deploy canisters to the IC
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: cargo test
-        run: |
-          cargo test
-          cargo clippy
-      - run: echo "🍏 This job's status is ${{ job.status }}."
       - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build        
       - name: Deploy canisters
         id: deploy
         uses: fleekhq/ic-deploy-action@master
         with:
           identity: ${{ secrets.DFX_IDENTITY }}
           dfx_params: --no-wallet
+
       - name: Show success message
         run: echo success!
