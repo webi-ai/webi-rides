@@ -39,6 +39,8 @@ pub enum CurrentStatus {
     Inactive,
 }
 
+
+/// implement the fmt::Display trait for CurrentStatus
 impl fmt::Display for CurrentStatus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -47,6 +49,43 @@ impl fmt::Display for CurrentStatus {
         }
     }
 }
+
+/// implement std::str::FromStr trait for CurrentStatus
+impl std::str::FromStr for CurrentStatus {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Active" => Ok(CurrentStatus::Active),
+            "Inactive" => Ok(CurrentStatus::Inactive),
+            _ => Err(format!("Invalid CurrentStatus: {}", s)),
+        }
+    }
+}
+
+/// implement the fmt::Display trait for RideStatus
+impl fmt::Display for RideStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            RideStatus::Active => write!(f, "Active"),
+            RideStatus::Completed => write!(f, "Completed"),
+            RideStatus::Cancelled => write!(f, "Cancelled"),
+        }
+    }
+}
+
+/// implement std::str::FromStr trait for RideStatus
+impl std::str::FromStr for RideStatus {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Active" => Ok(RideStatus::Active),
+            "Completed" => Ok(RideStatus::Completed),
+            "Cancelled" => Ok(RideStatus::Cancelled),
+            _ => Err(format!("Invalid RideStatus: {}", s)),
+        }
+    }
+}
+
 
 #[derive(Clone, Debug, CandidType, Deserialize)]
 pub struct Rider {
@@ -641,15 +680,6 @@ pub enum RideStatus {
     Cancelled,
 }
 
-impl fmt::Display for RideStatus {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            RideStatus::Active => write!(f, "Active"),
-            RideStatus::Completed => write!(f, "Completed"),
-            RideStatus::Cancelled => write!(f, "Cancelled"),
-        }
-    }
-}
 
 ///Ride struct for the ride table
 #[derive(Debug, Deserialize, Clone, CandidType)]
@@ -812,6 +842,32 @@ fn search_ride_by_id(rideid: String) -> Option<Ride> {
     }
     None
 }
+
+///update a driver for a ride by rideid
+#[update]
+#[candid_method(update)]
+fn update_driver_for_ride(rideid: String, driver: Driver) {
+    let mut rides = get_rides();
+    for ride in rides.iter_mut() {
+        if ride.rideid == rideid {
+            ride.update_driver(driver.clone());
+        }
+    }
+}
+
+
+///update a rider for a ride by rideid
+#[update]
+#[candid_method(update)]
+fn update_rider_for_ride(rideid: String, rider: Rider) {
+    let mut rides = get_rides();
+    for ride in rides.iter_mut() {
+        if ride.rideid == rideid {
+            ride.update_rider(rider.clone());
+        }
+    }
+}
+
 
 export_service!();
 
