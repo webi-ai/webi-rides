@@ -47,7 +47,7 @@ service : {
   get_rides : () -> (vec Ride) query;
   get_self : () -> (Profile) query;
   register_driver : (Driver) -> ();
-  register_ride : (Ride) -> () query;
+  register_ride : (Ride) -> ();
   register_rider : (Rider) -> ();
   search_driver_by_address : (text) -> (opt Driver) query;
   search_driver_by_contact : (text) -> (opt Driver) query;
