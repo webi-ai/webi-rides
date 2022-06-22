@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy canisters
         id: deploy
-        uses:  webi-ai/IC-Deploy-Action-rust@master
+        uses:  webi-ai/IC-Deploy-Action-rust@release
         with:
           identity: ${{ secrets.DFX_IDENTITY }}
           dfx_params: --no-wallet
