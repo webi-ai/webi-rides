@@ -14,6 +14,8 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: build        
+      - name: link cargo to bin
+        run: ln -s /home/runner/.cargo/bin/cargo /usr/local/bin
       - name: Deploy canisters
         id: deploy
         uses: fleekhq/ic-deploy-action@master
