@@ -11,14 +11,9 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build        
-      - name: link cargo to bin
-        run: ln -s /home/runner/.cargo/bin/cargo /usr/local/bin
       - name: Deploy canisters
         id: deploy
-        uses: fleekhq/ic-deploy-action@master
+        uses:  webi-ai/IC-Deploy-Action-rust@master
         with:
           identity: ${{ secrets.DFX_IDENTITY }}
           dfx_params: --no-wallet
