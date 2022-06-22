@@ -823,7 +823,7 @@ impl Ride {
 
 ///register ride to RIDES_STORE
 #[update]
-#[candid_method(query)]
+#[candid_method(update)]
 fn register_ride(ride: Ride) {
     RIDES_STORE.with(|rides_store| {
         rides_store.borrow_mut().push(ride);
