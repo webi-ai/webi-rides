@@ -1565,7 +1565,9 @@ mod test {
         let mut new_driver = driver.clone();
         new_driver.update_vehiclemake("Honda".to_string());
         update_driver(driver.address, new_driver.clone());
-        let new_ride = ride.clone();
+        let mut new_ride = ride.clone();
+        new_ride.driver = new_driver.clone();
+
         //update_ride with new ride
         update_ride(ride.rideid, new_ride);
 
