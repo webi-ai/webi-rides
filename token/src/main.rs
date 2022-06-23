@@ -681,6 +681,83 @@ pub enum RideStatus {
 }
 
 
+//remove a ride from the ride store
+#[update]
+#[candid_method(update)]
+fn remove_ride(ride_id: String) {
+    RIDES_STORE.with(|ride_store| {
+        let mut ride_store = ride_store.borrow_mut();
+        let mut index = 0;
+        for ride in ride_store.iter() {
+            if ride.rideid == ride_id {
+                ride_store.remove(index);
+                break;
+            }
+            index += 1;
+        }
+    });
+}
+
+//remove a ride in the store then add the new one
+#[update]
+#[candid_method(update)]
+fn update_ride(ride_id: String, ride: Ride) {
+    RIDES_STORE.with(|ride_store| {
+        let mut ride_store = ride_store.borrow_mut();
+        let mut index = 0;
+        for ride_ in ride_store.iter() {
+            if ride_.rideid == ride_id {
+                ride_store.remove(index);
+                break;
+            }
+            index += 1;
+        }
+    });
+    RIDES_STORE.with(|ride_store| {
+        let mut ride_store = ride_store.borrow_mut();
+        ride_store.push(ride);
+    });
+}
+
+//remove a rider from the store by address
+#[update]
+#[candid_method(update)]
+fn remove_rider(address: String) {
+    RIDER_STORE.with(|rider_store| {
+        let mut rider_store = rider_store.borrow_mut();
+        let mut index = 0;
+        for rider in rider_store.iter() {
+            if rider.address == address {
+                rider_store.remove(index);
+                break;
+            }
+            index += 1;
+        }
+    });
+}
+
+//remove a driver from the store by address and add the new one
+#[update]
+#[candid_method(update)]
+fn update_driver(address: String, driver: Driver) {
+    DRIVER_STORE.with(|driver_store| {
+        let mut driver_store = driver_store.borrow_mut();
+        let mut index = 0;
+        for driver_ in driver_store.iter() {
+            if driver_.address == address {
+                driver_store.remove(index);
+                break;
+            }
+            index += 1;
+        }
+    });
+    DRIVER_STORE.with(|driver_store| {
+        let mut driver_store = driver_store.borrow_mut();
+        driver_store.push(driver);
+    });
+}
+
+
 ///Ride struct for the ride table
 #[derive(Debug, Deserialize, Clone, CandidType)]
 pub struct Ride {
@@ -1434,5 +1511,71 @@ mod test {
         assert_eq!(ride.rider.name, rider.name);
         assert_eq!(ride.driver.name, driver.name);
         //search ride by pickup
+    }
+
+    ///test update_driver_for_ride
+    #[test]
+    fn test_update_driver_for_ride() {
+        //create driver
+        let driver = Driver {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@gmail.com".to_string(),
+            role: "driver".to_string(),
+            vehicleplatenumber: "ABC123".to_string(),
+            vehicleseatnumber: "1".to_string(),
+            vehiclemake: "Toyota".to_string(),
+            vehiclemodel: "Corolla".to_string(),
+            vehiclecolor: "Black".to_string(),
+            vehicletype: "SUV".to_string(),
+            vehicleyear: "2020".to_string(),
+            rating: 0.0,
+            currentstatus: CurrentStatus::Active,
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_driver(driver.clone());
+        //create rider
+        let rider = Rider {
+            name: "Kelsey".to_string(),
+            contact: "1234567890".to_string(),
+            email: "test@email.com".to_string(),
+            role: "rider".to_string(),
+            address: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+        };
+        register_rider(rider.clone());
+        //create ride for register_ride
+        let ride = Ride {
+            rideid: "cjr37-nxx7a-keiqq-efh5n-v47nd-ceddb-2c6hg-aseen-h66ih-so563-hae".to_string(),
+            rider: rider.clone(),
+            driver: driver.clone(),
+            pickup: "new york".to_string(),
+            dropoff: "san francisco".to_string(),
+            timestamp: "2020-01-01T00:00:00.000Z".to_string(),
+            status: RideStatus::Active,
+            driverrating: 0.0,
+            riderrating: 0.0,
+            driverconfirmation: "".to_string(),
+            riderconfirmation: "".to_string(),
+            driverfeedback: "".to_string(),
+            riderfeedback: "".to_string(),
+            rating: 0.0,
+        };
+
+        register_ride(ride.clone());
+        let mut new_driver = driver.clone();
+        new_driver.update_vehiclemake("Honda".to_string());
+        update_driver(driver.address, new_driver.clone());
+        let new_ride = ride.clone();
+        //update_ride with new ride
+        update_ride(ride.rideid, new_ride);
+
+        //get rides
+        let rides = get_rides();
+        //get first ride
+        let check_ride = rides.first().unwrap();
+        //assert ride exists
+        assert_eq!(check_ride.rider.name, rider.name);
+        //check for honda
+        assert_eq!(check_ride.driver.vehiclemake, "Honda".to_string());
     }
 }
