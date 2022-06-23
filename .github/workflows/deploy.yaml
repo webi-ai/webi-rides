@@ -8,6 +8,8 @@ jobs:
     name: A job to deploy canisters to the IC
     steps:
       - uses: actions/checkout@v2
+      - name: get deps
+        run: cargo install ic-cdk-optimizer --target root 
       - name: Deploy canisters
         id: deploy
         uses: webi-ai/IC-Deploy-Action-rust@main
