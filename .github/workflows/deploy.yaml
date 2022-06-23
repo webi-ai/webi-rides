@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: get deps
-        run: cargo install ic-cdk-optimizer --target root 
+        run: cargo install ic-cdk-optimizer
       - name: Deploy canisters
         id: deploy
         uses: webi-ai/IC-Deploy-Action-rust@main
