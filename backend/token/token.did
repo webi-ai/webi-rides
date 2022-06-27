@@ -1,0 +1,65 @@
+type CurrentStatus = variant { Inactive; Active };
+type Driver = record {
+  contact : text;
+  vehiclemake : text;
+  vehiclecolor : text;
+  vehicletype : text;
+  vehicleyear : text;
+  vehicleplatenumber : text;
+  name : text;
+  role : text;
+  email : text;
+  address : text;
+  vehicleseatnumber : text;
+  currentstatus : CurrentStatus;
+  rating : float64;
+  vehiclemodel : text;
+};
+type Profile = record { name : text; description : text; keywords : vec text };
+type Ride = record {
+  status : RideStatus;
+  dropoff : text;
+  rideid : text;
+  driverconfirmation : text;
+  riderrating : float64;
+  pickup : text;
+  riderfeedback : text;
+  timestamp : text;
+  driverfeedback : text;
+  rating : float64;
+  riderconfirmation : text;
+  driver : Driver;
+  rider : Rider;
+  driverrating : float64;
+};
+type RideStatus = variant { Active; Cancelled; Completed };
+type Rider = record {
+  contact : text;
+  name : text;
+  role : text;
+  email : text;
+  address : text;
+};
+service : {
+  get : (text) -> (Profile) query;
+  get_drivers : () -> (vec Driver) query;
+  get_riders : () -> (vec Rider) query;
+  get_rides : () -> (vec Ride) query;
+  get_self : () -> (Profile) query;
+  register_driver : (Driver) -> ();
+  register_ride : (Ride) -> ();
+  register_rider : (Rider) -> ();
+  search_driver_by_address : (text) -> (opt Driver) query;
+  search_driver_by_contact : (text) -> (opt Driver) query;
+  search_driver_by_field : (text, text) -> (vec opt Driver) query;
+  search_driver_by_name : (text) -> (opt Driver) query;
+  search_ride_by_field : (text, text) -> (vec opt Ride) query;
+  search_ride_by_id : (text) -> (opt Ride) query;
+  search_rider_by_address : (text) -> (opt Rider) query;
+  search_rider_by_field : (text, text) -> (vec opt Rider) query;
+  update : (Profile) -> ();
+  update_driver_for_ride : (text, Driver) -> ();
+  update_driver_rating : (text, float64) -> ();
+  update_driver_status : (text, CurrentStatus) -> () query;
+  update_rider_for_ride : (text, Rider) -> ();
+}
