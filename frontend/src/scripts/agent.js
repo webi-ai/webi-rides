@@ -23,7 +23,7 @@ const agent = new HttpAgent({
 
 
 //idl factory generated with the following command:
-//bash token/scripts/get_candid_macos_pipeable_into_didc_js.sh
+//didc bind token.did --target js
 export const idlFactory = ({ IDL }) => {
   const Profile = IDL.Record({
     'name' : IDL.Text,
@@ -84,9 +84,9 @@ export const idlFactory = ({ IDL }) => {
     'get_riders' : IDL.Func([], [IDL.Vec(Rider)], ['query']),
     'get_rides' : IDL.Func([], [IDL.Vec(Ride)], ['query']),
     'get_self' : IDL.Func([], [Profile], ['query']),
-    'register_driver' : IDL.Func([Driver], [], []),
-    'register_ride' : IDL.Func([Ride], [], []),
-    'register_rider' : IDL.Func([Rider], [], []),
+    'register_driver' : IDL.Func([Driver], [], ['update']),
+    'register_ride' : IDL.Func([Ride], [], ['update']),
+    'register_rider' : IDL.Func([Rider], [], ['update']),
     'search_driver_by_address' : IDL.Func(
         [IDL.Text],
         [IDL.Opt(Driver)],
@@ -124,10 +124,8 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'update' : IDL.Func([Profile], [], []),
-    'update_driver_for_ride' : IDL.Func([IDL.Text, Driver], [], []),
     'update_driver_rating' : IDL.Func([IDL.Text, IDL.Float64], [], []),
     'update_driver_status' : IDL.Func([IDL.Text, CurrentStatus], [], []),
-    'update_rider_for_ride' : IDL.Func([IDL.Text, Rider], [], []),
     'update_ride' : IDL.Func([IDL.Text, Ride], [], ['update'])
   });
 };
