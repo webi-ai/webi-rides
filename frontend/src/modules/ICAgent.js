@@ -209,18 +209,33 @@ const registerDriver = async (driver) => {
   );
 };
 
-////update driver of a ride by rideid using ride.update_driver
-const updateDriver = async (rideId, driver) => {
+// update driver of a ride by rideid using update_ride()
+const updateRideDriver = async (rideId, driver) => {
   const ride = await getRideById(rideId);
-  // check ride is valid
-  if (!(await isValidRide(ride))) {
-    console.error("update_driver error, ride is not valid");
-    return;
+  if (!ride) {
+    console.log('can\'t find ride', rideId);
+  } else if (ride.rideid !== rideId) {
+    console.log('ride id mismatch, rideid ', rideId, ' doesn\'t match found id ', ride.rideid);
+  } else {
+    console.log('ride found', rideId);
+    //change the driver
+    ride.driver = driver;
+    //update the ride
+    await actor.update_ride(rideId, ride);
+    console.log("update_ride success for ride", rideId);
   }
-  //call ride.update_driver
-  await ride.update_driver(driver);
-  console.log("update_driver success, driver address", driver.address);
-}
+};
+
+
+
+//getRideById searches for a ride by its rideid using actor.search_ride_by_field
+const getRideById = async (rideId) => {
+  const ride = await actor.search_ride_by_field("rideid", rideId);
+  console.log("search_ride_by_field success for ride id", rideId);
+  return ride[0][0];
+};
+
+
 
 //update driver feedback after a ride by rideid using ride.update_driver_feedback
 const updateDriverFeedback = async (rideId, feedback) => {
@@ -568,7 +583,6 @@ const makeNewDriver = async (
 const riderSelectDriver = async (riderAddress, driverAddress) => {
   console.log('riderSelectDriver', riderAddress, driverAddress);
   const ride = await getMostRecentRideForRider(riderAddress);
-  console.log('getMostRecentRideForRider', ride);
   // check ride is valid
   if (!(await isValidRide(ride))) {
     console.log("invalid ride");
@@ -578,11 +592,7 @@ const riderSelectDriver = async (riderAddress, driverAddress) => {
   const driver = await searchDriverByAddress(driverAddress);
   console.log('searchDriverByAddress', driver);
   // call update_driver with driver
-
-  // TODO fix this, remove bypass
-  // await ride.update_driver(driver);
-  // console.log("update_driver success, driver address", driver.address);
-  console.log('bypassed update_driver');
+  await updateRideDriver(ride.rideid, driver);
   return true;
 }
 

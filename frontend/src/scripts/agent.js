@@ -125,7 +125,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     'update' : IDL.Func([Profile], [], []),
     'update_driver_rating' : IDL.Func([IDL.Text, IDL.Float64], [], []),
-    'update_driver_status' : IDL.Func([IDL.Text, CurrentStatus], [], ['query']),
+    'update_driver_status' : IDL.Func([IDL.Text, CurrentStatus], [], []),
+    'update_ride' : IDL.Func([IDL.Text, Ride], [], ['update'])
   });
 };
 export const init = ({ IDL }) => { return []; };
